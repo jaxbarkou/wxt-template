@@ -6,6 +6,10 @@ export default defineConfig({
   srcDir: "src",
   modules: ["@wxt-dev/module-react"],
   manifest: {
+     // 同时配置popup和sidepanel
+     action: {
+      default_popup: "popup.html",
+    },
     side_panel: {
       default_path: "sidepanel.html", // Points to your side panel HTML
     },

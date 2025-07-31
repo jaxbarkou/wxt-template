@@ -190,10 +190,33 @@ export default defineContentScript({
         element.addEventListener("mouseenter", async (e) => {
           const target = e.currentTarget as HTMLElement;
           const rect = target.getBoundingClientRect();
+          
+          // 对于 fixed 定位，我们需要相对于视窗的位置
           let currentPosition: { x: number; y: number } | null = {
-            x: rect.left + window.scrollX,
-            y: rect.bottom + window.scrollY + 6,
+            x: rect.left,
+            y: rect.bottom + 6,
           };
+          
+          // 添加边界检查
+          const viewportWidth = window.innerWidth;
+          const viewportHeight = window.innerHeight;
+          const tooltipWidth = 200;
+          const tooltipHeight = 200;
+          
+          // 如果tooltip会超出右边界，调整到左侧
+          if (currentPosition.x + tooltipWidth > viewportWidth) {
+            currentPosition.x = rect.right - tooltipWidth;
+          }
+          
+          // 如果tooltip会超出下边界，调整到上方
+          if (currentPosition.y + tooltipHeight > viewportHeight) {
+            currentPosition.y = rect.top - tooltipHeight - 6;
+          }
+          
+          // 确保不会超出左边界和上边界
+          currentPosition.x = Math.max(0, currentPosition.x);
+          currentPosition.y = Math.max(0, currentPosition.y);
+          
           (window as any).__tooltipPosition__ = currentPosition;
           ui.mount();
         });

@@ -7,7 +7,8 @@ export default defineContentScript({
   cssInjectionMode: "ui",
   async main(ctx: any) {
     
-    const keyword = "BTC";
+    // 定义关键字列表
+    const keywords = ["BTC", "ETH", "SOL", "DOGE", "ADA", "DOT", "LINK", "UNI", "MATIC", "AVAX", "ATOM", "FTM", "NEAR", "ALGO", "VET", "THETA", "FIL", "TRX", "XLM", "EOS"];
 
     // 检测当前页面类型
     const detectPageType = () => {
@@ -159,22 +160,43 @@ export default defineContentScript({
       if (
         node.nodeType === Node.TEXT_NODE &&
         node.nodeValue &&
-        node.nodeValue.includes(keyword) &&
         !node.parentElement?.classList.contains('wxt-hover-word') // 避免处理已经是高亮元素的子节点
       ) {
-        const parent = node.parentNode;
-        if (!parent) return;
+        const text = node.nodeValue;
+        
+        // 使用正则表达式匹配 $SYMBOL 格式
+        const dollarSymbolRegex = /\$([A-Z]{2,10})/g;
+        let match;
+        let hasMatch = false;
+        let replacedText = text;
+        
+        // 检查所有匹配项
+        while ((match = dollarSymbolRegex.exec(text)) !== null) {
+          const fullMatch = match[0]; // 完整的匹配，如 $BTC
+          const symbol = match[1]; // 符号部分，如 BTC
+          
+          // 检查符号是否在关键字列表中
+          if (keywords.includes(symbol)) {
+            hasMatch = true;
+            // 替换为高亮元素
+            replacedText = replacedText.replace(
+              fullMatch,
+              `<span class="wxt-hover-word" data-symbol="${symbol}" style="cursor:pointer; color:#3b82f6; font-weight:bold">${fullMatch}</span>`
+            );
+          }
+        }
+        
+        // 如果有匹配项，替换节点
+        if (hasMatch) {
+          const parent = node.parentNode;
+          if (!parent) return;
 
-        const replacedHTML = node.nodeValue.replace(
-          keyword,
-          `<span class="wxt-hover-word" style="cursor:pointer; color:#3b82f6">${keyword}</span>`
-        );
+          const temp = document.createElement("span");
+          temp.innerHTML = replacedText;
 
-        const temp = document.createElement("span");
-        temp.innerHTML = replacedHTML;
-
-        parent.replaceChild(temp, node);
-        processedNodes.add(temp);
+          parent.replaceChild(temp, node);
+          processedNodes.add(temp);
+        }
       } else if (node.nodeType === Node.ELEMENT_NODE) {
         for (const child of Array.from(node.childNodes)) {
           walkAndReplaceTextNodes(child);
@@ -190,6 +212,7 @@ export default defineContentScript({
         element.addEventListener("mouseenter", async (e) => {
           const target = e.currentTarget as HTMLElement;
           const rect = target.getBoundingClientRect();
+          const symbol = target.getAttribute('data-symbol'); // 获取代币符号
           
           // 对于 fixed 定位，我们需要相对于视窗的位置
           let currentPosition: { x: number; y: number } | null = {
@@ -217,7 +240,9 @@ export default defineContentScript({
           currentPosition.x = Math.max(0, currentPosition.x);
           currentPosition.y = Math.max(0, currentPosition.y);
           
+          // 传递代币符号信息
           (window as any).__tooltipPosition__ = currentPosition;
+          (window as any).__tooltipSymbol__ = symbol;
           ui.mount();
         });
 
@@ -236,12 +261,14 @@ export default defineContentScript({
       append: "first",
       onMount: (container, shadowRoot, shadowHost) => {
         const wrapper = document.createElement("div");
-        // 从全局变量获取位置信息
+        // 从全局变量获取位置信息和代币符号
         const position = (window as any).__tooltipPosition__;
+        const symbol = (window as any).__tooltipSymbol__;
+        
         if (position) {
           const x = position.x;
           const y = position.y;
-          console.log("hover-ui mounted at:", x, y);
+          console.log("hover-ui mounted at:", x, y, "for symbol:", symbol);
           wrapper.classList.add(
             "fixed",
             "w-[200px]",
@@ -252,7 +279,7 @@ export default defineContentScript({
           wrapper.style.top = `${y}px`;
           container.append(wrapper);
           const root = ReactDOM.createRoot(wrapper);
-          root.render(<App />);
+          root.render(<App symbol={symbol} />); // 传递代币符号给App组件
           return { root, wrapper };
         }
         return null;

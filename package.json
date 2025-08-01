@@ -15,12 +15,14 @@
     "postinstall": "wxt prepare"
   },
   "dependencies": {
+    "@noble/hashes": "^1.8.0",
     "@tailwindcss/vite": "^4.1.11",
     "@types/lodash": "^4.17.20",
     "axios": "^1.11.0",
     "lodash": "^4.17.21",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "zustand": "^5.0.7"
   },
   "devDependencies": {
     "@types/chrome": "^0.1.1",

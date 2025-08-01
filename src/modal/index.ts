@@ -10,3 +10,19 @@ export interface ProjectsParams {
   type: ProjectsQueryType;
   value: string;
 }
+
+export type BloomFilterData = {
+  [key in ProjectsQueryType]?: string;
+};
+
+export interface BloomFilterParams {
+  type: ProjectsQueryType;
+}
+
+export interface BloomFilterType {
+  filter: string;
+  meta: {
+    version: string;
+    update_time: string;
+  };
+}

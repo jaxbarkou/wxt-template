@@ -20,17 +20,26 @@ const request = async <T = any>(
   config: AxiosRequestConfig
 ): Promise<MyResponseType<T>> => {
   try {
-    const lighgData = JSON.parse(localStorage.getItem("yomo") || "{}");
-    instance.defaults.headers.common["X-Auth-Token"] = _.get(
-      lighgData,
-      "state.token",
-      ""
-    );
+    let item: string | null = null;
+    
+    // 检查是否在支持 localStorage 的环境中
+    if (typeof localStorage !== 'undefined' && typeof window !== 'undefined') {
+      const lighgData = JSON.parse(localStorage.getItem("yomo") || "{}");
+      instance.defaults.headers.common["X-Auth-Token"] = _.get(
+        lighgData,
+        "state.token",
+        ""
+      );
+      item = window.localStorage.getItem("yomoInitToken");
+    }
+    
     const { data } = await instance.request<MyResponseType<T>>(config);
-    const item = window.localStorage.getItem("yomoInitToken");
-    if (data.code === 401 && !item) {
+    
+    // 只在有 localStorage 的环境中处理 401 错误
+    if (data.code === 401 && !item && typeof localStorage !== 'undefined' && typeof window !== 'undefined') {
       localStorage.setItem("yomoInitToken", `${new Date().getTime()}`);
     }
+    
     return data;
   } catch (err) {
     console.log(err);

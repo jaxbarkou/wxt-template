@@ -6,7 +6,7 @@ export default defineContentScript({
   matches: ["*://*/*"],
   cssInjectionMode: "ui",
   async main(ctx: any) {
-    
+
     // 定义关键字列表
     const keywords = ["BTC", "ETH", "SOL", "DOGE", "ADA", "DOT", "LINK", "UNI", "MATIC", "AVAX", "ATOM", "FTM", "NEAR", "ALGO", "VET", "THETA", "FIL", "TRX", "XLM", "EOS"];
 
@@ -14,9 +14,9 @@ export default defineContentScript({
     const detectPageType = () => {
       const url = window.location.href;
       const hostname = window.location.hostname;
-      
+
       console.log('检测页面类型:', { url, hostname });
-      
+
       if (hostname.includes('twitter.com') || hostname.includes('x.com')) {
         return 'TWITTER';
       }
@@ -33,7 +33,7 @@ export default defineContentScript({
     const extractTwitterHandle = () => {
       const pageType = detectPageType();
       console.log('开始提取Twitter handle，页面类型:', pageType);
-      
+
       if (pageType === 'TWITTER') {
         // 方法1：从URL提取
         const urlMatch = window.location.pathname.match(/^\/([^\/]+)/);
@@ -43,7 +43,7 @@ export default defineContentScript({
           console.log('从URL提取到handle:', handle);
           return handle;
         }
-        
+
         // 方法2：从页面元素提取
         const handleElements = document.querySelectorAll('[data-testid="UserName"] span');
         console.log('找到UserName元素数量:', handleElements.length);
@@ -56,7 +56,7 @@ export default defineContentScript({
             return handle;
           }
         }
-        
+
         // 方法3：从meta标签提取
         const metaHandle = document.querySelector('meta[property="og:title"]');
         console.log('找到meta标签:', metaHandle);
@@ -72,7 +72,7 @@ export default defineContentScript({
           }
         }
       }
-      
+
       console.log('未提取到Twitter handle');
       return null;
     };
@@ -118,7 +118,7 @@ export default defineContentScript({
         console.log('检测到页面变化，重新提取信息...');
         const pageInfo = extractPageInfo();
         console.log('页面信息:', pageInfo);
-        
+
         // 发送页面信息到background
         chrome.runtime.sendMessage({
           type: 'PAGE_DATA',
@@ -138,7 +138,7 @@ export default defineContentScript({
     console.log('开始初始检测...');
     const initialPageInfo = extractPageInfo();
     console.log('初始页面信息:', initialPageInfo);
-    
+
     // 发送初始数据到background
     chrome.runtime.sendMessage({
       type: 'PAGE_DATA',
@@ -152,29 +152,29 @@ export default defineContentScript({
 
     // 改进的关键词替换功能
     const processedNodes = new WeakSet(); // 用于跟踪已处理的节点
-    
+
     const walkAndReplaceTextNodes = (node: Node) => {
       // 避免重复处理
       if (processedNodes.has(node)) return;
-      
+
       if (
         node.nodeType === Node.TEXT_NODE &&
         node.nodeValue &&
         !node.parentElement?.classList.contains('wxt-hover-word') // 避免处理已经是高亮元素的子节点
       ) {
         const text = node.nodeValue;
-        
+
         // 使用正则表达式匹配 $SYMBOL 格式
         const dollarSymbolRegex = /\$([A-Z]{2,10})/g;
         let match;
         let hasMatch = false;
         let replacedText = text;
-        
+
         // 检查所有匹配项
         while ((match = dollarSymbolRegex.exec(text)) !== null) {
           const fullMatch = match[0]; // 完整的匹配，如 $BTC
           const symbol = match[1]; // 符号部分，如 BTC
-          
+
           // 检查符号是否在关键字列表中
           if (keywords.includes(symbol)) {
             hasMatch = true;
@@ -185,7 +185,7 @@ export default defineContentScript({
             );
           }
         }
-        
+
         // 如果有匹配项，替换节点
         if (hasMatch) {
           const parent = node.parentNode;
@@ -208,49 +208,74 @@ export default defineContentScript({
     const addHoverListeners = (element: Element) => {
       if (element.classList.contains('wxt-hover-word') && !element.hasAttribute('data-wxt-listener-added')) {
         element.setAttribute('data-wxt-listener-added', 'true');
-        
         element.addEventListener("mouseenter", async (e) => {
           const target = e.currentTarget as HTMLElement;
           const rect = target.getBoundingClientRect();
           const symbol = target.getAttribute('data-symbol'); // 获取代币符号
-          
+
           // 对于 fixed 定位，我们需要相对于视窗的位置
           let currentPosition: { x: number; y: number } | null = {
             x: rect.left,
             y: rect.bottom + 6,
           };
-          
+
           // 添加边界检查
           const viewportWidth = window.innerWidth;
           const viewportHeight = window.innerHeight;
           const tooltipWidth = 200;
           const tooltipHeight = 200;
-          
+
           // 如果tooltip会超出右边界，调整到左侧
           if (currentPosition.x + tooltipWidth > viewportWidth) {
             currentPosition.x = rect.right - tooltipWidth;
           }
-          
+
           // 如果tooltip会超出下边界，调整到上方
           if (currentPosition.y + tooltipHeight > viewportHeight) {
             currentPosition.y = rect.top - tooltipHeight - 6;
           }
-          
+
           // 确保不会超出左边界和上边界
           currentPosition.x = Math.max(0, currentPosition.x);
           currentPosition.y = Math.max(0, currentPosition.y);
-          
+
           // 传递代币符号信息
           (window as any).__tooltipPosition__ = currentPosition;
           (window as any).__tooltipSymbol__ = symbol;
           ui.mount();
         });
 
-        element.addEventListener("mouseleave", () => {
-          setTimeout(() => {
-            ui.remove();
+        let hideTimeout: NodeJS.Timeout | null = null;
+        let isHoveringTooltip = false;
+
+        // 设置全局函数
+        (window as any).__tooltipMouseEnter = () => {
+          console.log("全局：鼠标进入弹窗");
+          isHoveringTooltip = true;
+          if (hideTimeout) {
+            clearTimeout(hideTimeout);
+            hideTimeout = null;
+          }
+        };
+
+        (window as any).__tooltipMouseLeave = () => {
+          console.log("全局：鼠标离开弹窗");
+          isHoveringTooltip = false;
+          hideTimeout = setTimeout(() => {
+            if (!isHoveringTooltip) {
+              ui.remove();
+            }
           }, 300);
-        });
+        };
+
+        // element.addEventListener("mouseleave", () => {
+        //   console.log("鼠标离开关键词");
+        //   hideTimeout = setTimeout(() => {
+        //     if (!isHoveringTooltip) {
+        //       ui.remove();
+        //     }
+        //   }, 300);
+        // });
       }
     };
 
@@ -264,7 +289,7 @@ export default defineContentScript({
         // 从全局变量获取位置信息和代币符号
         const position = (window as any).__tooltipPosition__;
         const symbol = (window as any).__tooltipSymbol__;
-        
+
         if (position) {
           const x = position.x;
           const y = position.y;
@@ -292,7 +317,7 @@ export default defineContentScript({
 
     // 初始处理
     walkAndReplaceTextNodes(document.body);
-    
+
     // 为现有的高亮元素添加事件监听器
     document.querySelectorAll(".wxt-hover-word").forEach(addHoverListeners);
 

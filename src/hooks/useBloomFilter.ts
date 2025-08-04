@@ -76,10 +76,10 @@ export const useBloomFilter = () => {
   const testBloomFilter = useCallback(
     (item: string, type: ProjectsQueryType) => {
       let curItem = item.toLowerCase().trim();
-      const hashes = getHashes(curItem, bloomFilterData[type] || "");
+      const hashes = getHashes(curItem, bloomFilterData[type] || "{}");
       const data = JSON.parse(bloomFilterData[type] || "{}");
       // const bitArray = Buffer.from(data.bitArray, "base64");
-      const bitArray = base64ToBytes(data.bitArray);
+      const bitArray = base64ToBytes(data.bitArray || "");
       for (const hash of hashes) {
         const byteIndex = Math.floor(hash / 8);
         const bitIndex = hash % 8;

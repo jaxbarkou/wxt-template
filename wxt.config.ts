@@ -16,7 +16,8 @@ export default defineConfig({
     },
     permissions: [
       "sidePanel", // Required permission for side panels
-      "storage"
+      "storage",
+      "tabs",
     ],
     host_permissions: ["<all_urls>"],
   },

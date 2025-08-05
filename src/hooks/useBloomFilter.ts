@@ -3,7 +3,7 @@ import { useRootStore } from "@/store";
 import { getBloomFilter } from "@/utils/api";
 import { sha256 } from "@noble/hashes/sha2.js";
 import { utf8ToBytes } from "@noble/hashes/utils";
-
+import { useCallback } from "react";
 export const useBloomFilter = () => {
   const setBloomFilterData = useRootStore((state) => state.setBloomFilterData);
   const bloomFilterData = useRootStore((state) => state.bloomFilterData);

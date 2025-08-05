@@ -30,7 +30,7 @@ export default defineBackground(() => {
 
   // 监听来自content script和sidepanel的消息
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    console.log('收到消息:', message, '来自:', sender);
+    console.log('收到消息11:', message, '来自11:', sender);
     
     if (message.type === 'GET_BLOOM_FILTER_DATA') {
       getCurrentCache().then(cache => {

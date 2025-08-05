@@ -94,17 +94,7 @@ export default defineContentScript({
         const handle = extractTwitterHandle();
         if (handle) {
           info.twitterHandle = handle;
-          console.log("发送Twitter handle到background:", handle);
-          // 发送Twitter handle到background
-          chrome.runtime.sendMessage(
-            {
-              type: "TWITTER_HANDLE",
-              data: handle,
-            },
-            (response) => {
-              console.log("Background响应:", response);
-            }
-          );
+          console.log("提取到Twitter handle:", handle);
         }
       }
 
@@ -112,24 +102,96 @@ export default defineContentScript({
       return info;
     };
 
-    // 监听页面变化（SPA应用）
+    // 监听页面变化（SPA应用） 
     const observePageChanges = () => {
       console.log("开始监听页面变化...");
+      let lastUrl = window.location.href;
+      let lastProcessedTime = 0;
+      let lastPageData: string | null = null;
+      const DEBOUNCE_DELAY = 1000; // 1秒防抖
+      
       const observer = new MutationObserver(() => {
-        console.log("检测到页面变化，重新提取信息...");
-        const pageInfo = extractPageInfo();
-        console.log("页面信息:", pageInfo);
+        const currentTime = Date.now();
+        const currentUrl = window.location.href;
+        
+        // 检查URL是否发生变化
+        if (currentUrl !== lastUrl) {
+          console.log("检测到URL变化，重新提取信息...");
+          lastUrl = currentUrl;
+          lastProcessedTime = currentTime;
+          
+          const pageInfo = extractPageInfo();
+          console.log("页面信息:", pageInfo);
 
-        // 发送页面信息到background
-        chrome.runtime.sendMessage(
-          {
-            type: "PAGE_DATA",
-            data: pageInfo,
-          },
-          (response) => {
-            console.log("Background响应:", response);
+          // 检查数据是否真的发生了变化
+          const { timestamp, ...pageDataForComparison } = pageInfo;
+          const pageDataString = JSON.stringify(pageDataForComparison);
+          if (pageDataString !== lastPageData) {
+            lastPageData = pageDataString;
+            
+            // 发送页面信息到background
+            chrome.runtime.sendMessage(
+              {
+                type: "PAGE_DATA",
+                data: pageInfo,
+              },
+              (response) => {
+                console.log("Background响应:", response);
+              }
+            );
+            
+            // 如果有Twitter handle，单独发送
+            if (pageInfo.twitterHandle) {
+              chrome.runtime.sendMessage(
+                {
+                  type: "TWITTER_HANDLE",
+                  data: pageInfo.twitterHandle,
+                },
+                (response) => {
+                  console.log("Twitter handle发送响应:", response);
+                }
+              );
+            }
           }
-        );
+        } else if (currentTime - lastProcessedTime > DEBOUNCE_DELAY) {
+          // 只有在距离上次处理超过1秒时才处理DOM变化
+          console.log("检测到DOM变化，重新提取信息...");
+          lastProcessedTime = currentTime;
+          
+          const pageInfo = extractPageInfo();
+          console.log("页面信息:", pageInfo);
+
+          // 检查数据是否真的发生了变化
+          const { timestamp, ...pageDataForComparison } = pageInfo;
+          const pageDataString = JSON.stringify(pageDataForComparison);
+          if (pageDataString !== lastPageData) {
+            lastPageData = pageDataString;
+            
+            // 发送页面信息到background
+            chrome.runtime.sendMessage(
+              {
+                type: "PAGE_DATA",
+                data: pageInfo,
+              },
+              (response) => {
+                console.log("Background响应:", response);
+              }
+            );
+            
+            // 如果有Twitter handle，单独发送
+            if (pageInfo.twitterHandle) {
+              chrome.runtime.sendMessage(
+                {
+                  type: "TWITTER_HANDLE",
+                  data: pageInfo.twitterHandle,
+                },
+                (response) => {
+                  console.log("Twitter handle发送响应:", response);
+                }
+              );
+            }
+          }
+        }
       });
 
       observer.observe(document.body, {
@@ -153,6 +215,19 @@ export default defineContentScript({
         console.log("初始数据发送响应:", response);
       }
     );
+    
+    // 如果有Twitter handle，单独发送
+    if (initialPageInfo.twitterHandle) {
+      chrome.runtime.sendMessage(
+        {
+          type: "TWITTER_HANDLE",
+          data: initialPageInfo.twitterHandle,
+        },
+        (response) => {
+          console.log("初始Twitter handle发送响应:", response);
+        }
+      );
+    }
 
     // 开始监听页面变化
     observePageChanges();

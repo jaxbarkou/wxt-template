@@ -250,11 +250,13 @@ export default defineContentScript({
         const dollarSymbolRegex = /\$([A-Z]{2,10})/g;
         let match;
         let replacedText = text;
+        let hasMatch = false;
 
         // 检查所有匹配项
         while ((match = dollarSymbolRegex.exec(text)) !== null) {
           const fullMatch = match[0]; // 完整的匹配，如 $BTC
           const symbol = match[1]; // 符号部分，如 BTC
+          hasMatch = true;
           // 替换为高亮元素
           replacedText = replacedText.replace(
             fullMatch,
@@ -262,15 +264,17 @@ export default defineContentScript({
           );
         }
 
-        // 如果有匹配项，替换节点
-        const parent = node.parentNode;
-        if (!parent) return;
+        // 只有在有匹配项时才替换节点
+        if (hasMatch) {
+          const parent = node.parentNode;
+          if (!parent) return;
 
-        const temp = document.createElement("span");
-        temp.innerHTML = replacedText;
+          const temp = document.createElement("span");
+          temp.innerHTML = replacedText;
 
-        parent.replaceChild(temp, node);
-        processedNodes.add(temp);
+          parent.replaceChild(temp, node);
+          processedNodes.add(temp);
+        }
       } else if (node.nodeType === Node.ELEMENT_NODE) {
         for (const child of Array.from(node.childNodes)) {
           walkAndReplaceTextNodes(child);
@@ -396,33 +400,48 @@ export default defineContentScript({
     });
 
     // 初始处理
-    walkAndReplaceTextNodes(document.body);
+    try {
+      walkAndReplaceTextNodes(document.body);
 
-    // 为现有的高亮元素添加事件监听器
-    document.querySelectorAll(".wxt-hover-word").forEach(addHoverListeners);
+      // 为现有的高亮元素添加事件监听器
+      document.querySelectorAll(".wxt-hover-word").forEach(addHoverListeners);
+    } catch (error) {
+      console.error("初始处理时出错:", error);
+    }
 
     // 监听DOM变化，处理动态添加的内容
     const keywordObserver = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        mutation.addedNodes.forEach((node) => {
-          if (node.nodeType === Node.ELEMENT_NODE) {
-            // 检查新添加的元素是否包含关键词
-            walkAndReplaceTextNodes(node);
-            // 为新添加的高亮元素添加事件监听器
-            (node as Element)
-              .querySelectorAll?.(".wxt-hover-word")
-              .forEach(addHoverListeners);
-          } else if (node.nodeType === Node.TEXT_NODE) {
-            // 检查新添加的文本节点
-            walkAndReplaceTextNodes(node);
-          }
+      try {
+        mutations.forEach((mutation) => {
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === Node.ELEMENT_NODE) {
+              // 检查新添加的元素是否包含关键词
+              walkAndReplaceTextNodes(node);
+              // 为新添加的高亮元素添加事件监听器
+              (node as Element)
+                .querySelectorAll?.(".wxt-hover-word")
+                .forEach(addHoverListeners);
+            } else if (node.nodeType === Node.TEXT_NODE) {
+              // 检查新添加的文本节点
+              walkAndReplaceTextNodes(node);
+            }
+          });
         });
-      });
+      } catch (error) {
+        console.error("处理DOM变化时出错:", error);
+      }
     });
 
-    keywordObserver.observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
+    // 延迟启动observer，避免在页面加载时造成性能问题
+    setTimeout(() => {
+      try {
+        keywordObserver.observe(document.body, {
+          childList: true,
+          subtree: true,
+        });
+      } catch (error) {
+        console.error("启动DOM观察器时出错:", error);
+      }
+    }, 1000);
   },
 });

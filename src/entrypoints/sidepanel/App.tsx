@@ -1,22 +1,9 @@
-import "./App.css";
+import AppWrapper from "@/shared/components/AppWrapper";
 import "@/assets/style/globals.css";
-import { HashRouter, Routes, Route } from "react-router-dom";
-Home
-import Home from "./pages/home";
-import User from "./pages/user";
+import "./App.css";
 
 const App: React.FC = () => {
-
-  return (
-    <>
-      <HashRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/user" element={<User />} />
-        </Routes>
-      </HashRouter>
-    </>
-  );
+  return <AppWrapper mode="sidepanel" />;
 };
 
 export default App;

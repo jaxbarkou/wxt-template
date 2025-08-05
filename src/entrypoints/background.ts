@@ -1,13 +1,11 @@
-import {
-  fetchBloomFilterWithCache,
-  testBloomFilter,
-  getCurrentCache,
-  getCacheStatus,
-} from "@/utils/bloomFilterCache";
+// import {
+//   fetchBloomFilterWithCache,
+//   testBloomFilter,
+//   getCurrentCache,
+//   getCacheStatus,
+// } from "@/utils/bloomFilterCache";
 
 export default defineBackground(() => {
-  console.log("Hello background!", { id: browser.runtime.id });
-
   // 在内存中存储数据
   let currentData: any = {
     currentTwitterHandle: null,
@@ -15,18 +13,18 @@ export default defineBackground(() => {
   };
 
   // 初始化 Bloom Filter 数据
-  const initializeBloomFilter = async () => {
-    try {
-      console.log("开始初始化 Bloom Filter...");
-      await fetchBloomFilterWithCache();
-      console.log("Bloom Filter 数据初始化完成");
-    } catch (error) {
-      console.error("Bloom Filter 数据初始化失败:", error);
-    }
-  };
+  // const initializeBloomFilter = async () => {
+  //   try {
+  //     console.log("开始初始化 Bloom Filter...");
+  //     await fetchBloomFilterWithCache();
+  //     console.log("Bloom Filter 数据初始化完成");
+  //   } catch (error) {
+  //     console.error("Bloom Filter 数据初始化失败:", error);
+  //   }
+  // };
 
   // 启动时初始化
-  initializeBloomFilter();
+  // initializeBloomFilter();
 
   chrome.runtime.onInstalled.addListener(() => {
     chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
@@ -34,42 +32,41 @@ export default defineBackground(() => {
 
   // 监听来自content script和sidepanel的消息
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    console.log('收到消息11:', message, '来自11:', sender);
     
-    if (message.type === 'GET_BLOOM_FILTER_DATA') {
-      getCurrentCache().then(cache => {
-        sendResponse({ 
-          success: true, 
-          data: cache?.data || {} 
-        });
-      });
-      return true; // 保持消息通道开放
-    }
+    // if (message.type === 'GET_BLOOM_FILTER_DATA') {
+    //   getCurrentCache().then(cache => {
+    //     sendResponse({ 
+    //       success: true, 
+    //       data: cache?.data || {} 
+    //     });
+    //   });
+    //   return true; // 保持消息通道开放
+    // }
 
-    if (message.type === "TEST_BLOOM_FILTER") {
-      const { symbol, type } = message.data;
-      testBloomFilter(symbol, type).then((result) => {
-        sendResponse({ success: true, result });
-      });
-      return true; // 保持消息通道开放
-    }
+    // if (message.type === "TEST_BLOOM_FILTER") {
+    //   const { symbol, type } = message.data;
+    //   testBloomFilter(symbol, type).then((result) => {
+    //     sendResponse({ success: true, result });
+    //   });
+    //   return true; // 保持消息通道开放
+    // }
 
-    if (message.type === "REFRESH_BLOOM_FILTER") {
-      fetchBloomFilterWithCache().then(() => {
-        getCurrentCache().then((cache) => {
-          sendResponse({ success: true, data: cache?.data || {} });
-        });
-      });
-      return true; // 保持消息通道开放
-    }
+    // if (message.type === "REFRESH_BLOOM_FILTER") {
+    //   fetchBloomFilterWithCache().then(() => {
+    //     getCurrentCache().then((cache) => {
+    //       sendResponse({ success: true, data: cache?.data || {} });
+    //     });
+    //   });
+    //   return true; // 保持消息通道开放
+    // }
 
     // 添加 GET_CACHE_STATUS 消息处理器
-    if (message.type === "GET_CACHE_STATUS") {
-      getCacheStatus().then((status) => {
-        sendResponse({ success: true, status });
-      });
-      return true; // 保持消息通道开放
-    }
+    // if (message.type === "GET_CACHE_STATUS") {
+    //   getCacheStatus().then((status) => {
+    //     sendResponse({ success: true, status });
+    //   });
+    //   return true; // 保持消息通道开放
+    // }
 
     if (message.type === "PAGE_DATA") {
       console.log("处理页面数据:", message.data);

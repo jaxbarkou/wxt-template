@@ -19,7 +19,7 @@ export default defineConfig({
       "storage",
       "tabs",
     ],
-    host_permissions: ["<all_urls>"],
+    host_permissions: ["<all_urls>"]
   },
   vite: () => ({
     plugins: [tailwindcss()],

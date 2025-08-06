@@ -12,8 +12,9 @@ import {
 } from "@/components/ui/select";
 import { Link } from "react-router-dom";
 import { useBloomFilter } from "@/hooks/useBloomFilter";
+import { PageProps } from "../types";
 
-const Home: React.FC = () => {
+const Home: React.FC<PageProps> = ({ mode }) => {
   const [projectsData, setProjectsData] = useState(null);
   const [twitterHandle, setTwitterHandle] = useState<string | null>(null);
   const [lastDetected, setLastDetected] = useState<string | null>(null);

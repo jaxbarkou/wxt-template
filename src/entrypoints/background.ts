@@ -32,12 +32,11 @@ export default defineBackground(() => {
 
   // 监听来自content script和sidepanel的消息
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    
     // if (message.type === 'GET_BLOOM_FILTER_DATA') {
     //   getCurrentCache().then(cache => {
-    //     sendResponse({ 
-    //       success: true, 
-    //       data: cache?.data || {} 
+    //     sendResponse({
+    //       success: true,
+    //       data: cache?.data || {}
     //     });
     //   });
     //   return true; // 保持消息通道开放
@@ -93,6 +92,16 @@ export default defineBackground(() => {
         success: true,
         data: currentData,
       });
+    }
+
+    if (message.type === "FETCH_PROJECTS_DATA") {
+      fetch(message.url)
+        .then((res) => res.json())
+        .then((data) => sendResponse({ success: true, data }))
+        .catch((err) => sendResponse({ success: false, error: err.message }));
+
+      // 👇 重要：return true 表示异步响应
+      return true;
     }
 
     // 默认响应

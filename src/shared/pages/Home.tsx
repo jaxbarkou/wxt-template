@@ -21,13 +21,13 @@ const Home: React.FC<PageProps> = ({ mode }) => {
   const [baseBloomFilter, setBaseBloomFilter] = useState<boolean>(false);
   const { testBloomFilter, fetchBloomFilter } = useBloomFilter();
   const [tabUrl, setTabUrl] = useState<string>();
+  const [selectText, setSelectText] = useState("");
   const [proType, setProType] = useState<ProjectsQueryType>(
     ProjectsQueryType.ticker
   );
   const [queryValue, setQueryValue] = useState<string>("");
   const [domainProjectsData, setDomainProjectsData] = useState(null);
-  const [domainBloomFilter, setDomainBloomFilter] = useState<boolean>(false);
-
+  const [selectedProjectsData, setSelectedProjectsData] = useState(null);
   const fetchData = useCallback(
     async (type: ProjectsQueryType, value: string) => {
       try {
@@ -70,6 +70,7 @@ const Home: React.FC<PageProps> = ({ mode }) => {
       (response) => {
         if (response && response.success && response.data) {
           setTwitterHandle(response.data.currentTwitterHandle);
+          // fetchData(response.data.currentTwitterHandle);
           setLastDetected(response.data.lastDetected);
         }
       }
@@ -89,6 +90,7 @@ const Home: React.FC<PageProps> = ({ mode }) => {
     const handleStorageUpdate = (message: any) => {
       if (message.type === "STORAGE_UPDATED" && message.data) {
         setTwitterHandle(message.data.currentTwitterHandle);
+        // fetchData(message.data.currentTwitterHandle);
         setLastDetected(message.data.lastDetected);
       }
     };
@@ -116,169 +118,217 @@ const Home: React.FC<PageProps> = ({ mode }) => {
     }
   };
 
-  const openSidepanel = () => {
-    window.close();
-    chrome.sidePanel.setOptions({
-      enabled: true
-    });
-    try {
-      // 获取当前活动标签页
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        if (tabs[0] && tabs[0].id) {
-          // 使用当前标签页ID打开侧边栏
-          chrome.sidePanel.open({ tabId: tabs[0].id }, () => {
-            console.log('侧边栏已打开');
-          });
-        } else {
-          alert('无法获取当前标签页信息');
-        }
-      });
-    } catch (error) {
-      console.log('API调用失败，使用备用方案');
-      alert('请手动打开侧边栏：右键扩展图标 → 显示侧边栏');
+  const getActiveTabUrl = async (): Promise<string | null> => {
+    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (tabs[0]?.url) {
+      return tabs[0].url;
     }
+    return null;
   };
 
-  const getActiveTabUrl = async (): Promise<string | null> => {
-    try {
-      const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-      if (tabs[0] && tabs[0].url) {
-        return tabs[0].url;
+  useEffect(() => {
+    getActiveTabUrl().then((url) => {
+      if (url) {
+        setTabUrl(url); // 更新状态
       }
-      return null;
-    } catch (error) {
-      console.error("获取当前标签页URL失败:", error);
-      return null;
-    }
-  };
+    });
+  }, []);
 
   useEffect(() => {
     const updateUrl = async () => {
       const url = await getActiveTabUrl();
       if (url) {
         setTabUrl(url);
-        const domain = getDomain(url);
-        if (domain) {
-          const isMatch = testBloomFilter(domain, ProjectsQueryType.domain);
-          setDomainBloomFilter(isMatch);
-          if (isMatch) {
-            const data = await fetchData(ProjectsQueryType.domain, domain);
-            setDomainProjectsData(data);
-          }
-        }
       }
     };
 
-    updateUrl();
+    chrome.tabs.onActivated.addListener(updateUrl);
+    chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+      if (tab.active && changeInfo.url) {
+        setTabUrl(changeInfo.url);
+      }
+    });
+
+    return () => {
+      chrome.tabs.onActivated.removeListener(updateUrl);
+      chrome.tabs.onUpdated.removeListener(() => {});
+    };
   }, []);
 
   const getDomain = (rawUrl: string) => {
     try {
       const url = new URL(rawUrl);
-      return url.hostname;
-    } catch (error) {
-      console.error("解析URL失败:", error);
-      return null;
+      return url.hostname; // 返回不带协议的主机名
+    } catch (e) {
+      return rawUrl;
     }
   };
 
+  const domainUrl = useMemo(() => {
+    if (tabUrl) {
+      return getDomain(tabUrl);
+    }
+    return "";
+  }, [tabUrl]);
+
+  const fetchDomainData = useCallback(async () => {
+    if (!domainUrl) {
+      console.warn("当前 Tab URL 为空，无法查询 domain");
+      return;
+    }
+    const data = await fetchData(ProjectsQueryType.domain, domainUrl);
+    setDomainProjectsData(data);
+  }, [domainUrl, fetchData]);
+
+  useEffect(() => {
+    if (domainUrl) {
+      fetchDomainData();
+    }
+  }, [domainUrl, fetchDomainData, testBloomFilter]);
+
+  useEffect(() => {
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      if (message.type === "SEND_SELECTED_TEXT") {
+        setSelectText(message.payload);
+      }
+    });
+  }, []);
+
+  const splitText = (input: string): string[] => {
+    return input
+      .split(/\s+/) // 以一个或多个空格分割
+      .filter(Boolean) // 去掉空字符串（防止多空格）
+      .map((word) => word.replace(/\$/g, "")); // 删除每个词中的 `$`
+  };
+
+  // selectText
+  useEffect(() => {
+    if (selectText) {
+      let arr = splitText(selectText);
+      console.log("选中的文本分割结果:", arr);
+      if (arr.length > 0) {
+        const match = arr.find((word) =>
+          testBloomFilter(word, ProjectsQueryType.ticker)
+        );
+        console.log("匹配的代币:", match);
+        if (match) {
+          fetchSelectedData(match);
+        } else {
+          console.warn("没有匹配的代币");
+        }
+      }
+    }
+  }, [selectText]);
+
+  const fetchSelectedData = useCallback(
+    async (match: string) => {
+      try {
+        const data = await fetchData(ProjectsQueryType.ticker, match);
+        setSelectedProjectsData(data);
+      } catch (error) {
+        console.error("Error fetching selected data:", error);
+      }
+    },
+    [domainUrl, fetchData]
+  );
+
   return (
-    <div className={`w-full ${mode === 'popup' ? 'p-4' : 'p-2'}`}>
-      {/* 模式切换按钮 */}
-      {mode === 'sidepanel' && (
-        <button 
-          className="px-4 py-2 mb-4 text-white bg-blue-600 rounded hover:bg-blue-700"
-          onClick={openPopup}
-        >
+    <>
+      <div className="p-6">
+        <div>
+          <Link to="/">跳转到 Home</Link>
+          <Link className="ml-5" to="/user">
+            跳转到 User
+          </Link>
+        </div>
+        <button className="px-4 py-2 text-white" onClick={openPopup}>
           Open Popup
         </button>
-      )}
-      
-      {mode === 'popup' && (
-        <button 
-          className="px-4 py-2 mb-4 text-white bg-green-600 rounded hover:bg-green-700"
-          onClick={openSidepanel}
-        >
-          Open Sidepanel
-        </button>
-      )}
 
-      {/* 显示检测到的Twitter handle */}
-      {twitterHandle && (
-        <div className="p-4 mb-4 border border-blue-200 rounded card bg-blue-50">
-          <h3 className="mb-2 text-lg font-semibold">检测到的Twitter用户</h3>
-          <p className="font-mono text-blue-600">@{twitterHandle}</p>
-          <p className="mt-1 text-sm text-gray-500">
-            最后检测:{" "}
-            {lastDetected ? new Date(lastDetected).toLocaleString() : "未知"}
-          </p>
-        </div>
-      )}
-
-      {/* 查询表单 */}
-      <div className="mb-4 space-y-2">
-        <div className="flex space-x-2">
-          <Select value={proType} onValueChange={(value) => setProType(value as ProjectsQueryType)}>
-            <SelectTrigger className="w-32">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={ProjectsQueryType.ticker}>Ticker</SelectItem>
-              <SelectItem value={ProjectsQueryType.twitter}>Twitter</SelectItem>
-              <SelectItem value={ProjectsQueryType.domain}>Domain</SelectItem>
-            </SelectContent>
-          </Select>
-          <Input
-            placeholder="输入查询内容"
-            value={queryValue}
-            onChange={(e) => setQueryValue(e.target.value)}
-            className="flex-1"
-          />
-          <Button onClick={fetchBaseData}>查询</Button>
-        </div>
-      </div>
-
-      {/* 查询结果 */}
-      {projectsData && (
-        <div className="mb-4">
-          <h3 className="mb-2 text-lg font-semibold">查询结果</h3>
-          <pre className="p-4 overflow-auto text-sm text-left text-white bg-gray-900 rounded max-h-60">
-            {JSON.stringify(projectsData, null, 2)}
-          </pre>
-        </div>
-      )}
-
-      {/* 当前页面域名信息 */}
-      {tabUrl && (
-        <div className="mb-4">
-          <h3 className="mb-2 text-lg font-semibold">当前页面</h3>
-          <p className="text-sm text-gray-600">URL: {tabUrl}</p>
-          <p className="text-sm text-gray-600">域名: {getDomain(tabUrl)}</p>
-          {domainBloomFilter !== null && (
-            <p className={`text-sm ${domainBloomFilter ? 'text-green-600' : 'text-red-600'}`}>
-              域名状态: {domainBloomFilter ? '在白名单中' : '不在白名单中'}
+        <Button className="ml-2 text-white hover:text-white" variant="outline">
+          test shadcn Button
+        </Button>
+        <h3 className="mt-4 text-lg font-semibold">test Twitter handle</h3>
+        {!twitterHandle && <>未检测到Twitter用户</>}
+        {/* 显示检测到的Twitter handle */}
+        {twitterHandle && (
+          <div className="p-4 mt-4 border border-blue-200 rounded card bg-blue-50">
+            <h3 className="mb-2 text-lg font-semibold">检测到的Twitter用户</h3>
+            <p className="font-mono text-blue-600">@{twitterHandle}</p>
+            <p className="mt-1 text-sm text-gray-500">
+              最后检测:{" "}
+              {lastDetected ? new Date(lastDetected).toLocaleString() : "未知"}
             </p>
-          )}
+          </div>
+        )}
+        <h3 className="mt-4 text-lg font-semibold">基础请求</h3>
+        <div className="mt-4">
+          <div className="flex items-center">
+            <span className="mr-2">base:</span>
+            <Select
+              value={proType}
+              onValueChange={(value) => {
+                setProType(value as ProjectsQueryType);
+              }}
+              defaultValue="all"
+            >
+              <SelectTrigger
+                size={"sm"}
+                className="text-white w-[88px] !h-6 rounded-[20px] border-[0.5px] border-solid border-[#adadad80] text-[10px] px-2 py-1 mr-2 bg-none"
+              >
+                <SelectValue placeholder="type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={ProjectsQueryType.ticker}>
+                  {ProjectsQueryType.ticker}
+                </SelectItem>
+                <SelectItem value={ProjectsQueryType.domain}>
+                  {ProjectsQueryType.domain}
+                </SelectItem>
+                <SelectItem value={ProjectsQueryType.name}>
+                  {ProjectsQueryType.name}
+                </SelectItem>
+                <SelectItem value={ProjectsQueryType.twitter}>
+                  {ProjectsQueryType.twitter}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            <Input
+              className="w-[100px] h-6 text-xs"
+              placeholder="输入查询内容"
+              onChange={(e) => setQueryValue(e.target.value)}
+              value={queryValue}
+            />
+            <Button
+              className="h-6 ml-2 text-xs text-white hover:text-white"
+              variant="outline"
+              onClick={fetchBaseData}
+            >
+              查询
+            </Button>
+          </div>
         </div>
-      )}
-
-      {/* 域名查询结果 */}
-      {domainProjectsData && (
-        <div className="mb-4">
-          <h3 className="mb-2 text-lg font-semibold">域名查询结果</h3>
-          <pre className="p-4 overflow-auto text-sm text-left text-white bg-gray-900 rounded max-h-60">
-            {JSON.stringify(domainProjectsData, null, 2)}
-          </pre>
-        </div>
-      )}
-
-      {/* 导航链接 */}
-      <div className="flex space-x-4">
-        <Link to="/" className="text-blue-600 hover:text-blue-800">Home</Link>
-        <Link to="/user" className="text-blue-600 hover:text-blue-800">User</Link>
+        <h4 className="mt-4 text-sm font-semibold">
+          Bloom-filter {baseBloomFilter.toString()}
+        </h4>
+        <pre className="mt-3 flex justify-start p-4 overflow-auto text-sm text-left text-white bg-gray-900 h-[100px]">
+          {JSON.stringify(projectsData, null, 2)}
+        </pre>
+        <h3 className="mt-4 text-lg font-semibold">domain</h3>
+        <p>
+          当前 Tab URL: {tabUrl} --- {domainUrl}
+        </p>
+        <pre className="mt-3 flex justify-start p-4 overflow-auto text-sm text-left text-white bg-gray-900 h-[100px]">
+          {JSON.stringify(domainProjectsData, null, 2)}
+        </pre>
+        <h3 className="mt-4 text-lg font-semibold">页面选中内容</h3>
+        <p>来自页面的内容：{selectText}</p>
+        <pre className="mt-3 flex justify-start p-4 overflow-auto text-sm text-left text-white bg-gray-900 h-[100px]">
+          {JSON.stringify(selectedProjectsData, null, 2)}
+        </pre>
       </div>
-    </div>
+    </>
   );
 };
 
-export default Home; 
+export default Home;

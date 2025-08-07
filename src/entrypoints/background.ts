@@ -28,6 +28,72 @@ export default defineBackground(() => {
 
   chrome.runtime.onInstalled.addListener(() => {
     chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
+    
+    // 创建右键菜单
+    createContextMenus();
+  });
+
+  // 创建右键菜单函数
+  const createContextMenus = () => {
+    // 创建主菜单
+    chrome.contextMenus.create({
+      id: "wxt-extension-menu",
+      title: "WXT Extension",
+      contexts: ["all"]
+    });
+
+    // 创建子菜单项
+    chrome.contextMenus.create({
+      id: "open-options",
+      parentId: "wxt-extension-menu",
+      title: "打开设置",
+      contexts: ["all"]
+    });
+
+    chrome.contextMenus.create({
+      id: "open-sidepanel",
+      parentId: "wxt-extension-menu",
+      title: "打开侧边栏",
+      contexts: ["all"]
+    });
+
+    chrome.contextMenus.create({
+      id: "separator-1",
+      parentId: "wxt-extension-menu",
+      type: "separator",
+      contexts: ["all"]
+    });
+
+    chrome.contextMenus.create({
+      id: "about-extension",
+      parentId: "wxt-extension-menu",
+      title: "关于扩展",
+      contexts: ["all"]
+    });
+  };
+
+  // 处理右键菜单点击事件
+  chrome.contextMenus.onClicked.addListener((info, tab) => {
+    switch (info.menuItemId) {
+      case "open-options":
+        // 打开选项页面
+        chrome.runtime.openOptionsPage();
+        break;
+        
+      case "open-sidepanel":
+        // 打开侧边栏
+        if (tab?.id) {
+          chrome.sidePanel.open({ tabId: tab.id });
+        }
+        break;
+        
+      case "about-extension":
+        // 显示关于信息
+        chrome.tabs.create({
+          url: chrome.runtime.getURL("options.html#/about")
+        });
+        break;
+    }
   });
 
   // 监听来自content script和sidepanel的消息

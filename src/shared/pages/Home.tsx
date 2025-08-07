@@ -1,331 +1,110 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { ProjectsQueryType } from "@/modal";
-import { getProjectsLookup } from "@/utils/api";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Link } from "react-router-dom";
-import { useBloomFilter } from "@/hooks/useBloomFilter";
+import { ArrowUpIcon, MenuIcon } from "lucide-react";
 import { PageProps } from "../types";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
 const Home: React.FC<PageProps> = ({ mode }) => {
-  const [projectsData, setProjectsData] = useState(null);
-  const [twitterHandle, setTwitterHandle] = useState<string | null>(null);
-  const [lastDetected, setLastDetected] = useState<string | null>(null);
-  const [baseBloomFilter, setBaseBloomFilter] = useState<boolean>(false);
-  const { testBloomFilter, fetchBloomFilter } = useBloomFilter();
-  const [tabUrl, setTabUrl] = useState<string>();
-  const [selectText, setSelectText] = useState("");
-  const [proType, setProType] = useState<ProjectsQueryType>(
-    ProjectsQueryType.ticker
-  );
-  const [queryValue, setQueryValue] = useState<string>("");
-  const [domainProjectsData, setDomainProjectsData] = useState(null);
-  const [selectedProjectsData, setSelectedProjectsData] = useState(null);
-  const fetchData = useCallback(
-    async (type: ProjectsQueryType, value: string) => {
-      try {
-        const params = {
-          type: type,
-          value: value,
-        };
-
-        const response = await getProjectsLookup(params);
-        if (response.code === 200) {
-          console.log("Fetched projects data:", response);
-          return response.data;
-        }
-      } catch (error) {
-        console.error("Error fetching wallets:", error);
-      }
+  const categoryCards = [
+    {
+      title: "Hot Campaigns",
+      description: "Trending airdrops and quests",
+      position: "top-[394px] left-[18px]",
     },
-    []
-  );
-
-  const fetchBaseData = useCallback(async () => {
-    if (queryValue === "") {
-      console.warn("查询内容不能为空");
-      return;
-    }
-    const isMatch = testBloomFilter(queryValue, proType);
-    setBaseBloomFilter(isMatch);
-    if (isMatch) {
-      const data = await fetchData(proType, queryValue);
-      setProjectsData(data);
-    }
-  }, [proType, queryValue, fetchData]);
-
-  // 获取当前检测到的Twitter handle
-  const fetchTwitterData = useCallback(() => {
-    chrome.runtime.sendMessage(
-      {
-        type: "GET_CURRENT_DATA",
-      },
-      (response) => {
-        if (response && response.success && response.data) {
-          setTwitterHandle(response.data.currentTwitterHandle);
-          // fetchData(response.data.currentTwitterHandle);
-          setLastDetected(response.data.lastDetected);
-        }
-      }
-    );
-  }, []);
-
-  useEffect(() => {
-    fetchTwitterData(); // 初始获取Twitter数据
-  }, [fetchTwitterData]);
-
-  useEffect(() => {
-    fetchBloomFilter();
-  }, [fetchBloomFilter]);
-
-  // 监听来自background的数据更新通知
-  useEffect(() => {
-    const handleStorageUpdate = (message: any) => {
-      if (message.type === "STORAGE_UPDATED" && message.data) {
-        setTwitterHandle(message.data.currentTwitterHandle);
-        // fetchData(message.data.currentTwitterHandle);
-        setLastDetected(message.data.lastDetected);
-      }
-    };
-
-    // 监听来自background的消息
-    chrome.runtime.onMessage.addListener(handleStorageUpdate);
-
-    return () => {
-      chrome.runtime.onMessage.removeListener(handleStorageUpdate);
-    };
-  }, []);
-
-  const openPopup = () => {
-    try {
-      // 先打开popup
-      if (chrome.action && typeof chrome.action.openPopup === "function") {
-        chrome.action.openPopup();
-      }
-      chrome.sidePanel.setOptions({
-        enabled: false,
-      });
-    } catch (error) {
-      console.log("API不可用，使用备用方案");
-      alert("请点击扩展图标打开弹窗");
-    }
-  };
-
-  const getActiveTabUrl = async (): Promise<string | null> => {
-    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (tabs[0]?.url) {
-      return tabs[0].url;
-    }
-    return null;
-  };
-
-  useEffect(() => {
-    getActiveTabUrl().then((url) => {
-      if (url) {
-        setTabUrl(url); // 更新状态
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    const updateUrl = async () => {
-      const url = await getActiveTabUrl();
-      if (url) {
-        setTabUrl(url);
-      }
-    };
-
-    chrome.tabs.onActivated.addListener(updateUrl);
-    chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-      if (tab.active && changeInfo.url) {
-        setTabUrl(changeInfo.url);
-      }
-    });
-
-    return () => {
-      chrome.tabs.onActivated.removeListener(updateUrl);
-      chrome.tabs.onUpdated.removeListener(() => {});
-    };
-  }, []);
-
-  const getDomain = (rawUrl: string) => {
-    try {
-      const url = new URL(rawUrl);
-      return url.hostname; // 返回不带协议的主机名
-    } catch (e) {
-      return rawUrl;
-    }
-  };
-
-  const domainUrl = useMemo(() => {
-    if (tabUrl) {
-      return getDomain(tabUrl);
-    }
-    return "";
-  }, [tabUrl]);
-
-  const fetchDomainData = useCallback(async () => {
-    if (!domainUrl) {
-      console.warn("当前 Tab URL 为空，无法查询 domain");
-      return;
-    }
-    const data = await fetchData(ProjectsQueryType.domain, domainUrl);
-    setDomainProjectsData(data);
-  }, [domainUrl, fetchData]);
-
-  useEffect(() => {
-    if (domainUrl) {
-      fetchDomainData();
-    }
-  }, [domainUrl, fetchDomainData, testBloomFilter]);
-
-  useEffect(() => {
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      if (message.type === "SEND_SELECTED_TEXT") {
-        setSelectText(message.payload);
-      }
-    });
-  }, []);
-
-  const splitText = (input: string): string[] => {
-    return input
-      .split(/\s+/) // 以一个或多个空格分割
-      .filter(Boolean) // 去掉空字符串（防止多空格）
-      .map((word) => word.replace(/\$/g, "")); // 删除每个词中的 `$`
-  };
-
-  // selectText
-  useEffect(() => {
-    if (selectText) {
-      let arr = splitText(selectText);
-      console.log("选中的文本分割结果:", arr);
-      if (arr.length > 0) {
-        const match = arr.find((word) =>
-          testBloomFilter(word, ProjectsQueryType.ticker)
-        );
-        console.log("匹配的代币:", match);
-        if (match) {
-          fetchSelectedData(match);
-        } else {
-          console.warn("没有匹配的代币");
-        }
-      }
-    }
-  }, [selectText]);
-
-  const fetchSelectedData = useCallback(
-    async (match: string) => {
-      try {
-        const data = await fetchData(ProjectsQueryType.ticker, match);
-        setSelectedProjectsData(data);
-      } catch (error) {
-        console.error("Error fetching selected data:", error);
-      }
+    {
+      title: "Alpha Narratives",
+      description: "Early narratives worth watching",
+      position: "top-[394px] left-[205px]",
     },
-    [domainUrl, fetchData]
-  );
-
+    {
+      title: "Marketing Trends",
+      description: "What's hot and moving the market",
+      position: "top-[541px] left-[18px]",
+    },
+    {
+      title: "Earn Rewards",
+      description: "Contribute and Earn Rewards",
+      position: "top-[541px] left-[205px]",
+    },
+  ];
   return (
     <>
-      <div className="p-6">
-        <div>
-          <Link to="/">跳转到 Home</Link>
-          <Link className="ml-5" to="/user">
-            跳转到 User
-          </Link>
-        </div>
-        <button className="px-4 py-2 text-white" onClick={openPopup}>
-          Open Popup
-        </button>
-
-        <Button className="ml-2 text-white hover:text-white" variant="outline">
-          test shadcn Button
-        </Button>
-        <h3 className="mt-4 text-lg font-semibold">test Twitter handle</h3>
-        {!twitterHandle && <>未检测到Twitter用户</>}
-        {/* 显示检测到的Twitter handle */}
-        {twitterHandle && (
-          <div className="p-4 mt-4 border border-blue-200 rounded card bg-blue-50">
-            <h3 className="mb-2 text-lg font-semibold">检测到的Twitter用户</h3>
-            <p className="font-mono text-blue-600">@{twitterHandle}</p>
-            <p className="mt-1 text-sm text-gray-500">
-              最后检测:{" "}
-              {lastDetected ? new Date(lastDetected).toLocaleString() : "未知"}
-            </p>
-          </div>
-        )}
-        <h3 className="mt-4 text-lg font-semibold">基础请求</h3>
-        <div className="mt-4">
-          <div className="flex items-center">
-            <span className="mr-2">base:</span>
-            <Select
-              value={proType}
-              onValueChange={(value) => {
-                setProType(value as ProjectsQueryType);
-              }}
-              defaultValue="all"
-            >
-              <SelectTrigger
-                size={"sm"}
-                className="text-white w-[88px] !h-6 rounded-[20px] border-[0.5px] border-solid border-[#adadad80] text-[10px] px-2 py-1 mr-2 bg-none"
-              >
-                <SelectValue placeholder="type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={ProjectsQueryType.ticker}>
-                  {ProjectsQueryType.ticker}
-                </SelectItem>
-                <SelectItem value={ProjectsQueryType.domain}>
-                  {ProjectsQueryType.domain}
-                </SelectItem>
-                <SelectItem value={ProjectsQueryType.name}>
-                  {ProjectsQueryType.name}
-                </SelectItem>
-                <SelectItem value={ProjectsQueryType.twitter}>
-                  {ProjectsQueryType.twitter}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-            <Input
-              className="w-[100px] h-6 text-xs"
-              placeholder="输入查询内容"
-              onChange={(e) => setQueryValue(e.target.value)}
-              value={queryValue}
-            />
+      <div className="flex items-start justify-center min-h-screen ">
+        <div className="bg-[#f9f9f9] w-[393px] min-h-[832px] flex flex-col px-4 py-3.5">
+          {/* Header */}
+          <header className="flex items-center justify-between mb-8">
+            <MenuIcon className="w-6 h-6" />
+            <h1 className=" font-normal text-black text-xl tracking-[0] leading-[normal]">
+              Yomo
+            </h1>
             <Button
-              className="h-6 ml-2 text-xs text-white hover:text-white"
               variant="outline"
-              onClick={fetchBaseData}
+              className="w-[66px] h-[26px] rounded-[10px] border border-solid border-[#00000080] p-0 text-white hover:text-white"
             >
-              查询
+              <span className=" font-normal text-sm tracking-[0] leading-[normal]">
+                sign in
+              </span>
             </Button>
+          </header>
+
+          {/* Welcome Section */}
+          <div className="mb-8">
+            <h2 className=" font-normal text-black text-xl tracking-[0] leading-[normal] mb-4">
+              Hey,
+            </h2>
+            <p className=" font-normal text-black text-base tracking-[0] leading-[normal] mb-8">
+              What do you feel like exploring today?
+            </p>
+
+            {/* Search Bar */}
+            <div className="relative w-full h-[46px] bg-[#fafffa] rounded-[15px] border border-solid border-black mb-4">
+              <Input
+                className="absolute top-[3px] left-5 right-12 border-0 bg-transparent p-0  font-normal text-[#000000b2] text-sm tracking-[0] leading-[normal] focus-visible:ring-0"
+                placeholder="Search tokens, projects or alpha..."
+              />
+              <ArrowUpIcon className="absolute w-6 h-6 top-[10px] right-5" />
+            </div>
+          </div>
+
+          {/* Category Cards Section */}
+          <div className="mb-8">
+            <p className=" font-normal text-black text-sm tracking-[0] leading-[normal] mb-4">
+              Not sure yet? Pick something below to get started.
+            </p>
+
+            <div className="grid grid-cols-2 gap-4">
+              {categoryCards.map((card, index) => (
+                <Card
+                  key={index}
+                  className="w-full h-[125px] bg-[#d9d9d9] rounded-xl border-0 p-0"
+                >
+                  <CardContent className="flex flex-col justify-between h-full p-0">
+                    <h3 className="pt-[15px] pl-[9px]  font-normal text-black text-base tracking-[0] leading-[normal]">
+                      {card.title}
+                    </h3>
+                    <p className="pb-[15px] pl-[9px] pr-[9px]  font-normal text-[#000000cc] text-[13px] tracking-[0] leading-[normal]">
+                      {card.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+
+          {/* Community Section */}
+          <div className="flex flex-col flex-1">
+            <h2 className=" font-normal text-black text-base tracking-[0] leading-[normal] mb-2">
+              Community Hot Topics
+            </h2>
+            <p className=" font-normal text-[#000000cc] text-[13px] tracking-[0] leading-[normal] mb-4">
+              See what everyone is talking about right now.
+            </p>
+
+            {/* Community Content Placeholder */}
+            <div className="w-full h-[58px] bg-[#d9d9d9] rounded-xl" />
           </div>
         </div>
-        <h4 className="mt-4 text-sm font-semibold">
-          Bloom-filter {baseBloomFilter.toString()}
-        </h4>
-        <pre className="mt-3 flex justify-start p-4 overflow-auto text-sm text-left text-white bg-gray-900 h-[100px]">
-          {JSON.stringify(projectsData, null, 2)}
-        </pre>
-        <h3 className="mt-4 text-lg font-semibold">domain</h3>
-        <p>
-          当前 Tab URL: {tabUrl} --- {domainUrl}
-        </p>
-        <pre className="mt-3 flex justify-start p-4 overflow-auto text-sm text-left text-white bg-gray-900 h-[100px]">
-          {JSON.stringify(domainProjectsData, null, 2)}
-        </pre>
-        <h3 className="mt-4 text-lg font-semibold">页面选中内容</h3>
-        <p>来自页面的内容：{selectText}</p>
-        <pre className="mt-3 flex justify-start p-4 overflow-auto text-sm text-left text-white bg-gray-900 h-[100px]">
-          {JSON.stringify(selectedProjectsData, null, 2)}
-        </pre>
       </div>
     </>
   );

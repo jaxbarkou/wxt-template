@@ -1,0 +1,53 @@
+/* 浮窗样式 */
+#wxt-floating-container {
+  position: fixed !important;
+  bottom: 24px !important;
+  right: 24px !important;
+  z-index: 999999 !important;
+  pointer-events: auto !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+/* 确保浮窗在所有网站上都可见 */
+#wxt-floating-container * {
+  box-sizing: border-box !important;
+}
+
+/* 浮窗按钮样式 */
+#wxt-floating-container button {
+  border: none !important;
+  outline: none !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+/* 悬停效果 */
+#wxt-floating-container button:hover {
+  transform: scale(1.1) !important;
+}
+
+/* 确保图标正确显示 */
+#wxt-floating-container svg {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  #wxt-floating-container {
+    bottom: 16px !important;
+    right: 16px !important;
+  }
+}
+
+/* 防止被其他样式覆盖 */
+#wxt-floating-container {
+  all: initial !important;
+  position: fixed !important;
+  bottom: 24px !important;
+  right: 24px !important;
+  z-index: 999999 !important;
+  pointer-events: auto !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+} 

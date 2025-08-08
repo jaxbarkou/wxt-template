@@ -28,46 +28,16 @@ export default defineBackground(() => {
 
   chrome.runtime.onInstalled.addListener(() => {
     chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
-    
+
     // 创建右键菜单
     createContextMenus();
   });
 
   // 创建右键菜单函数
   const createContextMenus = () => {
-    // 创建主菜单
-    chrome.contextMenus.create({
-      id: "wxt-extension-menu",
-      title: "WXT Extension",
-      contexts: ["all"]
-    });
-
-    // 创建子菜单项
-    chrome.contextMenus.create({
-      id: "open-options",
-      parentId: "wxt-extension-menu",
-      title: "打开设置",
-      contexts: ["all"]
-    });
-
-    chrome.contextMenus.create({
-      id: "open-sidepanel",
-      parentId: "wxt-extension-menu",
-      title: "打开侧边栏",
-      contexts: ["all"]
-    });
-
-    chrome.contextMenus.create({
-      id: "separator-1",
-      parentId: "wxt-extension-menu",
-      type: "separator",
-      contexts: ["all"]
-    });
-
     chrome.contextMenus.create({
       id: "about-extension",
-      parentId: "wxt-extension-menu",
-      title: "关于扩展",
+      title: "打开全页面聊天",
       contexts: ["all"]
     });
   };
@@ -75,18 +45,6 @@ export default defineBackground(() => {
   // 处理右键菜单点击事件
   chrome.contextMenus.onClicked.addListener((info, tab) => {
     switch (info.menuItemId) {
-      case "open-options":
-        // 打开选项页面
-        chrome.runtime.openOptionsPage();
-        break;
-        
-      case "open-sidepanel":
-        // 打开侧边栏
-        if (tab?.id) {
-          chrome.sidePanel.open({ tabId: tab.id });
-        }
-        break;
-        
       case "about-extension":
         // 显示关于信息
         chrome.tabs.create({
@@ -158,6 +116,65 @@ export default defineBackground(() => {
         success: true,
         data: currentData,
       });
+    }
+
+    // 添加打开侧边栏的消息处理
+    if (message.type === "OPEN_SIDEPANEL") {
+      if (sender.tab?.id) {
+        chrome.sidePanel.open({ tabId: sender.tab.id });
+        sendResponse({ success: true, message: "侧边栏已打开" });
+      } else {
+        sendResponse({ success: false, message: "无法获取标签页ID" });
+      }
+      return true;
+    }
+
+    // 统一处理页面打开请求
+    if (message.type === "OPEN_PAGE") {
+      try {
+        const { page } = message;
+
+        switch (page) {
+          case "user":
+            if (sender.tab?.id) {
+              chrome.sidePanel.open({ tabId: sender.tab.id });
+              chrome.runtime.sendMessage({
+                type: "NAVIGATE_TO_PAGE",
+                page: "user"
+              });
+              sendResponse({ success: true, message: "用户页面已打开" });
+            } else {
+              sendResponse({ success: false, message: "无法获取标签页ID" });
+            }
+            break;
+
+          case "about":
+            if (sender.tab?.id) {
+              chrome.sidePanel.open({ tabId: sender.tab.id });
+              chrome.runtime.sendMessage({
+                type: "NAVIGATE_TO_PAGE",
+                page: "about"
+              });
+              sendResponse({ success: true, message: "用户页面已打开" });
+            } else {
+              sendResponse({ success: false, message: "无法获取标签页ID" });
+            }
+            sendResponse({ success: true, message: "关于页面已打开" });
+            break;
+
+          case "options":
+            chrome.runtime.openOptionsPage();
+            sendResponse({ success: true, message: "设置页面已打开" });
+            break;
+
+          default:
+            sendResponse({ success: false, message: `未知页面类型: ${page}` });
+        }
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        sendResponse({ success: false, message: `打开页面失败: ${errorMessage}` });
+      }
+      return true;
     }
 
     if (message.type === "FETCH_PROJECTS_DATA") {

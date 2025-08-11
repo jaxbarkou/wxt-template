@@ -5,6 +5,8 @@ import { BloomFilterData } from "@/modal";
 export interface UserSlice {
   hasHydrated: boolean;
   bloomFilterData: BloomFilterData;
+  token: string | undefined;
+  updateToken: (token: string) => void;
   setBloomFilterData: (data: BloomFilterData) => void;
   setHasHydrated: (val: boolean) => void;
 }
@@ -25,6 +27,10 @@ export const createUserSlice: StateCreator<
   return {
     hasHydrated: false,
     bloomFilterData: baseBloomFilterData,
+    token: "",
+    updateToken: (token: string) => {
+      set({ token });
+    },
     setBloomFilterData: (data: BloomFilterData) => {
       set({ bloomFilterData: data });
     },

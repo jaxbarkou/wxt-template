@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { PageProps } from "../types";
 import { WalletButtonCustom } from "../components/WalletButtonCustom";
-import { loginWithPasskey, registerPasskey } from "@/utils/api/passkey";
+import { loginWithPasskey, registerPasskey } from "@/lib/api/passkey";
 
 const User: React.FC<PageProps> = ({ mode }) => {
   const [email, setEmail] = useState("");
@@ -88,17 +88,17 @@ const User: React.FC<PageProps> = ({ mode }) => {
       <p className="mb-4">当前模式: {mode}</p>
       
       {/* Passkey登录区域 */}
-      <div className="mb-6 p-4 border rounded-lg bg-gray-50">
+      <div className="p-4 mb-6 border rounded-lg bg-gray-50">
         <h3 className="mb-3 text-lg font-semibold">Passkey 登录/注册</h3>
         
         {!isPasskeySupported() ? (
-          <div className="text-red-600 mb-3">
+          <div className="mb-3 text-red-600">
             您的浏览器不支持 Passkey，请使用支持 WebAuthn 的现代浏览器。
           </div>
         ) : (
           <>
             <div className="mb-3">
-              <label className="block text-sm font-medium mb-1">邮箱地址</label>
+              <label className="block mb-1 text-sm font-medium">邮箱地址</label>
               <input
                 type="email"
                 value={email}
@@ -113,7 +113,7 @@ const User: React.FC<PageProps> = ({ mode }) => {
               <button
                 onClick={handlePasskeyLogin}
                 disabled={isLoading || !email}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="flex-1 px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 {isLoading ? '登录中...' : '登录'}
               </button>
@@ -121,7 +121,7 @@ const User: React.FC<PageProps> = ({ mode }) => {
               <button
                 onClick={handlePasskeyRegister}
                 disabled={isLoading || !email}
-                className="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="flex-1 px-4 py-2 text-white bg-green-600 rounded-md hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 {isLoading ? '注册中...' : '注册'}
               </button>

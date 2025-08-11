@@ -4,6 +4,7 @@ import { PageProps } from "../types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Link } from "react-router-dom";
 
 const Home: React.FC<PageProps> = ({ mode }) => {
   const categoryCards = [
@@ -47,7 +48,32 @@ const Home: React.FC<PageProps> = ({ mode }) => {
               </span>
             </Button>
           </header>
-
+          <div className="flex flex-wrap gap-4">
+            <Link
+              to="/"
+              className="text-blue-300 transition-colors hover:text-blue-200"
+            >
+              返回首页
+            </Link>
+            <Link
+              to="/user"
+              className="text-blue-300 transition-colors hover:text-blue-200"
+            >
+              用户页面
+            </Link>
+            <Link
+              to="/options"
+              className="text-blue-300 transition-colors hover:text-blue-200"
+            >
+              设置页面
+            </Link>
+            <Link
+              to="/login"
+              className="text-blue-300 transition-colors hover:text-blue-200"
+            >
+              Login
+            </Link>
+          </div>
           {/* Welcome Section */}
           <div className="mb-8">
             <h2 className=" font-normal text-black text-xl tracking-[0] leading-[normal] mb-4">

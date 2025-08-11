@@ -1,0 +1,137 @@
+import { Link } from "react-router-dom";
+import { PageProps } from "../types";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useCallback } from "react";
+import { emailRegister, emailLogin } from "@/lib/api/login";
+import { WalletButtonCustom } from "../components/WalletButtonCustom";
+
+const Login: React.FC<PageProps> = ({ mode }) => {
+  const [token, setToken] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [pwd, setPwd] = useState<string>("");
+  const [loginEmail, setLoginEmail] = useState<string>("");
+  const [loginPwd, setLoginPwd] = useState<string>("");
+
+  const toEmailRegister = useCallback(async () => {
+    try {
+      if (!email || !pwd) {
+        return;
+      }
+      let par = {
+        email: email,
+        code: "",
+        pwd: pwd,
+        verifyPwd: pwd,
+      };
+      const response = await emailRegister(par);
+      if (response && response?.result) {
+        setToken(response.result.token);
+        console.log(
+          "Email registration successful, token:",
+          response.result.token
+        );
+      }
+    } catch (error) {
+      console.error("Error during email registration:", error);
+    }
+  }, [email, pwd]);
+
+  const toEmailLogin = useCallback(async () => {
+    try {
+      if (!loginEmail || !loginPwd) {
+        return;
+      }
+      let par = {
+        email: loginEmail,
+        pwd: loginPwd,
+      };
+      const response = await emailLogin(par);
+      if (response && response?.result) {
+        setToken(response.result.token);
+      }
+    } catch (error) {
+      console.error("Error during email registration:", error);
+    }
+  }, [loginEmail, loginPwd]);
+
+  return (
+    <div className={`w-full ${mode === "options" ? "p-6" : "p-4"}`}>
+      <div className="max-w-4xl mx-auto">
+        <h1 className="mb-8 text-3xl font-bold text-white">Login</h1>
+        {/* 导航链接 */}
+        <div className="flex flex-wrap gap-4">
+          <Link
+            to="/"
+            className="text-white transition-colors hover:text-blue-200"
+          >
+            返回首页
+          </Link>
+          <Link
+            to="/user"
+            className="text-white transition-colors hover:text-blue-200"
+          >
+            用户页面
+          </Link>
+          <Link
+            to="/options"
+            className="text-white transition-colors hover:text-blue-200"
+          >
+            设置页面
+          </Link>
+        </div>
+        <div className="">
+          <div>
+            <Input
+              className="w-full h-10 bg-[#303338] rounded-[40px] border-none  font-normal text-white text-sm px-3"
+              placeholder={"email"}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="off"
+            />
+            <Input
+              className="w-full mt-2 h-10 bg-[#303338] rounded-[40px] border-none  font-normal text-white text-sm px-3"
+              placeholder={"password"}
+              type="password"
+              value={pwd}
+              onChange={(e) => setPwd(e.target.value)}
+              autoComplete="off"
+            />
+            <Button className="mt-2" onClick={toEmailRegister}>
+              {" "}
+              Email Register{" "}
+            </Button>
+          </div>
+          <div className="mt-5">
+            <Input
+              className="w-full h-10 bg-[#303338] rounded-[40px] border-none  font-normal text-white text-sm px-3"
+              placeholder={"email"}
+              value={loginEmail}
+              onChange={(e) => setLoginEmail(e.target.value)}
+              autoComplete="off"
+            />
+            <Input
+              className="mt-2 w-full h-10 bg-[#303338] rounded-[40px] border-none  font-normal text-white text-sm px-3"
+              placeholder={"password"}
+              type="password"
+              value={loginPwd}
+              onChange={(e) => setLoginPwd(e.target.value)}
+              autoComplete="off"
+            />
+            <Button className="mt-2" onClick={toEmailLogin}>
+              {" "}
+              Email Login{" "}
+            </Button>
+          </div>
+          <WalletButtonCustom mode={mode} showDetails={true} />
+
+          <div>
+            <span className="ml-4 text-white">Token: {token}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Login;

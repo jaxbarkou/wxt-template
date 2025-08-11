@@ -3,7 +3,7 @@
 //   testBloomFilter,
 //   getCurrentCache,
 //   getCacheStatus,
-// } from "@/utils/bloomFilterCache";
+// } from "@/lib/bloomFilterCache";
 
 export default defineBackground(() => {
   // 在内存中存储数据

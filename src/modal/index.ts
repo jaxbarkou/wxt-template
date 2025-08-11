@@ -57,3 +57,21 @@ export interface PasskeyRegisterFinishParams {
     clientDataJSON: string;
   };
 }
+export enum ChainType {
+  bsc = "bsc",
+  solana = "solana",
+}
+
+export type LoginReq = {
+  domain: string;
+  statement: string;
+  address: string;
+  chainId: number;
+  version: string;
+  uri: string;
+  nonce: string;
+  issuedAt?: string;
+  publicKey?: string;
+};
+
+

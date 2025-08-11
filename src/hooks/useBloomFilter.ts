@@ -1,6 +1,6 @@
 import { ProjectsQueryType } from "@/modal";
 import { useRootStore } from "@/store";
-import { getBloomFilter } from "@/utils/api";
+import { getBloomFilter } from "@/lib/api";
 import { sha256 } from "@noble/hashes/sha2.js";
 import { utf8ToBytes } from "@noble/hashes/utils";
 import { useCallback } from "react";

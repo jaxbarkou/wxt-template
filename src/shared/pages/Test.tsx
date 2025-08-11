@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { ProjectsQueryType } from "@/modal";
-import { getProjectsLookup } from "@/utils/api";
+import { getProjectsLookup } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {

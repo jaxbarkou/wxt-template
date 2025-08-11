@@ -1,5 +1,9 @@
 import request from "@/utils/request";
-import { BloomFilterParams, BloomFilterType, ProjectsParams } from "@/modal";
+import { 
+  BloomFilterParams, 
+  BloomFilterType, 
+  ProjectsParams
+} from "@/modal";
 
 export const getProjectsLookup = (params: ProjectsParams) => {
   return request<any>({

@@ -3,24 +3,25 @@ import { PageProps } from "../types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCallback } from "react";
-import { emailRegister, emailLogin } from "@/lib/api/login";
+import { emailRegister, emailLogin, getEmailCode } from "@/lib/api/login";
 import { WalletButtonCustom } from "../components/WalletButtonCustom";
 
 const Login: React.FC<PageProps> = ({ mode }) => {
   const [token, setToken] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [pwd, setPwd] = useState<string>("");
+  const [code, setCode] = useState<string>("");
   const [loginEmail, setLoginEmail] = useState<string>("");
   const [loginPwd, setLoginPwd] = useState<string>("");
 
   const toEmailRegister = useCallback(async () => {
     try {
-      if (!email || !pwd) {
+      if (!email || !pwd || !code) {
         return;
       }
       let par = {
         email: email,
-        code: "",
+        code: code,
         pwd: pwd,
         verifyPwd: pwd,
       };
@@ -35,7 +36,7 @@ const Login: React.FC<PageProps> = ({ mode }) => {
     } catch (error) {
       console.error("Error during email registration:", error);
     }
-  }, [email, pwd]);
+  }, [email, pwd, code]);
 
   const toEmailLogin = useCallback(async () => {
     try {
@@ -54,6 +55,20 @@ const Login: React.FC<PageProps> = ({ mode }) => {
       console.error("Error during email registration:", error);
     }
   }, [loginEmail, loginPwd]);
+
+  const getCode = useCallback(async () => {
+    try {
+      if (!email) {
+        return;
+      }
+      const response = await getEmailCode(email);
+      if (response) {
+        console.log("Email code sent successfully");
+      }
+    } catch (error) {
+      console.error("Error sending email code:", error);
+    }
+  }, [email]);
 
   return (
     <div className={`w-full ${mode === "options" ? "p-6" : "p-4"}`}>
@@ -82,11 +97,23 @@ const Login: React.FC<PageProps> = ({ mode }) => {
         </div>
         <div className="">
           <div>
+            <div className="flex items-centert">
+              <Input
+                className="w-full h-10 bg-[#303338] rounded-[40px] border-none  font-normal text-white text-sm px-3"
+                placeholder={"email"}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="off"
+              />
+              <Button className="ml-2" onClick={getCode}>
+                send code
+              </Button>
+            </div>
             <Input
-              className="w-full h-10 bg-[#303338] rounded-[40px] border-none  font-normal text-white text-sm px-3"
-              placeholder={"email"}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              className="w-full mt-2 h-10 bg-[#303338] rounded-[40px] border-none  font-normal text-white text-sm px-3"
+              placeholder={"code"}
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
               autoComplete="off"
             />
             <Input

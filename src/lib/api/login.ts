@@ -2,6 +2,16 @@ import request, { base2Api } from "@/lib/request";
 import { EmailRegisterParams, EmailLoginParams } from "@/modal/user";
 import { ChainType, LoginReq } from "@/modal";
 
+export const getEmailCode = (email: string) => {
+  return request<boolean>(base2Api, {
+    url: `/lg/email/code`,
+    method: "POST",
+    data: {
+      email,
+    },
+  });
+};
+
 export const emailRegister = (par: EmailRegisterParams) => {
   return request<{ token: string }>(base2Api, {
     url: `/lg/email/register`,

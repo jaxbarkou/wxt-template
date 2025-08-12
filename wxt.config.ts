@@ -23,8 +23,13 @@ export default defineConfig({
       "storage",
       "tabs",
       "contextMenus", // 添加右键菜单权限
+      "identity", // 可能需要用于身份验证
     ],
-    host_permissions: ["<all_urls>"]
+    host_permissions: [
+      "<all_urls>",
+      "https://*/*", // 允许访问HTTPS网站
+      "http://localhost:*", // 允许访问localhost
+    ]
   },
   vite: () => ({
     plugins: [tailwindcss()],

@@ -2,11 +2,39 @@ import { StateCreator } from "zustand";
 import { RootState } from "./index";
 import { BloomFilterData } from "@/modal";
 
+// 用户详情类型定义
+export interface UserDetail {
+  uid: number;
+  email: string;
+  gmail: string;
+  telegramId: string;
+  authenticatorStatus: number;
+  address: string;
+  inviteCode: string;
+  nickName: string;
+  avatarUrl: string;
+  firstName: string;
+  lastName: string;
+  birthday: string;
+  phone: string;
+  lastLoginAt: string;
+  status: number;
+  twitter: string;
+  twitterBindTime: string;
+  telegramBindTime: string;
+  vipLevel: number;
+  vipExpireTime: string;
+  password: string;
+}
+
 export interface UserSlice {
   hasHydrated: boolean;
   bloomFilterData: BloomFilterData;
   token: string | undefined;
+  userDetail: UserDetail | null;
   updateToken: (token: string) => void;
+  setUserDetail: (userDetail: UserDetail) => void;
+  clearUserDetail: () => void;
   setBloomFilterData: (data: BloomFilterData) => void;
   setHasHydrated: (val: boolean) => void;
 }
@@ -28,8 +56,15 @@ export const createUserSlice: StateCreator<
     hasHydrated: false,
     bloomFilterData: baseBloomFilterData,
     token: "",
+    userDetail: null,
     updateToken: (token: string) => {
       set({ token });
+    },
+    setUserDetail: (userDetail: UserDetail) => {
+      set({ userDetail });
+    },
+    clearUserDetail: () => {
+      set({ userDetail: null });
     },
     setBloomFilterData: (data: BloomFilterData) => {
       set({ bloomFilterData: data });

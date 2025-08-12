@@ -2,12 +2,15 @@ import { Link } from "react-router-dom";
 import { PageProps } from "../types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { emailRegister, emailLogin, getEmailCode } from "@/lib/api/login";
 import { WalletButtonCustom } from "../components/WalletButtonCustom";
+import { useRootStore } from "@/store";
+import { useUserDetail } from "@/hooks/useUserDetail";
 
 const Login: React.FC<PageProps> = ({ mode }) => {
-  const [token, setToken] = useState<string>("");
+  const { updateToken, token } = useRootStore();
+  const { fetchUserDetail } = useUserDetail();
   const [email, setEmail] = useState<string>("");
   const [pwd, setPwd] = useState<string>("");
   const [code, setCode] = useState<string>("");
@@ -27,11 +30,13 @@ const Login: React.FC<PageProps> = ({ mode }) => {
       };
       const response = await emailRegister(par);
       if (response && response?.result) {
-        setToken(response.result.token);
+        updateToken(response.result.token);
         console.log(
           "Email registration successful, token:",
           response.result.token
         );
+        // 注册成功后获取用户详情
+        await fetchUserDetail();
       }
     } catch (error) {
       console.error("Error during email registration:", error);
@@ -49,7 +54,9 @@ const Login: React.FC<PageProps> = ({ mode }) => {
       };
       const response = await emailLogin(par);
       if (response && response?.result) {
-        setToken(response.result.token);
+        updateToken(response.result.token);
+        // 登录成功后获取用户详情
+        await fetchUserDetail();
       }
     } catch (error) {
       console.error("Error during email registration:", error);

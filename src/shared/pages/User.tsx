@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { PageProps } from "../types";
 import { WalletButtonCustom } from "../components/WalletButtonCustom";
+import { PasskeyTest } from "../components";
 import { loginWithPasskey, registerPasskey } from "@/lib/api/passkey";
 
 const User: React.FC<PageProps> = ({ mode }) => {
@@ -87,9 +88,77 @@ const User: React.FC<PageProps> = ({ mode }) => {
       <h2 className="mb-4 text-xl font-bold">User Page</h2>
       <p className="mb-4">当前模式: {mode}</p>
       
+      {/* 打开Popup按钮 */}
+      <div className="mb-4">
+        <button
+          onClick={() => {
+            try {
+              // 尝试打开popup
+              if (chrome.action && typeof chrome.action.openPopup === "function") {
+                chrome.action.openPopup();
+              } else {
+                // 备用方案：显示提示
+                alert("请点击扩展图标打开弹窗");
+              }
+            } catch (error) {
+              console.log("打开popup失败:", error);
+              alert("请点击扩展图标打开弹窗");
+            }
+          }}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+        >
+          打开 Popup 弹窗
+        </button>
+      </div>
+      
       {/* Passkey登录区域 */}
       <div className="p-4 mb-6 border rounded-lg bg-gray-50">
         <h3 className="mb-3 text-lg font-semibold">Passkey 登录/注册</h3>
+        
+        {/* Sidepanel环境特殊提示 */}
+        {mode === 'sidepanel' && (
+          <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <h4 className="font-semibold text-yellow-800 mb-2">⚠️ Sidepanel 环境限制</h4>
+            <p className="text-sm text-yellow-700 mb-2">
+              Sidepanel 环境中的 WebAuthn 功能受到浏览器限制，建议：
+            </p>
+            <ul className="text-sm text-yellow-700 space-y-1 mb-3">
+              <li>• 点击上方"打开 Popup 弹窗"按钮在弹窗中测试</li>
+              <li>• 或在扩展的 Options 页面中测试</li>
+              <li>• 或在支持 HTTPS 的网页中使用 content script</li>
+            </ul>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => {
+                  try {
+                    if (chrome.action && typeof chrome.action.openPopup === "function") {
+                      chrome.action.openPopup();
+                    } else {
+                      alert("请点击扩展图标打开弹窗");
+                    }
+                  } catch (error) {
+                    alert("请点击扩展图标打开弹窗");
+                  }
+                }}
+                className="px-3 py-1 bg-yellow-600 text-white text-sm rounded hover:bg-yellow-700"
+              >
+                在 Popup 中测试
+              </button>
+              <button
+                onClick={() => {
+                  try {
+                    chrome.runtime.openOptionsPage();
+                  } catch (error) {
+                    alert("请手动打开扩展设置页面");
+                  }
+                }}
+                className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+              >
+                打开 Options 页面
+              </button>
+            </div>
+          </div>
+        )}
         
         {!isPasskeySupported() ? (
           <div className="mb-3 text-red-600">
@@ -160,6 +229,12 @@ const User: React.FC<PageProps> = ({ mode }) => {
       <div className="flex space-x-4">
         <Link to="/" className="text-blue-600 hover:text-blue-800">跳转到 Home</Link>
         <Link to="/user" className="text-blue-600 hover:text-blue-800">跳转到 User</Link>
+      </div>
+      
+      {/* Passkey 测试组件 */}
+      <div className="mt-8 p-4 border rounded-lg bg-yellow-50">
+        <h3 className="mb-4 text-lg font-semibold text-yellow-800">Passkey 调试工具</h3>
+        <PasskeyTest />
       </div>
     </div>
   );

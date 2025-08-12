@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { WalletButton } from "@rainbow-me/rainbowkit";
 import { useAccount, useDisconnect } from "wagmi";
 import { PageProps } from "../types";

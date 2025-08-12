@@ -30,6 +30,8 @@ export const useRootStore = create<RootState>()(
           partialize: (state) => ({
             hasHydrated: state.hasHydrated,
             bloomFilterData: state.bloomFilterData,
+            token: state.token,
+            userDetail: state.userDetail,
           }),
         }
       )

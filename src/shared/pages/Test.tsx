@@ -1,333 +1,78 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
-import { ProjectsQueryType } from "@/modal";
-import { getProjectsLookup } from "@/lib/api";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Link } from "react-router-dom";
-import { useBloomFilter } from "@/hooks/useBloomFilter";
-import { PageProps } from "../types";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { PageProps } from '../types';
+import { PasskeyTest } from "@/shared/components";
 
 const Test: React.FC<PageProps> = ({ mode }) => {
-  const [projectsData, setProjectsData] = useState(null);
-  const [twitterHandle, setTwitterHandle] = useState<string | null>(null);
-  const [lastDetected, setLastDetected] = useState<string | null>(null);
-  const [baseBloomFilter, setBaseBloomFilter] = useState<boolean>(false);
-  const { testBloomFilter, fetchBloomFilter } = useBloomFilter();
-  const [tabUrl, setTabUrl] = useState<string>();
-  const [selectText, setSelectText] = useState("");
-  const [proType, setProType] = useState<ProjectsQueryType>(
-    ProjectsQueryType.ticker
-  );
-  const [queryValue, setQueryValue] = useState<string>("");
-  const [domainProjectsData, setDomainProjectsData] = useState(null);
-  const [selectedProjectsData, setSelectedProjectsData] = useState(null);
-  const fetchData = useCallback(
-    async (type: ProjectsQueryType, value: string) => {
-      try {
-        const params = {
-          type: type,
-          value: value,
-        };
-
-        const response = await getProjectsLookup(params);
-        if (response.code === 200) {
-          console.log("Fetched projects data:", response);
-          return response.data;
-        }
-      } catch (error) {
-        console.error("Error fetching wallets:", error);
-      }
-    },
-    []
-  );
-
-  const fetchBaseData = useCallback(async () => {
-    if (queryValue === "") {
-      console.warn("查询内容不能为空");
-      return;
-    }
-    const isMatch = testBloomFilter(queryValue, proType);
-    setBaseBloomFilter(isMatch);
-    if (isMatch) {
-      const data = await fetchData(proType, queryValue);
-      setProjectsData(data);
-    }
-  }, [proType, queryValue, fetchData]);
-
-  // 获取当前检测到的Twitter handle
-  const fetchTwitterData = useCallback(() => {
-    chrome.runtime.sendMessage(
-      {
-        type: "GET_CURRENT_DATA",
-      },
-      (response) => {
-        if (response && response.success && response.data) {
-          setTwitterHandle(response.data.currentTwitterHandle);
-          // fetchData(response.data.currentTwitterHandle);
-          setLastDetected(response.data.lastDetected);
-        }
-      }
-    );
-  }, []);
-
-  useEffect(() => {
-    fetchTwitterData(); // 初始获取Twitter数据
-  }, [fetchTwitterData]);
-
-  useEffect(() => {
-    fetchBloomFilter();
-  }, [fetchBloomFilter]);
-
-  // 监听来自background的数据更新通知
-  useEffect(() => {
-    const handleStorageUpdate = (message: any) => {
-      if (message.type === "STORAGE_UPDATED" && message.data) {
-        setTwitterHandle(message.data.currentTwitterHandle);
-        // fetchData(message.data.currentTwitterHandle);
-        setLastDetected(message.data.lastDetected);
-      }
-    };
-
-    // 监听来自background的消息
-    chrome.runtime.onMessage.addListener(handleStorageUpdate);
-
-    return () => {
-      chrome.runtime.onMessage.removeListener(handleStorageUpdate);
-    };
-  }, []);
-
-  const openPopup = () => {
-    try {
-      // 先打开popup
-      if (chrome.action && typeof chrome.action.openPopup === "function") {
-        chrome.action.openPopup();
-      }
-      chrome.sidePanel.setOptions({
-        enabled: false,
-      });
-    } catch (error) {
-      console.log("API不可用，使用备用方案");
-      alert("请点击扩展图标打开弹窗");
-    }
-  };
-
-  const getActiveTabUrl = async (): Promise<string | null> => {
-    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (tabs[0]?.url) {
-      return tabs[0].url;
-    }
-    return null;
-  };
-
-  useEffect(() => {
-    getActiveTabUrl().then((url) => {
-      if (url) {
-        setTabUrl(url); // 更新状态
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    const updateUrl = async () => {
-      const url = await getActiveTabUrl();
-      if (url) {
-        setTabUrl(url);
-      }
-    };
-
-    chrome.tabs.onActivated.addListener(updateUrl);
-    chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-      if (tab.active && changeInfo.url) {
-        setTabUrl(changeInfo.url);
-      }
-    });
-
-    return () => {
-      chrome.tabs.onActivated.removeListener(updateUrl);
-      chrome.tabs.onUpdated.removeListener(() => {});
-    };
-  }, []);
-
-  const getDomain = (rawUrl: string) => {
-    try {
-      const url = new URL(rawUrl);
-      return url.hostname; // 返回不带协议的主机名
-    } catch (e) {
-      return rawUrl;
-    }
-  };
-
-  const domainUrl = useMemo(() => {
-    if (tabUrl) {
-      return getDomain(tabUrl);
-    }
-    return "";
-  }, [tabUrl]);
-
-  const fetchDomainData = useCallback(async () => {
-    if (!domainUrl) {
-      console.warn("当前 Tab URL 为空，无法查询 domain");
-      return;
-    }
-    const data = await fetchData(ProjectsQueryType.domain, domainUrl);
-    setDomainProjectsData(data);
-  }, [domainUrl, fetchData]);
-
-  useEffect(() => {
-    if (domainUrl) {
-      fetchDomainData();
-    }
-  }, [domainUrl, fetchDomainData, testBloomFilter]);
-
-  useEffect(() => {
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      if (message.type === "SEND_SELECTED_TEXT") {
-        setSelectText(message.payload);
-      }
-    });
-  }, []);
-
-  const splitText = (input: string): string[] => {
-    return input
-      .split(/\s+/) // 以一个或多个空格分割
-      .filter(Boolean) // 去掉空字符串（防止多空格）
-      .map((word) => word.replace(/\$/g, "")); // 删除每个词中的 `$`
-  };
-
-  // selectText
-  useEffect(() => {
-    if (selectText) {
-      let arr = splitText(selectText);
-      console.log("选中的文本分割结果:", arr);
-      if (arr.length > 0) {
-        const match = arr.find((word) =>
-          testBloomFilter(word, ProjectsQueryType.ticker)
-        );
-        console.log("匹配的代币:", match);
-        if (match) {
-          fetchSelectedData(match);
-        } else {
-          console.warn("没有匹配的代币");
-        }
-      }
-    }
-  }, [selectText]);
-
-  const fetchSelectedData = useCallback(
-    async (match: string) => {
-      try {
-        const data = await fetchData(ProjectsQueryType.ticker, match);
-        setSelectedProjectsData(data);
-      } catch (error) {
-        console.error("Error fetching selected data:", error);
-      }
-    },
-    [domainUrl, fetchData]
-  );
-
   return (
-    <>
-      <div className="p-6">
-        <div>
-          <Link to="/">跳转到 Home</Link>
-          <Link className="ml-5" to="/user">
-            跳转到 User
-          </Link>
-        </div>
-        <button className="px-4 py-2 text-white" onClick={openPopup}>
-          Open Popup
-        </button>
-
-        <Button className="ml-2 text-white hover:text-white" variant="outline">
-          test shadcn Button
-        </Button>
-        <h3 className="mt-4 text-lg font-semibold">test Twitter handle</h3>
-        {!twitterHandle && <>未检测到Twitter用户</>}
-        {/* 显示检测到的Twitter handle */}
-        {twitterHandle && (
-          <div className="p-4 mt-4 border border-blue-200 rounded card bg-blue-50">
-            <h3 className="mb-2 text-lg font-semibold">检测到的Twitter用户</h3>
-            <p className="font-mono text-blue-600">@{twitterHandle}</p>
-            <p className="mt-1 text-sm text-gray-500">
-              最后检测:{" "}
-              {lastDetected ? new Date(lastDetected).toLocaleString() : "未知"}
-            </p>
-          </div>
-        )}
-        <h3 className="mt-4 text-lg font-semibold">基础请求</h3>
-        <div className="mt-4">
-          <div className="flex items-center">
-            <span className="mr-2">base:</span>
-            <Select
-              value={proType}
-              onValueChange={(value) => {
-                setProType(value as ProjectsQueryType);
+    <div className={`w-full ${mode === 'popup' ? 'p-4' : 'p-8'}`}>
+      <Link to="/">返回</Link>
+      <h1 className="text-2xl font-bold mb-6">Passkey 功能测试页面</h1>
+      
+      {/* Sidepanel环境特殊提示 */}
+      {mode === 'sidepanel' && (
+        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <h3 className="font-semibold text-yellow-800 mb-2">⚠️ Sidepanel 环境限制</h3>
+          <p className="text-sm text-yellow-700 mb-3">
+            Sidepanel 环境中的 WebAuthn 功能受到浏览器限制，建议在其他环境中测试：
+          </p>
+          <div className="flex space-x-2">
+            <button
+              onClick={() => {
+                try {
+                  if (chrome.action && typeof chrome.action.openPopup === "function") {
+                    chrome.action.openPopup();
+                  } else {
+                    alert("请点击扩展图标打开弹窗");
+                  }
+                } catch (error) {
+                  alert("请点击扩展图标打开弹窗");
+                }
               }}
-              defaultValue="all"
+              className="px-3 py-1 bg-yellow-600 text-white text-sm rounded hover:bg-yellow-700"
             >
-              <SelectTrigger
-                size={"sm"}
-                className="text-white w-[88px] !h-6 rounded-[20px] border-[0.5px] border-solid border-[#adadad80] text-[10px] px-2 py-1 mr-2 bg-none"
-              >
-                <SelectValue placeholder="type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={ProjectsQueryType.ticker}>
-                  {ProjectsQueryType.ticker}
-                </SelectItem>
-                <SelectItem value={ProjectsQueryType.domain}>
-                  {ProjectsQueryType.domain}
-                </SelectItem>
-                <SelectItem value={ProjectsQueryType.name}>
-                  {ProjectsQueryType.name}
-                </SelectItem>
-                <SelectItem value={ProjectsQueryType.twitter}>
-                  {ProjectsQueryType.twitter}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-            <Input
-              className="w-[100px] h-6 text-xs"
-              placeholder="输入查询内容"
-              onChange={(e) => setQueryValue(e.target.value)}
-              value={queryValue}
-            />
-            <Button
-              className="h-6 ml-2 text-xs text-white hover:text-white"
-              variant="outline"
-              onClick={fetchBaseData}
+              在 Popup 中测试
+            </button>
+            <button
+              onClick={() => {
+                try {
+                  chrome.runtime.openOptionsPage();
+                } catch (error) {
+                  alert("请手动打开扩展设置页面");
+                }
+              }}
+              className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
             >
-              查询
-            </Button>
+              打开 Options 页面
+            </button>
           </div>
         </div>
-        <h4 className="mt-4 text-sm font-semibold">
-          Bloom-filter {baseBloomFilter.toString()}
-        </h4>
-        <pre className="mt-3 flex justify-start p-4 overflow-auto text-sm text-left text-white bg-gray-900 h-[100px]">
-          {JSON.stringify(projectsData, null, 2)}
-        </pre>
-        <h3 className="mt-4 text-lg font-semibold">domain</h3>
-        <p>
-          当前 Tab URL: {tabUrl} --- {domainUrl}
-        </p>
-        <pre className="mt-3 flex justify-start p-4 overflow-auto text-sm text-left text-white bg-gray-900 h-[100px]">
-          {JSON.stringify(domainProjectsData, null, 2)}
-        </pre>
-        <h3 className="mt-4 text-lg font-semibold">页面选中内容</h3>
-        <p>来自页面的内容：{selectText}</p>
-        <pre className="mt-3 flex justify-start p-4 overflow-auto text-sm text-left text-white bg-gray-900 h-[100px]">
-          {JSON.stringify(selectedProjectsData, null, 2)}
-        </pre>
+      )}
+      
+      <div className="space-y-8">
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-xl font-bold mb-4">Passkey 功能测试</h2>
+          <p className="text-gray-600 mb-4">
+            测试完整的Passkey注册和登录流程，包括与后端API的交互。
+            支持多种认证器类型，优先使用平台认证器（指纹/面容识别）。
+          </p>
+          <PasskeyTest />
+        </div>
+        
+        <div className="bg-blue-50 p-4 rounded-lg">
+          <h3 className="font-bold mb-2">测试说明：</h3>
+          <ul className="text-sm space-y-1">
+            <li>• <strong>Sidepanel 环境</strong>：WebAuthn 功能受到浏览器限制，无法正常使用</li>
+            <li>• <strong>Popup 环境</strong>：可以正常使用 WebAuthn 功能</li>
+            <li>• <strong>Options 页面</strong>：独立标签页环境，最适合测试 WebAuthn</li>
+            <li>• <strong>Content Script</strong>：在支持 HTTPS 的网页中测试</li>
+            <li>• <strong>平台认证器</strong>：优先使用指纹/面容识别，更安全便捷</li>
+            <li>• <strong>跨平台认证器</strong>：支持手机扫码、USB密钥等</li>
+            <li>• 确保设备支持 Passkey（如 Touch ID、Face ID 等）</li>
+          </ul>
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 

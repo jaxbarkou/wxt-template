@@ -74,4 +74,6 @@ export type LoginReq = {
   publicKey?: string;
 };
 
-
+export enum SendEmailCodeType {
+  Withdraw = 1,
+}

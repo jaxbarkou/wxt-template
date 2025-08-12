@@ -1,13 +1,100 @@
 import request, { base3Api } from "@/lib/request";
-
+import { SendEmailCodeType } from "@/modal";
+import { OperateLog, UserInfo } from "@/modal/user";
 /**
  * 用户相关 API
  */
 
 // 获取用户详情
 export const getUserDetail = async () => {
-  return request<any>(base3Api, {
+  return request<UserInfo>(base3Api, {
     url: '/user/userDetail',
     method: 'GET'
   });
-}; 
+};
+
+// 
+export const getTwitterUrl = () => {
+  return request<string>(base3Api, {
+    url: `/user/twitter/auth/url`,
+    method: "GET",
+  });
+};
+
+export const bindTwitter = (code: string) => {
+  return request<boolean>(base3Api, {
+    url: `/user/twitter/auth/code?code=${code}`,
+    method: "POST",
+  });
+};
+
+export const changeNickName = (nickName: string) => {
+  return request<any>(base3Api, {
+    url: `/user/changeNickName`,
+    method: "POST",
+    data: { nickName },
+  });
+};
+
+export const getAvatarList = () => {
+  return request<any>(base3Api, {
+    url: `/user/getAvatarList`,
+    method: "GET",
+  });
+};
+
+export const changeAvatarUrl = (avatarUrl: string) => {
+  return request<any>(base3Api, {
+    url: `/user/changeAvatarUrl`,
+    method: "POST",
+    data: { avatarUrl },
+  });
+};
+
+export const changeEmail = (email: string, google2faCode: string) => {
+  return request<boolean>(base3Api, {
+    url: `/user/changeEmail`,
+    method: "POST",
+    data: { email, google2faCode },
+  });
+};
+
+export const changeWithdrawPassword = (
+  oldPassword: string,
+  newPassword: string,
+  google2faCode: string
+) => {
+  return request<boolean>(base3Api, {
+    url: `/user/changeWithdrawPassword`,
+    method: "POST",
+    data: { oldPassword, newPassword, google2faCode },
+  });
+};
+
+export const changePassword = (
+  oldPwd: string,
+  newPwd: string,
+  verifyNewPwd: string,
+  google2faCode: string
+) => {
+  return request<boolean>(base3Api, {
+    url: `/user/changePassword`,
+    method: "POST",
+    data: { oldPwd, newPwd, verifyNewPwd, google2faCode },
+  });
+};
+
+export const sendEmailCode = (type: SendEmailCodeType) => {
+  return request<boolean>(base3Api, {
+    url: `/user/emailSend`,
+    method: "POST",
+    data: { type },
+  });
+};
+
+export const getOperateLog = () => {
+  return request<OperateLog[]>(base3Api, {
+    url: `/user/getOperateLog`,
+    method: "GET",
+  });
+};

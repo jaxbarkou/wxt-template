@@ -1,21 +1,33 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { 
-    SearchIcon, 
-    PentagramIcon, 
-    GiftIcon, 
-    EarthIcon, 
-    TelegramIcon, 
-    TwitterIcon, 
-    MoreIcon, 
-    LampIcon, 
-    HomeIcon, 
-    MobileIcon, 
-    SettingIcon, 
+import {
+    SearchIcon,
+    PentagramIcon,
+    GiftIcon,
+    EarthIcon,
+    TelegramIcon,
+    TwitterIcon,
+    MoreIcon,
+    LampIcon,
+    HomeIcon,
+    MobileIcon,
+    SettingIcon,
     UserIcon,
     FoldIcon,
-    FullPageIcon 
+    FullPageIcon,
+    ExpandIcon,
+    RightIcon,
+    LoveIcon,
+    PromptBorIcon,
+    EmaiIcon
 } from '@/components/custom/svg';
+import { Button } from "@/components/ui/button";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 import '@/shared/styles/Layout.css';
 
 interface LayoutProps {
@@ -61,9 +73,11 @@ const bottomItems = [
 
 const Layout: React.FC<LayoutProps> = ({ children, mode }) => {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+    const [isFullscreen, setIsFullscreen] = useState(false);
+    const [isHoveringExpand, setIsHoveringExpand] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
-    
+
     const handleNavItemClick = (item: any) => {
         if (item.path) {
             navigate(item.path);
@@ -71,12 +85,22 @@ const Layout: React.FC<LayoutProps> = ({ children, mode }) => {
         if (item.id === 'fold') {
             setIsSidebarCollapsed(!isSidebarCollapsed);
         }
+        if (item.id === 'fullpage') {
+            setIsFullscreen(!isFullscreen);
+        }
     };
 
     // 渲染图标的辅助函数
     const renderIcon = (iconType: string) => {
         const iconProps = {
             size: 20,
+            color: "#6c757d",
+            hoverColor: "#495057"
+        };
+
+        // 为顶部操作栏的图标设置更小的尺寸
+        const smallIconProps = {
+            size: 16,
             color: "#6c757d",
             hoverColor: "#495057"
         };
@@ -94,101 +118,311 @@ const Layout: React.FC<LayoutProps> = ({ children, mode }) => {
             case 'mobile': return <MobileIcon {...iconProps} />;
             case 'settings': return <SettingIcon {...iconProps} />;
             case 'user': return <UserIcon {...iconProps} />;
-            case 'fold': return <FoldIcon {...iconProps} />;
-            case 'fullpage': return <FullPageIcon {...iconProps} />;
+            case 'fold': return <FoldIcon {...smallIconProps} />;
+            case 'fullpage': return <FullPageIcon {...smallIconProps} />;
+            case 'expand': return <ExpandIcon {...smallIconProps} />;
             default: return null;
         }
     };
 
-    return (
-        <div className={`layout-container ${mode}-mode`}>
-            {/* 左侧主内容区域 */}
-            <div className="left-content">
-                {/* 页面内容 */}
-                <div className="page-content">
-                    {children}
+    // 渲染带Tooltip的导航项
+    const renderNavItem = (item: any) => (
+        <Tooltip key={item.id}>
+            <TooltipTrigger asChild>
+                <div
+                    className={`nav-item ${location.pathname === item.path ? 'active' : ''} flex items-center justify-center`}
+                    onClick={() => handleNavItemClick(item)}
+                >
+                    <span className="nav-icon">
+                        {renderIcon(item.icon)}
+                    </span>
                 </div>
+            </TooltipTrigger>
+            <TooltipContent side="left">
+                <p>{item.label}</p>
+            </TooltipContent>
+        </Tooltip>
+    );
 
-                {/* 底部积分栏 */}
-                <div className="bottom-bar">
-                    <div className="bottom-left">
-                        <div className="points-display">
-                            <div className="points-icon">🔴</div>
-                            <span className="points-text">1,500</span>
+    // 为顶部操作栏创建专门的渲染函数
+    const renderTopActionItem = (item: any) => (
+        <Tooltip key={item.id}>
+            <TooltipTrigger asChild>
+                <div
+                    className={`nav-item nav-top-action ${location.pathname === item.path ? 'active' : ''} flex items-center justify-center ${item.id === 'fold' ? 'fold-flipped' : ''}`}
+                    onClick={() => handleNavItemClick(item)}
+                >
+                    <span className="nav-icon">
+                        {renderIcon(item.icon)}
+                    </span>
+                </div>
+            </TooltipTrigger>
+            <TooltipContent side="left">
+                <p>{item.label}</p>
+            </TooltipContent>
+        </Tooltip>
+    );
+
+    // 为面板中的顶部操作栏创建专门的渲染函数
+    const renderPanelTopActionItem = (item: any) => (
+        <Tooltip key={item.id}>
+            <TooltipTrigger asChild>
+                <div
+                    className={`nav-item nav-top-action ${location.pathname === item.path ? 'active' : ''} flex items-center justify-center ${item.id === 'fold' ? 'fold-flipped' : ''}`}
+                    onClick={() => handleNavItemClick(item)}
+                >
+                    <span className="nav-icon">
+                        {renderIcon(item.icon)}
+                    </span>
+                </div>
+            </TooltipTrigger>
+            <TooltipContent side="left">
+                <p>{item.label}</p>
+            </TooltipContent>
+        </Tooltip>
+    );
+
+    // 如果全屏模式，只显示主内容
+    if (isFullscreen) {
+        return (
+            <div className="layout-container fullscreen-mode">
+                <div className="left-content fullscreen">
+                    <div className="page-content">
+                        {children}
+                    </div>
+                    <div className="bottom-bar">
+                        <div className="bottom-left">
+                            <div className="points-display">
+                                <div className="points-icon">🔴</div>
+                                <span className="points-text">1,500</span>
+                            </div>
+                        </div>
+                        <div className="bottom-center">
+                            {bottomItems.slice(1, 5).map((item) => (
+                                <div key={item.id} className="bottom-item" title={item.label}>
+                                    <span className="bottom-icon">{item.icon}</span>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="bottom-right">
+                            <div className="bottom-user">
+                                <UserIcon
+                                    size={18}
+                                    color="#6c757d"
+                                    hoverColor="#495057"
+                                />
+                            </div>
                         </div>
                     </div>
-                    <div className="bottom-center">
-                        {bottomItems.slice(1, 5).map((item) => (
-                            <div key={item.id} className="bottom-item" title={item.label}>
-                                <span className="bottom-icon">{item.icon}</span>
-                            </div>
-                        ))}
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <TooltipProvider>
+            <div className={`layout-container ${mode}-mode ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+                {/* 左侧主内容区域 */}
+                <div className="left-content">
+                    {/* 页面内容 */}
+                    <div className="page-content">
+                        {children}
                     </div>
-                    <div className="bottom-right">
-                        <div className="bottom-user">
-                            <UserIcon
-                                size={18}
+
+
+
+                    {/* 底部积分栏 */}
+                    <div className="bottom-bar">
+                        {/* 左侧积分显示 */}
+                        <div className="bottom-left">
+                            <div className="points-display">
+                                <div className="points-icon">🔴</div>
+                                <span className="points-text">1,500</span>
+                            </div>
+                        </div>
+                        
+                        {/* 右侧图标 */}
+                        <div className="bottom-right-icons">
+                            <div className="bottom-item">
+                                <GiftIcon size={18} color="#F67C00" />
+                            </div>
+                            <div className="bottom-item">
+                                <LoveIcon size={18} color="#6c757d" />
+                            </div>
+                            <div className="bottom-item">
+                                <PromptBorIcon size={18} color="#6c757d" />
+                            </div>
+                            <div className="bottom-item">
+                                <EmaiIcon size={18} color="#6c757d" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 右侧导航栏 */}
+                <div className={`right-sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}>
+                    <div className="nav-items">
+                        {/* 顶部操作栏 - 2个icon一行展示 */}
+                        <div className="nav-top-actions">
+                            {topActions.map(renderTopActionItem)}
+                        </div>
+
+                        {/* 上半部分导航项 */}
+                        <div className="nav-top-section">
+                            {topNavigationItems.map(renderNavItem)}
+                        </div>
+
+                        {/* 下半部分导航项 */}
+                        <div className="nav-bottom-section">
+                            {bottomNavigationItems.map(renderNavItem)}
+                        </div>
+                    </div>
+                </div>
+
+                {/* 折叠时显示的ExpandIcon */}
+                {isSidebarCollapsed && (
+                    <div className="expand-wrapper">
+                        <div
+                            className="expand-trigger"
+                            onMouseEnter={() => setIsHoveringExpand(true)}
+                        >
+                            <ExpandIcon
+                                size={16}
                                 color="#6c757d"
                                 hoverColor="#495057"
                             />
                         </div>
+
+                        {/* 悬停时显示的导航面板 */}
+                        {isHoveringExpand && (
+                            <div
+                                className="expand-panel"
+                            onMouseLeave={() => setIsHoveringExpand(false)}
+                            >
+                                <div className="expand-panel-content">
+                                    {/* 面板顶部操作栏 */}
+                                    <div className="expand-panel-top">
+                                        <div className="expand-panel-header">
+                                            <div className="nav-top-actions">
+                                                {topActions.map(renderPanelTopActionItem)}
+                                            </div>
+                                        </div>
+
+                                        {/* 水平导航栏 */}
+                                        <div className="horizontal-nav">
+                                            <div className="nav-item-horizontal">
+                                                <SearchIcon size={16} color="#6c757d" />
+                                                <span>Research</span>
+                                            </div>
+                                            <div className="nav-item-horizontal">
+                                                <PentagramIcon size={16} color="#6c757d" />
+                                                <span>Campaigns</span>
+                                            </div>
+                                            <div className="nav-item-horizontal">
+                                                <EarthIcon size={16} color="#6c757d" />
+                                                <span>News</span>
+                                            </div>
+                                            <div className="nav-item-horizontal">
+                                                <SearchIcon size={16} color="#6c757d" />
+                                                <span>Chat</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="expand-panel-bottom">
+                                        {/* Credits卡片 */}
+                                        <div className="credits-card">
+                                            <div className="credits-header">
+                                                <div className="credits-title">
+                                                    <span>Credits</span>
+                                                    <span className="question-mark">?</span>
+                                                </div>
+                                                <button
+                                                    className="px-3 py-1 text-sm text-white bg-[#FF9E3B] rounded hover:bg-[#FF9E3B]-700"
+                                                >
+                                                    Sign in
+                                                </button>
+                                            </div>
+                                            <div className="credits-row border-b border-[#E9E9E9]">
+                                                <div className="credits-row-left flex items-center">
+                                                    <span className='mr-1'>1,500 +150 /day</span>
+                                                </div>
+                                                <div className="credits-row-right">
+                                                    <RightIcon color='#000' size={16} />
+                                                </div>
+                                            </div>
+                                            <div className="credits-row border-b border-[#E9E9E9]">
+                                                <div className="credits-row-left flex items-center">
+                                                    <span className='mr-1'>Total Staked</span>
+                                                    <PromptBorIcon color='#979797' size={16} />
+                                                </div>
+                                                <div className="credits-row-right">
+                                                    <RightIcon color='#000' size={16} />
+                                                </div>
+                                            </div>
+                                            <div className="credits-row">
+                                                <div className="credits-row-left flex items-center">
+                                                    <span className='mr-1'>Total Earned</span>
+                                                    <PromptBorIcon color='#979797' size={16} />
+                                                </div>
+                                                <div className="credits-row-right">
+                                                    <RightIcon color='#000' size={16} />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Share Knowledge卡片 */}
+                                        <div className="share-card">
+                                            <span>Share Knowledge & Earn</span>
+                                            <RightIcon color='#000' size={16} />
+                                        </div>
+
+                                        {/* Share Yomo卡片 */}
+                                        <div className="share-yomo-card">
+                                            <div className="share-yomo-content">
+                                                <GiftIcon color='#000' size={20} />
+                                                <div className="share-yomo-text">
+                                                    <div>Share Yomo with a friend</div>
+                                                    <div className="share-yomo-subtitle">Get 500 credits each</div>
+                                                </div>
+                                            </div>
+                                            <RightIcon color='#000' size={16} />
+                                        </div>
+                                        {/* 底部导航栏 */}
+                                        <div className="bottom-nav-panel">
+                                            {/* 左侧图标 */}
+                                            <div className="bottom-nav-left">
+                                                <div className="bottom-nav-item">
+                                                    <TwitterIcon size={16} color="#6c757d" />
+                                                </div>
+                                                <div className="bottom-nav-item">
+                                                    <TelegramIcon size={16} color="#6c757d" />
+                                                </div>
+                                            </div>
+                                            
+                                            {/* 右侧图标 */}
+                                            <div className="bottom-nav-right">
+                                                <div className="bottom-nav-item">
+                                                    <HomeIcon size={16} color="#6c757d" />
+                                                </div>
+                                                <div className="bottom-nav-item">
+                                                    <MobileIcon size={16} color="#6c757d" />
+                                                </div>
+                                                <div className="bottom-nav-item">
+                                                    <SettingIcon size={16} color="#6c757d" />
+                                                </div>
+                                                <div className="bottom-nav-item active">
+                                                    <UserIcon size={16} color="white" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                </div>
+                )}
             </div>
-
-            {/* 右侧导航栏 */}
-            <div className={`right-sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}>
-                <div className="nav-items">
-                    {/* 顶部操作栏 - 2个icon一行展示 */}
-                    <div className="nav-top-actions">
-                        {topActions.map((item) => (
-                            <div
-                                key={item.id}
-                                className={`nav-item ${location.pathname === item.path ? 'active' : ''} flex items-center justify-center`}
-                                onClick={() => handleNavItemClick(item)}
-                                title={item.label}
-                            >
-                                <span className="nav-icon">
-                                    {renderIcon(item.icon)}
-                                </span>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* 上半部分导航项 */}
-                    <div className="nav-top-section">
-                        {topNavigationItems.map((item) => (
-                            <div
-                                key={item.id}
-                                className={`nav-item ${location.pathname === item.path ? 'active' : ''} flex items-center justify-center`}
-                                onClick={() => handleNavItemClick(item)}
-                                title={item.label}
-                            >
-                                <span className="nav-icon">
-                                    {renderIcon(item.icon)}
-                                </span>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* 下半部分导航项 */}
-                    <div className="nav-bottom-section">
-                        {bottomNavigationItems.map((item) => (
-                            <div
-                                key={item.id}
-                                className={`nav-item ${location.pathname === item.path ? 'active' : ''} flex items-center justify-center`}
-                                onClick={() => handleNavItemClick(item)}
-                                title={item.label}
-                            >
-                                <span className="nav-icon">
-                                    {renderIcon(item.icon)}
-                                </span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        </div>
+        </TooltipProvider>
     );
 };
 

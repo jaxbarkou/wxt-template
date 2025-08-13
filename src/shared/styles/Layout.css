@@ -5,6 +5,23 @@
   background: white;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   gap: 0;
+  transition: all 0.3s ease;
+}
+
+/* 全屏模式 */
+.layout-container.fullscreen-mode {
+  width: 100vw;
+  height: 100vh;
+}
+
+.left-content.fullscreen {
+  width: 100%;
+  max-width: none;
+}
+
+/* 侧边栏折叠状态 */
+.layout-container.sidebar-collapsed .left-content {
+  width: 100%;
 }
 
 /* 弹窗模式调整 */
@@ -29,6 +46,7 @@
   flex-direction: column;
   overflow: hidden;
   flex: 1;
+  transition: width 0.3s ease;
 }
 
 /* 页面内容区域 */
@@ -42,18 +60,21 @@
 /* 右侧导航栏 */
 .right-sidebar {
   background: #F6F6F8;
-  display: flex;  
+  display: flex;
   flex-direction: column;
   align-items: center;
   padding: 15px 4px;
-  transition: width 0.3s ease;
+  transition: all 0.3s ease;
   width: 44px;
   height: 100vh;
   border-left: 1px solid #e9ecef;
 }
 
 .right-sidebar.collapsed {
-  width: 44px;
+  width: 0;
+  padding: 0;
+  overflow: hidden;
+  border-left: none;
 }
 
 .nav-items {
@@ -68,9 +89,33 @@
 /* 顶部操作栏 */
 .nav-top-actions {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  flex-direction: row;
+  gap: 2px;
+  /* 更小的间距 */
   margin-bottom: 20px;
+  justify-content: center;
+  align-items: center;
+  padding: 0 2px;
+  /* 添加内边距 */
+}
+
+/* 顶部操作栏的导航项 */
+.nav-top-actions .nav-item {
+  width: 14px;
+  /* 稍微减小 */
+  height: 14px;
+  padding: 2px;
+  border-radius: 1px;
+}
+
+.nav-top-actions .nav-item:nth-child(1) {
+  margin-right: 5px;
+}
+
+/* 顶部操作栏的图标 */
+.nav-top-actions .nav-icon {
+  font-size: 16px;
+  /* 稍微减小 */
 }
 
 /* 上半部分导航项 */
@@ -139,17 +184,6 @@
   transition: opacity 0.2s ease;
 }
 
-/* 底部积分栏 */
-.bottom-bar {
-  background: #f1f3f4;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  border-top: 1px solid #e9ecef;
-  height: 60px;
-  flex-shrink: 0;
-}
 
 .bottom-left {
   display: flex;
@@ -262,7 +296,6 @@
   
   .nav-item {
     padding: 6px;
-    min-height: 35px;
   }
   
   .nav-icon {
@@ -367,4 +400,372 @@
 
 .left-content::-webkit-scrollbar-corner {
   background: transparent;
+}
+
+/* 撤回之前的expand-container相关样式，使用新的样式 */
+
+.expand-wrapper {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.expand-trigger {
+  cursor: pointer;
+  background: white;
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  width: fit-content;
+}
+
+.expand-trigger:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.expand-panel {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  border-radius: 8px;
+  background: #F6F6F8;
+  box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.16);
+  min-width: 300px;
+  animation: slideIn 0.2s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.expand-panel-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.expand-panel-top {
+  padding: 12px 12px 0 12px;
+}
+
+.expand-panel-bottom {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.16);
+  padding: 12px;
+
+}
+
+/* 水平导航栏 */
+.horizontal-nav {
+  margin-top: 15px;
+  display: flex;
+  gap: 16px;
+  padding: 0 11px;
+}
+
+.nav-item-horizontal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.nav-item-horizontal:hover {
+  background: #fff;
+}
+
+.nav-item-horizontal span {
+  font-size: 12px;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+/* Credits卡片 */
+.credits-card {
+  margin-bottom: 12px;
+  border-radius: 8px;
+  background: #F6F6F8;
+  padding: 12px 12px 0 12px;
+}
+
+.credits-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.credits-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.question-mark {
+  width: 16px;
+  height: 16px;
+  background: #6c757d;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.sign-in-btn {
+  background: #FF8C00;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.sign-in-btn:hover {
+  background: #e67e00;
+}
+
+.credits-balance {
+  font-size: 18px;
+  font-weight: 600;
+  color: #212529;
+  margin-bottom: 12px;
+}
+
+.credits-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  font-size: 14px;
+  color: #6c757d;
+}
+
+.arrow {
+  color: #6c757d;
+  font-weight: bold;
+}
+
+/* Share卡片 */
+.share-card {
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-radius: 8px;
+  background: #F6F6F8;
+  font-size: 14px;
+  color: #212529;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+
+.share-yomo-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-radius: 8px;
+  background: #F6F6F8;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.share-yomo-card:hover {
+  background: #f8f9fa;
+}
+
+.share-yomo-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.gift-icon {
+  font-size: 20px;
+}
+
+.share-yomo-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.share-yomo-subtitle {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+/* 面板顶部操作栏 */
+
+.expand-panel-header .nav-top-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  justify-content: flex-start;
+  /* 左对齐 */
+  align-items: center;
+  margin-bottom: 0px;
+}
+
+.expand-panel-header .nav-top-actions .nav-item {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.expand-panel-header .nav-top-actions .nav-item:hover {
+  background: #e9ecef;
+  transform: translateY(-1px);
+}
+
+.expand-panel-header .nav-top-actions .nav-icon {
+  font-size: 16px;
+}
+
+/* Fold图标翻转 */
+.fold-flipped .nav-icon {
+  transform: rotate(180deg);
+  transition: transform 0.2s ease;
+}
+
+/* 底部导航栏 */
+.bottom-nav-panel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  margin-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.bottom-nav-left {
+  display: flex;
+  gap: 16px;
+}
+
+.bottom-nav-right {
+  display: flex;
+  gap: 16px;
+}
+
+.bottom-nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: transparent;
+}
+
+.bottom-nav-item:hover {
+  background: #f8f9fa;
+  transform: translateY(-1px);
+}
+
+.bottom-nav-item.active {
+  background: #FF8C00;
+}
+
+.bottom-nav-item:hover svg {
+  color: #495057;
+}
+
+.bottom-nav-item.active svg {
+  color: white;
+} 
+
+/* 底部积分栏 */
+.bottom-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 60px;
+  flex-shrink: 0;
+}
+
+.bottom-left {
+  display: flex;
+  align-items: center;
+}
+
+.points-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.points-icon {
+  width: 12px;
+  height: 12px;
+  background: #dc3545;
+  border-radius: 50%;
+}
+
+.points-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #212529;
+}
+
+.bottom-right-icons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.bottom-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.bottom-item:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.bottom-item svg {
+  transition: color 0.2s ease;
+}
+
+.bottom-item:hover svg {
+  color: #495057;
 } 

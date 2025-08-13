@@ -3,6 +3,10 @@
   "compilerOptions": {
     "allowImportingTsExtensions": true,
     "jsx": "react-jsx",
-    "types": ["chrome"]
+    "types": ["chrome"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"] // or "./src/*" if using src directory
+    }
   },
 }

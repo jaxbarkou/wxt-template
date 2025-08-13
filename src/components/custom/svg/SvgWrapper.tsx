@@ -21,7 +21,7 @@ const SvgWrapper: React.FC<SvgWrapperProps> = ({
   const [isHovered, setIsHovered] = React.useState(false);
   const currentColor = isHovered && hoverColor ? hoverColor : color;
 
-  // 简化处理：只处理SVG根元素和直接子元素
+ 
   const processSvgElement = (element: React.ReactElement): React.ReactElement => {
     const elementProps = element.props as any;
     

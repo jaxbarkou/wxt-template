@@ -1,3 +1,21 @@
 export { default as SvgWrapper } from './SvgWrapper';
+
+// Icons
 export { default as UserIcon } from "./icons/UserIcon";
-export { default as StarIcon } from './icons/StarIcon';
+export { default as LoveIcon } from './icons/LoveIcon';
+export { default as GiftIcon } from './icons/GiftIcon';
+export { default as PromptIcon } from './icons/PromptIcon';
+export { default as EarnIcon } from "./icons/EarnIcon";
+export { default as EmaiIcon } from "./icons/EmaiIcon";
+export { default as FoldIcon } from "./icons/FoldIcon";
+export { default as FullPageIcon } from "./icons/FullPageIcon";
+export { default as SettingIcon } from "./icons/SettingIcon";
+export { default as MobileIcon } from "./icons/MobileIcon";
+export { default as HomeIcon } from "./icons/HomeIcon";
+export { default as TelegramIcon } from "./icons/TelegramIcon";
+export { default as TwitterIcon } from "./icons/TwitterIcon";
+export { default as MoreIcon } from "./icons/MoreIcon";
+export { default as LampIcon } from "./icons/LampIcon";
+export { default as EarthIcon } from "./icons/EarthIcon";
+export { default as PentagramIcon } from "./icons/PentagramIcon";
+export { default as SearchIcon } from "./icons/SearchIcon";

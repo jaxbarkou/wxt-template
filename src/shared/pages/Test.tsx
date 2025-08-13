@@ -117,7 +117,7 @@ const Test: React.FC<PageProps> = ({ mode }) => {
         <h3>test-UI</h3>
         <span className="text-brand-primary">text-brand-primary</span>
         <span className="text-brand-red">text-brand-red</span>
-        <UserIcon color="#f1f1f1" hoverColor="#000"></UserIcon>
+        <UserIcon color="#ddd" hoverColor="#000"></UserIcon>
         <Button className="flex-1 h-8 rounded-[40px] font-medium text-sm">
           普通样式
         </Button>

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import UserIcon from '../../components/custom/svg/icons/UserIcon';
+import StarIcon from '../../components/custom/svg/icons/StarIcon';
 import '../styles/Layout.css';
 
 interface LayoutProps {
@@ -11,17 +13,17 @@ interface LayoutProps {
 const navigationItems = [
   { id: 'expand', icon: '⤢', label: '展开', path: null },
   { id: 'search', icon: '🔍', label: '搜索', path: '/search' },
-  { id: 'star', icon: '⭐', label: '收藏', path: '/favorites' },
+  { id: 'star', icon: 'star-icon', label: '收藏', path: '/favorites' },
   { id: 'globe', icon: '🌐', label: '全球', path: '/global' },
   { id: 'lightbulb', icon: '💡', label: '发现', path: '/discover' },
   { id: 'plus', icon: '➕', label: '添加', path: '/add' },
   { id: 'more', icon: '⋯', label: '更多', path: '/more' },
   { id: 'close', icon: '✕', label: '关闭', path: '/close' },
-  { id: 'send', icon: '📤', label: '发送', path: '/send' },
+  { id: 'test', icon: '📤', label: '测试', path: '/test' },
   { id: 'home', icon: '🏠', label: '首页', path: '/' },
   { id: 'mobile', icon: '📱', label: '移动', path: '/mobile' },
   { id: 'settings', icon: '⚙️', label: '设置', path: '/settings' },
-  { id: 'user', icon: '👤', label: '用户', path: '/user' },
+  { id: 'user', icon: 'user-icon', label: '用户', path: '/user' },
 ];
 
 // 底部积分栏配置
@@ -37,8 +39,9 @@ const bottomItems = [
 const Layout: React.FC<LayoutProps> = ({ children, mode }) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const location = useLocation();
-
+  const navigate = useNavigate();
   const handleNavItemClick = (item: any) => {
+    navigate(item.path);
     if (item.id === 'expand') {
       setIsSidebarCollapsed(!isSidebarCollapsed);
     }
@@ -70,7 +73,11 @@ const Layout: React.FC<LayoutProps> = ({ children, mode }) => {
           </div>
           <div className="bottom-right">
             <div className="bottom-user">
-              <span className="bottom-user-icon">👤</span>
+              <UserIcon 
+                size={18} 
+                color="#6c757d" 
+                hoverColor="#495057"
+              />
             </div>
           </div>
         </div>
@@ -86,7 +93,23 @@ const Layout: React.FC<LayoutProps> = ({ children, mode }) => {
               onClick={() => handleNavItemClick(item)}
               title={item.label}
             >
-              <span className="nav-icon">{item.icon}</span>
+              <span className="nav-icon">
+                {item.icon === 'user-icon' ? (
+                  <UserIcon 
+                    size={20} 
+                    color="#6c757d" 
+                    hoverColor="#495057"
+                  />
+                ) : item.icon === 'star-icon' ? (
+                  <StarIcon 
+                    size={20} 
+                    color="#6c757d" 
+                    hoverColor="#495057"
+                  />
+                ) : (
+                  item.icon
+                )}
+              </span>
               {!isSidebarCollapsed && <span className="nav-label">{item.label}</span>}
             </div>
           ))}

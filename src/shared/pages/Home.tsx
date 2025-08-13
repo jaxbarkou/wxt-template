@@ -73,6 +73,12 @@ const Home: React.FC<PageProps> = ({ mode }) => {
             >
               Login
             </Link>
+            <Link
+              to="/test"
+              className="text-blue-300 transition-colors hover:text-blue-200"
+            >
+              test-page
+            </Link>
           </div>
           {/* Welcome Section */}
           <div className="mb-8">

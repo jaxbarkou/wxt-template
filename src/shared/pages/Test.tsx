@@ -4,6 +4,8 @@ import { PageProps } from "../types";
 import { PasskeyTest } from "@/shared/components";
 import { getOperateLog } from "@/lib/api/user";
 import { OperateLog } from "@/modal/user";
+import { UserIcon } from "@/components/custom/svg";
+import { Button } from "@/components/ui/button";
 
 const Test: React.FC<PageProps> = ({ mode }) => {
   const [logList, setLogList] = React.useState<OperateLog[]>([]);
@@ -111,22 +113,14 @@ const Test: React.FC<PageProps> = ({ mode }) => {
         </div>
       </div>
 
-      <div>
-        <h2 className="mt-8 mb-4 text-xl font-bold">操作日志</h2>
-        <button
-          onClick={getLog}
-          className="px-3 py-1 mb-4 text-white bg-blue-600 rounded hover:bg-blue-700"
-        >
-          刷新日志
-        </button>
-        <ul className="space-y-2">
-          {logList.map((log, index) => (
-            <li key={index} className="p-3 bg-gray-100 rounded">
-              <div className="text-sm text-gray-600">{log.activity}</div>
-              <div className="text-xs text-gray-500">{log.createdAt}</div>
-            </li>
-          ))}
-        </ul>
+      <div className="mt-4">
+        <h3>test-UI</h3>
+        <span className="text-brand-primary">text-brand-primary</span>
+        <span className="text-brand-red">text-brand-red</span>
+        <UserIcon color="#f1f1f1" hoverColor="#000"></UserIcon>
+        <Button className="flex-1 h-8 rounded-[40px] font-medium text-sm">
+          普通样式
+        </Button>
       </div>
     </div>
   );

@@ -19,7 +19,6 @@
 .sidepanel-mode {
   width: 100%;
   min-height: 100vh;
-  padding: 16px;
 }
 
 /* 选项页面模式样式 */
@@ -71,31 +70,7 @@
   background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
 }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .popup-mode {
-    width: 100vw;
-    height: 100vh;
-    border-radius: 0;
-  }
-  
-  .sidepanel-mode {
-    padding: 12px;
-  }
-  
-  .options-mode {
-    padding: 16px;
-  }
-  
-  .mode-indicator {
-    padding: 8px 12px;
-  }
-  
-  .mode-badge {
-    font-size: 11px;
-    padding: 4px 8px;
-  }
-}
+
 
 /* 滚动条样式 */
 .app-container::-webkit-scrollbar {

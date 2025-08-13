@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { Home, User, Test, About, Options, Login } from "../pages";
 import { AppMode } from "../types";
 import { RainbowKitProvider } from "./RainbowKitProvider";
+import Layout from "./Layout";
 import "../styles/AppWrapper.css";
 
 interface AppWrapperProps {
@@ -56,21 +57,7 @@ const AppWrapper: React.FC<AppWrapperProps> = ({ mode }) => {
     <RainbowKitProvider>
       <Router>
         <NavigationHandler />
-        <div
-          className={`app-container ${
-            mode === "popup" ? "popup-mode" : "sidepanel-mode"
-          }`}
-        >
-          <div className="flex items-center p-4">
-            <span
-              className={`mode-badge ${
-                mode === "popup" ? "popup-badge" : "sidepanel-badge"
-              }`}
-            >
-              {mode === "popup" ? "弹窗模式" : "侧边栏模式"}
-            </span>
-            <Link to="/test">Test Page</Link>
-          </div>
+        <Layout mode={mode}>
           <Routes>
             <Route path="/" element={<Home mode={mode} />} />
             <Route path="/user" element={<User mode={mode} />} />
@@ -80,7 +67,7 @@ const AppWrapper: React.FC<AppWrapperProps> = ({ mode }) => {
             <Route path="/login" element={<Login mode={mode} />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
-        </div>
+        </Layout>
       </Router>
     </RainbowKitProvider>
   );

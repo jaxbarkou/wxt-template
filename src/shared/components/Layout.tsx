@@ -33,8 +33,8 @@ import '@/shared/styles/Layout.css';
 import LoginStatus from './LoginStatus';
 
 interface LayoutProps {
-    children: React.ReactNode;
-    mode: 'popup' | 'sidepanel' | 'options';
+  children: React.ReactNode;
+  mode: "popup" | "sidepanel" | "options";
 }
 
 // 顶部操作栏配置
@@ -57,20 +57,20 @@ const topNavigationItems = [
 
 // 下半部分导航项配置
 const bottomNavigationItems = [
-    { id: 'home', icon: 'home', label: '首页', path: '/' },
-    { id: 'mobile', icon: 'mobile', label: '移动', path: '/mobile' },
-    { id: 'settings', icon: 'settings', label: '设置', path: '/settings' },
-    { id: 'user', icon: 'user', label: '用户', path: '/user' },
+  { id: "home", icon: "home", label: "首页", path: "/" },
+  { id: "mobile", icon: "mobile", label: "移动", path: "/mobile" },
+  { id: "settings", icon: "settings", label: "设置", path: "/settings" },
+  { id: "user", icon: "user", label: "用户", path: "/user" },
 ];
 
 // 底部积分栏配置
 const bottomItems = [
-    { id: 'points', icon: '🔴', label: '1,500', path: null },
-    { id: 'gift', icon: '🎁', label: '礼物', path: '/gift' },
-    { id: 'heart', icon: '❤️', label: '喜欢', path: '/heart' },
-    { id: 'help', icon: '❓', label: '帮助', path: '/help' },
-    { id: 'mail', icon: '✉️', label: '邮件', path: '/mail' },
-    { id: 'user-bottom', icon: '👤', label: '用户', path: '/user' },
+  { id: "points", icon: "🔴", label: "1,500", path: null },
+  { id: "gift", icon: "🎁", label: "礼物", path: "/gift" },
+  { id: "heart", icon: "❤️", label: "喜欢", path: "/heart" },
+  { id: "help", icon: "❓", label: "帮助", path: "/help" },
+  { id: "mail", icon: "✉️", label: "邮件", path: "/mail" },
+  { id: "user-bottom", icon: "👤", label: "用户", path: "/user" },
 ];
 
 const Layout: React.FC<LayoutProps> = ({ children, mode }) => {

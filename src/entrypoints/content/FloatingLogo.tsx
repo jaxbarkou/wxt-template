@@ -19,7 +19,7 @@ const FloatingLogo: React.FC<FloatingLogoProps> = ({
   const parentContainerStyle: React.CSSProperties = {
     position: 'fixed',
     bottom: '24px',
-    right: '24px',
+    right: '0px',
     zIndex: 999999,
   };
 
@@ -28,16 +28,23 @@ const FloatingLogo: React.FC<FloatingLogoProps> = ({
     bottom: '100%',
     right: '0',
     marginBottom: '0',
+    paddingBottom: '20px',
+  };
+  const lineStyle: React.CSSProperties = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     gap: '8px',
     paddingBottom: '8px',
-  };
+    background: '#fff',
+    borderRadius: '40px',
+    padding: '8px 4px',
+    boxShadow: '0 0 4px 0 rgba(0, 0, 0, 0.25)',
+  }
 
   const buttonStyle: React.CSSProperties = {
-    width: '48px',
-    height: '48px',
+    width: '28px',
+    height: '28px',
     borderRadius: '50%',
     border: 'none',
     display: 'flex',
@@ -51,11 +58,10 @@ const FloatingLogo: React.FC<FloatingLogoProps> = ({
   };
 
   const mainButtonStyle: React.CSSProperties = {
-    width: '48px',
-    height: '48px',
-    background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
-    borderRadius: '50%',
-    border: '2px solid white',
+    width: '40px',
+    height: '36px',
+    background: '#FFF',
+    borderRadius: '40px 0 0 40px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -75,7 +81,8 @@ const FloatingLogo: React.FC<FloatingLogoProps> = ({
   const mainIconStyle: React.CSSProperties = {
     width: '24px',
     height: '24px',
-    fill: 'currentColor',
+    borderRadius: '50%',
+    background: '#F67C00'
   };
 
   return (
@@ -87,6 +94,7 @@ const FloatingLogo: React.FC<FloatingLogoProps> = ({
       {/* 悬停菜单 */}
       {isHovered && (
         <div style={menuStyle}>
+          <div style={lineStyle}>
           {/* 侧边栏按钮 */}
           <button
             onClick={onOpenSidePanel}
@@ -175,6 +183,7 @@ const FloatingLogo: React.FC<FloatingLogoProps> = ({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </button>
+          </div>
         </div>
       )}
 
@@ -182,18 +191,16 @@ const FloatingLogo: React.FC<FloatingLogoProps> = ({
       <button
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = 'scale(1.1)';
-          e.currentTarget.style.background = 'linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)';
+          e.currentTarget.style.background = '#fff';
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.transform = 'scale(1)';
-          e.currentTarget.style.background = 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)';
+          e.currentTarget.style.background = '#fff';
         }}
         style={mainButtonStyle}
         title="WXT Extension"
       >
-        <svg style={mainIconStyle} fill="currentColor" viewBox="0 0 20 20">
-          <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
-        </svg>
+        <p style={mainIconStyle} className='text-[12px] text-[#2C2C2C]'>WXT</p>
       </button>
     </div>
   );

@@ -462,13 +462,12 @@
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.16);
-  padding: 12px;
+  padding: 12px 12px 0 12px;
 
 }
 
 /* 水平导航栏 */
 .horizontal-nav {
-  margin-top: 15px;
   display: flex;
   gap: 16px;
   padding: 0 11px;
@@ -564,7 +563,7 @@
 }
 
 .arrow {
-  color: #6c757d;
+  color: #2C2C2C;
   font-weight: bold;
 }
 
@@ -622,7 +621,9 @@
 }
 
 /* 面板顶部操作栏 */
-
+.expand-panel-header{
+  padding: 12px 12px 0 12px;
+}
 .expand-panel-header .nav-top-actions {
   display: flex;
   flex-direction: row;
@@ -634,10 +635,8 @@
 }
 
 .expand-panel-header .nav-top-actions .nav-item {
-  width: 32px;
-  height: 32px;
-  min-width: 32px;
-  min-height: 32px;
+  width: 24px;
+  height: 24px;
   background: #f8f9fa;
   border-radius: 8px;
   transition: all 0.2s ease;
@@ -768,4 +767,60 @@
 
 .bottom-item:hover svg {
   color: #495057;
+} 
+
+/* User弹窗容器 */
+.nav-item-container {
+  position: relative;
+}
+
+/* User悬停弹窗 - 右侧显示 */
+.user-popup {
+  position: fixed;
+  bottom: 43px;
+  right: 15px; /* 在导航栏右侧显示 */
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  padding: 20px;
+  min-width: 300px;
+  max-width: 350px;
+  z-index: 1000;
+  animation: slideInLeft 0.2s ease;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 确保弹窗内容样式正确 */
+.user-popup .sign-info,
+.user-popup .login-info {
+  margin: 0;
+  padding: 0;
+}
+
+.user-popup .user-info {
+  margin-bottom: 16px;
+}
+
+.user-popup .credits-card {
+  margin-bottom: 16px;
+}
+
+.user-popup .share-card,
+.user-popup .share-yomo-card {
+  margin-bottom: 12px;
+}
+
+.user-popup .share-card:last-child,
+.user-popup .share-yomo-card:last-child {
+  margin-bottom: 0;
 } 

@@ -19,7 +19,8 @@ import {
     RightIcon,
     LoveIcon,
     PromptBorIcon,
-    EmaiIcon
+    EmaiIcon,
+    TabIcon,
 } from '@/components/custom/svg';
 import { Button } from "@/components/ui/button";
 import {
@@ -29,6 +30,7 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import '@/shared/styles/Layout.css';
+import LoginStatus from './LoginStatus';
 
 interface LayoutProps {
     children: React.ReactNode;
@@ -75,6 +77,9 @@ const Layout: React.FC<LayoutProps> = ({ children, mode }) => {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [isHoveringExpand, setIsHoveringExpand] = useState(false);
+    // 添加登录状态状态
+    const [isUserHovered, setIsUserHovered] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -182,6 +187,74 @@ const Layout: React.FC<LayoutProps> = ({ children, mode }) => {
         </Tooltip>
     );
 
+    // 为下半部分导航项创建专门的渲染函数
+    const renderBottomNavItem = (item: any) => {
+        if (item.icon === 'user') {
+            return (
+                <div key={item.id} className="nav-item-container">
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <div
+                                className={`nav-item ${location.pathname === item.path ? 'active' : ''} flex items-center justify-center`}
+                                onClick={() => handleNavItemClick(item)}
+                                onMouseEnter={() => setIsUserHovered(true)}
+                                onMouseLeave={() => setIsUserHovered(false)}
+                            >
+                                <span className="nav-icon">
+                                    {renderIcon(item.icon)}
+                                </span>
+                            </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="left">
+                            <p>{item.label}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                    
+                    {/* User悬停弹窗 */}
+                    {isUserHovered && (
+                        <div 
+                            className="user-popup"
+                            onMouseEnter={() => setIsUserHovered(true)}
+                            onMouseLeave={() => setIsUserHovered(false)}
+                        >
+                            <LoginStatus 
+                                isLoggedIn={true}
+                                userInfo={{
+                                    username: 'Kai',
+                                    email: 'useremail@gmail.com'
+                                }}
+                                credits={{
+                                    balance: '1,500',
+                                    dailyEarn: '+150',
+                                    totalStaked: '0',
+                                    totalEarned: '0'
+                                }}
+                            />
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        return (
+            <Tooltip key={item.id}>
+                <TooltipTrigger asChild>
+                    <div
+                        className={`nav-item ${location.pathname === item.path ? 'active' : ''} flex items-center justify-center`}
+                        onClick={() => handleNavItemClick(item)}
+                    >
+                        <span className="nav-icon">
+                            {renderIcon(item.icon)}
+                        </span>
+                    </div>
+                </TooltipTrigger>
+                <TooltipContent side="left">
+                    <p>{item.label}</p>
+                </TooltipContent>
+            </Tooltip>
+        );
+    };
+
     // 如果全屏模式，只显示主内容
     if (isFullscreen) {
         return (
@@ -240,7 +313,7 @@ const Layout: React.FC<LayoutProps> = ({ children, mode }) => {
                                 <span className="points-text">1,500</span>
                             </div>
                         </div>
-                        
+
                         {/* 右侧图标 */}
                         <div className="bottom-right-icons">
                             <div className="bottom-item">
@@ -274,7 +347,7 @@ const Layout: React.FC<LayoutProps> = ({ children, mode }) => {
 
                         {/* 下半部分导航项 */}
                         <div className="nav-bottom-section">
-                            {bottomNavigationItems.map(renderNavItem)}
+                            {bottomNavigationItems.map(renderBottomNavItem)}
                         </div>
                     </div>
                 </div>
@@ -297,99 +370,55 @@ const Layout: React.FC<LayoutProps> = ({ children, mode }) => {
                         {isHoveringExpand && (
                             <div
                                 className="expand-panel"
-                            onMouseLeave={() => setIsHoveringExpand(false)}
+                                onMouseLeave={() => setIsHoveringExpand(false)}
                             >
                                 <div className="expand-panel-content">
                                     {/* 面板顶部操作栏 */}
-                                    <div className="expand-panel-top">
-                                        <div className="expand-panel-header">
-                                            <div className="nav-top-actions">
-                                                {topActions.map(renderPanelTopActionItem)}
-                                            </div>
+                                    <div className="expand-panel-header">
+                                        <div className="nav-top-actions">
+                                            {topActions.map(renderPanelTopActionItem)}
                                         </div>
+                                    </div>
 
-                                        {/* 水平导航栏 */}
-                                        <div className="horizontal-nav">
-                                            <div className="nav-item-horizontal">
-                                                <SearchIcon size={16} color="#6c757d" />
-                                                <span>Research</span>
-                                            </div>
-                                            <div className="nav-item-horizontal">
-                                                <PentagramIcon size={16} color="#6c757d" />
-                                                <span>Campaigns</span>
-                                            </div>
-                                            <div className="nav-item-horizontal">
-                                                <EarthIcon size={16} color="#6c757d" />
-                                                <span>News</span>
-                                            </div>
-                                            <div className="nav-item-horizontal">
-                                                <SearchIcon size={16} color="#6c757d" />
-                                                <span>Chat</span>
-                                            </div>
+                                    {/* 水平导航栏 */}
+                                    <div className="horizontal-nav">
+                                        <div className="nav-item-horizontal">
+                                            <SearchIcon size={16} color="#6c757d" />
+                                            <span>Research</span>
+                                        </div>
+                                        <div className="nav-item-horizontal">
+                                            <PentagramIcon size={16} color="#6c757d" />
+                                            <span>Campaigns</span>
+                                        </div>
+                                        <div className="nav-item-horizontal">
+                                            <EarthIcon size={16} color="#6c757d" />
+                                            <span>News</span>
+                                        </div>
+                                        <div className="nav-item-horizontal">
+                                            <SearchIcon size={16} color="#6c757d" />
+                                            <span>Chat</span>
                                         </div>
                                     </div>
                                     <div className="expand-panel-bottom">
-                                        {/* Credits卡片 */}
-                                        <div className="credits-card">
-                                            <div className="credits-header">
-                                                <div className="credits-title">
-                                                    <span>Credits</span>
-                                                    <span className="question-mark">?</span>
-                                                </div>
-                                                <button
-                                                    className="px-3 py-1 text-sm text-white bg-[#FF9E3B] rounded hover:bg-[#FF9E3B]-700"
-                                                >
-                                                    Sign in
-                                                </button>
-                                            </div>
-                                            <div className="credits-row border-b border-[#E9E9E9]">
-                                                <div className="credits-row-left flex items-center">
-                                                    <span className='mr-1'>1,500 +150 /day</span>
-                                                </div>
-                                                <div className="credits-row-right">
-                                                    <RightIcon color='#000' size={16} />
-                                                </div>
-                                            </div>
-                                            <div className="credits-row border-b border-[#E9E9E9]">
-                                                <div className="credits-row-left flex items-center">
-                                                    <span className='mr-1'>Total Staked</span>
-                                                    <PromptBorIcon color='#979797' size={16} />
-                                                </div>
-                                                <div className="credits-row-right">
-                                                    <RightIcon color='#000' size={16} />
-                                                </div>
-                                            </div>
-                                            <div className="credits-row">
-                                                <div className="credits-row-left flex items-center">
-                                                    <span className='mr-1'>Total Earned</span>
-                                                    <PromptBorIcon color='#979797' size={16} />
-                                                </div>
-                                                <div className="credits-row-right">
-                                                    <RightIcon color='#000' size={16} />
-                                                </div>
-                                            </div>
-                                        </div>
 
-                                        {/* Share Knowledge卡片 */}
-                                        <div className="share-card">
-                                            <span>Share Knowledge & Earn</span>
-                                            <RightIcon color='#000' size={16} />
-                                        </div>
 
-                                        {/* Share Yomo卡片 */}
-                                        <div className="share-yomo-card">
-                                            <div className="share-yomo-content">
-                                                <GiftIcon color='#000' size={20} />
-                                                <div className="share-yomo-text">
-                                                    <div>Share Yomo with a friend</div>
-                                                    <div className="share-yomo-subtitle">Get 500 credits each</div>
-                                                </div>
-                                            </div>
-                                            <RightIcon color='#000' size={16} />
-                                        </div>
+                                        {/* 使用封装的登录状态组件 */}
+                                        <LoginStatus
+                                            isLoggedIn={isLoggedIn}
+                                            userInfo={{
+                                                username: 'Kai',
+                                                email: 'useremail@gmail.com'
+                                            }}
+                                            credits={{
+                                                balance: '1,500',
+                                                dailyEarn: '+150',
+                                                totalStaked: '0',
+                                                totalEarned: '0'
+                                            }}
+                                        />
+
                                         {/* 底部导航栏 */}
                                         <div className="bottom-nav-panel">
-                                            {/* 左侧图标 */}
                                             <div className="bottom-nav-left">
                                                 <div className="bottom-nav-item">
                                                     <TwitterIcon size={16} color="#6c757d" />
@@ -398,8 +427,7 @@ const Layout: React.FC<LayoutProps> = ({ children, mode }) => {
                                                     <TelegramIcon size={16} color="#6c757d" />
                                                 </div>
                                             </div>
-                                            
-                                            {/* 右侧图标 */}
+
                                             <div className="bottom-nav-right">
                                                 <div className="bottom-nav-item">
                                                     <HomeIcon size={16} color="#6c757d" />

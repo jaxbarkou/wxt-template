@@ -6,9 +6,11 @@ import { getOperateLog } from "@/lib/api/user";
 import { OperateLog } from "@/modal/user";
 import { UserIcon } from "@/components/custom/svg";
 import { Button } from "@/components/ui/button";
+import { BaseDialog } from "@/components/custom/Modal/BaseDialog";
 
 const Test: React.FC<PageProps> = ({ mode }) => {
   const [logList, setLogList] = React.useState<OperateLog[]>([]);
+  const [open, setOpen] = React.useState(false);
   const getLog = useCallback(async () => {
     try {
       let res = await getOperateLog();
@@ -118,9 +120,22 @@ const Test: React.FC<PageProps> = ({ mode }) => {
         <span className="text-brand-primary">text-brand-primary</span>
         <span className="text-brand-red">text-brand-red</span>
         <UserIcon color="#ddd" hoverColor="#000"></UserIcon>
-        <Button className="flex-1 h-8 rounded-[40px] font-medium text-sm">
-          普通样式
+        <Button
+          onClick={() => setOpen(true)}
+          className="flex-1 h-8 rounded-[40px] font-medium text-sm"
+        >
+          dialog
         </Button>
+
+        <BaseDialog open={open} onOpenChange={setOpen}>
+          <div>BaseDialogBaseDialog</div>
+          <Button
+            onClick={() => setOpen(false)}
+            className="flex-1 h-8 rounded-[40px] font-medium text-sm"
+          >
+            close
+          </Button>
+        </BaseDialog>
       </div>
     </div>
   );

@@ -4,7 +4,7 @@ import { getEthersSigner } from "@/hooks/useEthersSigner";
 import { useRootStore } from "@/store";
 import { getNonce, walletLogin } from "@/lib/api/login";
 import { SiweMessage } from "siwe";
-import { ChainType, LoginReq } from "@/modal";
+import { ChainType, LoginReq, LoginType } from "@/modal";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
 
 export const useLogin = (code: string) => {
@@ -13,6 +13,8 @@ export const useLogin = (code: string) => {
   const [logining, setLogining] = useState(false);
   const config = useConfig();
   const updateToken = useRootStore((state) => state.updateToken);
+  const setLoginModalOpen = useRootStore((state) => state.setLoginModalOpen);
+  const updateLoginType = useRootStore((state) => state.updateLoginType);
 
   const toLogin = useCallback(
     async (account: string) => {
@@ -50,7 +52,8 @@ export const useLogin = (code: string) => {
           );
           if (resLogin.code === 1) {
             updateToken(resLogin.result.token);
-            // updateLoginType(LoginType.Wallet);
+            setLoginModalOpen(false);
+            updateLoginType(LoginType.Wallet);
             return resLogin;
           } else if (resLogin.code === 426) {
             return null;

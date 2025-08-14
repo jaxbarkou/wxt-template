@@ -6,6 +6,12 @@ export enum ProjectsQueryType {
   Id = "Id",
 }
 
+export enum LoginType {
+  Email,
+  Wallet,
+}
+
+
 export interface ProjectsParams {
   type: ProjectsQueryType;
   value: string;

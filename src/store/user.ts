@@ -1,6 +1,6 @@
 import { StateCreator } from "zustand";
 import { RootState } from "./index";
-import { BloomFilterData } from "@/modal";
+import { BloomFilterData, LoginType } from "@/modal";
 
 // 用户详情类型定义
 export interface UserDetail {
@@ -32,6 +32,10 @@ export interface UserSlice {
   bloomFilterData: BloomFilterData;
   token: string | undefined;
   userDetail: UserDetail | null;
+  loginModalOpen: boolean;
+  loginType: LoginType;
+  updateLoginType: (loginType: LoginType) => void;
+  setLoginModalOpen: (open: boolean) => void;
   updateToken: (token: string) => void;
   setUserDetail: (userDetail: UserDetail) => void;
   clearUserDetail: () => void;
@@ -57,6 +61,14 @@ export const createUserSlice: StateCreator<
     bloomFilterData: baseBloomFilterData,
     token: "",
     userDetail: null,
+    loginModalOpen: false,
+    loginType: LoginType.Email,
+    updateLoginType: (loginType: LoginType) => {
+      set({ loginType });
+    },
+    setLoginModalOpen: (open: boolean) => {
+      set({ loginModalOpen: open });
+    },
     updateToken: (token: string) => {
       set({ token });
     },

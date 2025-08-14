@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
+import { useRootStore } from "@/store";
 
 const Home: React.FC<PageProps> = ({ mode }) => {
+  const { setLoginModalOpen } = useRootStore();
   const categoryCards = [
     {
       title: "Hot Campaigns",
@@ -79,6 +81,7 @@ const Home: React.FC<PageProps> = ({ mode }) => {
             >
               test-page
             </Link>
+            <Button onClick={() => setLoginModalOpen(true)}>login</Button>
           </div>
           {/* Welcome Section */}
           <div className="mb-8">

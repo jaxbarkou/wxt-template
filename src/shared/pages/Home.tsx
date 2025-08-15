@@ -1,13 +1,12 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { ArrowUpIcon, MenuIcon } from "lucide-react";
-import { PageProps } from "../types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import { useRootStore } from "@/store";
 
-const Home: React.FC<PageProps> = ({ mode }) => {
+const Home: React.FC = () => {
   const { setLoginModalOpen } = useRootStore();
   const categoryCards = [
     {

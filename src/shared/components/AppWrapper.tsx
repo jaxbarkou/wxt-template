@@ -3,13 +3,13 @@ import {
   Routes,
   Route,
   Navigate,
-  Link,
   useNavigate,
 } from "react-router-dom";
 import { useEffect } from "react";
 import { Home, User, Test, About, Options, Login } from "../pages";
 import { AppMode } from "../types";
 import { RainbowKitProvider } from "./RainbowKitProvider";
+import { ModeProvider } from "../context/ModeProvider";
 import Layout from "./Layout";
 import "../styles/AppWrapper.css";
 
@@ -54,22 +54,24 @@ const NavigationHandler: React.FC = () => {
 
 const AppWrapper: React.FC<AppWrapperProps> = ({ mode }) => {
   return (
-    <RainbowKitProvider>
-      <Router>
-        <NavigationHandler />
-        <Layout mode={mode}>
-          <Routes>
-            <Route path="/" element={<Home mode={mode} />} />
-            <Route path="/user" element={<User mode={mode} />} />
-            <Route path="/options" element={<Options mode={mode} />} />
-            <Route path="/about" element={<About mode={mode} />} />
-            <Route path="/test" element={<Test mode={mode} />} />
-            <Route path="/login" element={<Login mode={mode} />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </Layout>
-      </Router>
-    </RainbowKitProvider>
+    <ModeProvider mode={mode}>
+      <RainbowKitProvider>
+        <Router>
+          <NavigationHandler />
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/user" element={<User />} />
+              <Route path="/options" element={<Options />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/test" element={<Test />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Layout>
+        </Router>
+      </RainbowKitProvider>
+    </ModeProvider>
   );
 };
 

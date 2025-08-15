@@ -32,11 +32,8 @@ import {
 import "@/shared/styles/Layout.css";
 import LoginStatus from "./LoginStatus";
 import LoginBase from "@/components/custom/Login/LoginBase";
+import { useMode } from "../context/ModeProvider";
 
-interface LayoutProps {
-  children: React.ReactNode;
-  mode: "popup" | "sidepanel" | "options";
-}
 
 // 顶部操作栏配置
 const topActions = [
@@ -79,7 +76,9 @@ const bottomItems = [
   { id: "user-bottom", icon: "👤", label: "用户", path: "/user" },
 ];
 
-const Layout: React.FC<LayoutProps> = ({ children, mode }) => {
+// 移除mode参数
+const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { mode } = useMode();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isHoveringExpand, setIsHoveringExpand] = useState(false);

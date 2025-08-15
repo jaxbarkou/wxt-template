@@ -1,6 +1,7 @@
 import React from 'react';
 import { UserIcon, PromptBorIcon, RightIcon, GiftIcon,TabIcon } from '@/components/custom/svg';
 import '@/shared/styles/Layout.css';
+import { useRootStore } from '@/store';
 interface LoginStatusProps {
     isLoggedIn: boolean;
     userInfo?: {
@@ -20,6 +21,7 @@ const LoginStatus: React.FC<LoginStatusProps> = ({
     userInfo = { username: 'Kai', email: 'useremail@gmail.com' },
     credits = { balance: '1,500', dailyEarn: '+150', totalStaked: '0', totalEarned: '0' }
 }) => {
+    const { setLoginModalOpen } = useRootStore();
     if (!isLoggedIn) {
         return (
             <div className="sign-info">
@@ -29,7 +31,8 @@ const LoginStatus: React.FC<LoginStatusProps> = ({
                     </div>
                     <div className="user-info-right">
                         <button
-                            className="px-3 py-1 text-sm text-white bg-[#FF9E3B] rounded-full hover:bg-[#FF9E3B]-700"
+                            className="px-3 py-1 text-sm text-white bg-[#FF9E3B] rounded-full hover:bg-[#FF9E3B]-700 cursor-pointer"
+                            onClick={() => setLoginModalOpen(true)}
                         >
                             Sign in
                         </button>

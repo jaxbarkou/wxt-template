@@ -1,16 +1,17 @@
 import React, { useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { PageProps } from "../types";
 import { PasskeyTest } from "@/shared/components";
 import { getOperateLog } from "@/lib/api/user";
 import { OperateLog } from "@/modal/user";
 import { UserIcon } from "@/components/custom/svg";
 import { Button } from "@/components/ui/button";
 import { BaseDialog } from "@/components/custom/Modal/BaseDialog";
+import { useMode } from "../context/ModeProvider";
 
-const Test: React.FC<PageProps> = ({ mode }) => {
+const Test: React.FC= () => {
   const [logList, setLogList] = React.useState<OperateLog[]>([]);
   const [open, setOpen] = React.useState(false);
+  const { mode } = useMode();
   const getLog = useCallback(async () => {
     try {
       let res = await getOperateLog();

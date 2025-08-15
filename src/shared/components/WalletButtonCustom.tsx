@@ -1,18 +1,17 @@
 import { useEffect } from "react";
 import { WalletButton } from "@rainbow-me/rainbowkit";
 import { useAccount, useDisconnect } from "wagmi";
-import { PageProps } from "../types";
 import _ from "lodash";
 import { useLogin } from "@/hooks/useLogin";
-
-interface WalletButtonCustomProps extends PageProps {
+import { useMode } from "../context/ModeProvider";
+interface WalletButtonCustomProps {
   showDetails?: boolean;
 }
 
 export const WalletButtonCustom: React.FC<WalletButtonCustomProps> = ({
-  mode,
   showDetails = true,
 }) => {
+  const { mode } = useMode();
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
   const { handleLogin } = useLogin("");

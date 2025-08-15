@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
-import { PageProps } from "../types";
 import { WalletButtonCustom } from "../components/WalletButtonCustom";
+import { useMode } from "../context/ModeProvider";
+const Options: React.FC = () => {
+  const { mode } = useMode();
 
-const Options: React.FC<PageProps> = ({ mode }) => {
   return (
     <div className={`w-full ${mode === 'options' ? 'p-6' : 'p-4'}`}>
       <div className="max-w-4xl mx-auto">
@@ -13,7 +14,7 @@ const Options: React.FC<PageProps> = ({ mode }) => {
           {/* 钱包连接设置 */}
           <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
             <h2 className="text-xl font-semibold text-white mb-4">钱包连接</h2>
-            <WalletButtonCustom mode={mode} showDetails={true} />
+            <WalletButtonCustom showDetails={true} />
           </div>
           
           {/* 扩展信息 */}

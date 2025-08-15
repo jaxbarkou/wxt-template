@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { PageProps } from "../types";
 import { WalletButtonCustom } from "../components/WalletButtonCustom";
 import { PasskeyTest } from "../components";
 import { loginWithPasskey, registerPasskey } from "@/lib/api/passkey";
+import React from 'react';
+import { useMode } from '../context/ModeProvider';
 
-const User: React.FC<PageProps> = ({ mode }) => {
+const User: React.FC = () => {
+  const { mode } = useMode();
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [loginStatus, setLoginStatus] = useState<{
@@ -222,7 +224,7 @@ const User: React.FC<PageProps> = ({ mode }) => {
       {/* 钱包连接组件 */}
       <div className="mb-6">
         <h3 className="mb-3 text-lg font-semibold">钱包连接</h3>
-        <WalletButtonCustom mode={mode} showDetails={true} />
+        <WalletButtonCustom showDetails={true} />
       </div>
       
       {/* 导航链接 */}

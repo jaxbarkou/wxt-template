@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { PageProps } from "../types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCallback, useState } from "react";
@@ -7,8 +6,10 @@ import { emailRegister, emailLogin, getEmailCode } from "@/lib/api/login";
 import { WalletButtonCustom } from "../components/WalletButtonCustom";
 import { useRootStore } from "@/store";
 import { useUserDetail } from "@/hooks/useUserDetail";
+import { useMode } from "../context/ModeProvider";
 
-const Login: React.FC<PageProps> = ({ mode }) => {
+const Login: React.FC = () => {
+  const { mode } = useMode();
   const { updateToken, token } = useRootStore();
   const { fetchUserDetail } = useUserDetail();
   const [email, setEmail] = useState<string>("");
@@ -157,7 +158,7 @@ const Login: React.FC<PageProps> = ({ mode }) => {
               Email Login{" "}
             </Button>
           </div>
-          <WalletButtonCustom mode={mode} showDetails={true} />
+          <WalletButtonCustom showDetails={true} />
 
           <div>
             <span className="ml-4 text-white">Token: {token}</span>

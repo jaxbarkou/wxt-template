@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import { PageProps } from "../types";
-
-const About: React.FC<PageProps> = ({ mode }) => {
+import { useMode } from "../context/ModeProvider";
+const About: React.FC = () => {
+  const { mode } = useMode();
   return (
     <div className={`w-full ${mode === 'options' ? 'p-6' : 'p-4'}`}>
       <div className="max-w-4xl mx-auto">

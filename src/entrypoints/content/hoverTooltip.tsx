@@ -347,11 +347,16 @@ const hoverTooltip = async (ctx: any) => {
         isHoveringKeyword = true;
         if (hideTimeout) clearTimeout(hideTimeout);
 
-        ui.mount();
+        if (!(window as any).__WXT_UI_MOUNTED__) {
+          ui.mount();
+          (window as any).__WXT_UI_MOUNTED__ = true; // 标记已挂载
+        }
+        // ui.mount();
       });
 
       element.addEventListener("mouseleave", () => {
         isHoveringKeyword = false;
+        (window as any).__WXT_UI_MOUNTED__ = false; // 重置挂载状态
         startHideTimer();
       });
     }

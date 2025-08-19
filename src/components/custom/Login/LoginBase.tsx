@@ -1,5 +1,5 @@
 // import { Link } from "react-router-dom";
-import React, { use, useEffect, useState } from "react";
+import React, { use, useEffect, useState, useMemo } from "react";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { useRootStore } from "@/store";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import _ from "lodash";
 import { WalletButtonCustom } from "./WalletButtonCustom";
 import Register from "./Register";
 import EmailLogin from "./EmailLogin";
+import { useUserDetail } from "@/hooks/useUserDetail";
 
 export enum LoginState {
   Base = "Base",
@@ -19,14 +20,17 @@ export enum LoginState {
 }
 
 const LoginBase: React.FC = () => {
-  const { loginModalOpen, setLoginModalOpen } = useRootStore();
+  const { loginModalOpen, setLoginModalOpen, token } = useRootStore();
+  const { fetchUserDetail } = useUserDetail();
   const { isConnected } = useAccount();
   const { handleLogin } = useLogin("");
   const [curState, setCurState] = useState<LoginState>(LoginState.Base);
   const handleStateChange = (state: LoginState) => {
     setCurState(state);
   };
-
+  const shouldFetchUserDetail = useMemo(() => {
+    return !!token;
+  }, [token]);
   useEffect(() => {
     const lightData = JSON.parse(localStorage.getItem("yomo") || "{}");
     const token = _.get(lightData, "state.token", "");
@@ -38,6 +42,12 @@ const LoginBase: React.FC = () => {
   useEffect(() => {
     setCurState(LoginState.Base);
   }, [loginModalOpen]);
+
+  useEffect(() => {
+    if (shouldFetchUserDetail) {
+      fetchUserDetail();
+    }
+  }, [shouldFetchUserDetail, fetchUserDetail]);
 
   return (
     <Drawer open={loginModalOpen} onOpenChange={setLoginModalOpen}>

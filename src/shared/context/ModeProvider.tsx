@@ -14,9 +14,7 @@ interface ModeProviderProps {
 
 export const ModeProvider: React.FC<ModeProviderProps> = ({ mode, children }) => {
   return (
-    <ModeContext.Provider value={{ mode }}>
-      {children}
-    </ModeContext.Provider>
+    <ModeContext.Provider value={{ mode }}>{children}</ModeContext.Provider>
   );
 };
 

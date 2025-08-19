@@ -12,7 +12,6 @@ export const useUserDetail = () => {
   const fetchUserDetail = useCallback(async () => {
     try {
       const response = await getUserDetail();
-      console.log("response",response);
       if (response.code === 1 && response.result) {
         setUserDetail(response.result);
         return response.result;

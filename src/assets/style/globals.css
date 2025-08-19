@@ -130,6 +130,9 @@
   }
   body {
     @apply bg-background text-foreground;
+    color: #2C2C2C;
   }
 }
+
+
 

@@ -4,3 +4,6 @@ export { default as Test } from './Test';
 export { default as About } from './About';
 export { default as Options } from './Options';
 export { default as Login } from './Login';
+export { default as TopUp } from './TopUp';
+export { default as TopUpDetail } from './TopUpDetail';
+export { default as Settings } from './Settings';

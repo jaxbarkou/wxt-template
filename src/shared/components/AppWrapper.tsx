@@ -6,7 +6,17 @@ import {
   useNavigate,
 } from "react-router-dom";
 import { useEffect } from "react";
-import { Home, User, Test, About, Options, Login } from "../pages";
+import {
+  Home,
+  User,
+  Test,
+  About,
+  Options,
+  Login,
+  TopUp,
+  TopUpDetail,
+  Settings,
+} from "../pages";
 import { AppMode } from "../types";
 import { RainbowKitProvider } from "./RainbowKitProvider";
 import { ModeProvider } from "../context/ModeProvider";
@@ -66,6 +76,10 @@ const AppWrapper: React.FC<AppWrapperProps> = ({ mode }) => {
               <Route path="/about" element={<About />} />
               <Route path="/test" element={<Test />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/top-up" element={<TopUp />} />
+              <Route path="/top-up-detail" element={<TopUpDetail />} />
+              <Route path="/settings" element={<Settings />} />
+              {/* 其他路由 */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Layout>

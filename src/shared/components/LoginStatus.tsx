@@ -34,12 +34,12 @@ const LoginStatus: React.FC<LoginStatusProps> = ({
     totalEarned: "0",
   },
 }) => {
-  const { setLoginModalOpen } = useRootStore();
+  const { setLoginModalOpen,token } = useRootStore();
   const navigate = useNavigate();
   const goTopUp = () => {
     navigate("/top-up");
-  };
-  if (!isLoggedIn) {
+  }; 
+  if (!token) {
     return (
       <div className="sign-info">
         <div className="flex items-center justify-between mb-3 user-info">

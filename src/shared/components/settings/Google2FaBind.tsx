@@ -113,13 +113,7 @@ export default function TwoFactorAuthSection({ onClose }: ChangeEmailSectionProp
   };
 
   const handleNextStep = () => {
-    if (isAuthenticatorBound) {
-      // 已绑定状态：步骤1(输入原验证码) -> 步骤2(显示新密钥)
-      setCurrentStep(2);
-    } else {
-      // 未绑定状态：步骤1(显示密钥) -> 步骤2(输入验证码)
-      setCurrentStep(2);
-    }
+    setCurrentStep(currentStep + 1);
   };
 
   const handlePrevStep = () => {

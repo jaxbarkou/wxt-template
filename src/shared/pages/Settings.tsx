@@ -1,14 +1,14 @@
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import Account from "../components/settings/Account.tsx";
-
+import Account from "../components/settings/Account";
+import Credits from "../components/settings/Credits";
 const Settings: React.FC = () => {
   const tabItems = [
     { value: "account", label: "Account" },
-    { value: "earns", label: "Earns" },
-    { value: "stake", label: "Stake" },
     { value: "credits", label: "Credits" },
+    { value: "stake", label: "Stake" },
+    { value: "earns", label: "Earns" },
   ];
   return (
     <div className="w-full min-h-screen mx-auto bg-[#F6F6F8]">
@@ -42,14 +42,14 @@ const Settings: React.FC = () => {
         <TabsContent value="account" className="flex-1 px-4 ">
           <Account />
         </TabsContent>
+        <TabsContent value="credits" className="flex-1 px-4">
+          <Credits />
+        </TabsContent>
         <TabsContent value="earns" className="flex-1 px-4 ">
           earns
         </TabsContent>
         <TabsContent value="stake" className="flex-1 px-4 ">
           stake
-        </TabsContent>
-        <TabsContent value="credits" className="flex-1 px-4">
-          credits
         </TabsContent>
       </Tabs>
     </div>

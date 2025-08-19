@@ -25,3 +25,4 @@ export { default as PentagramIcon } from "./icons/PentagramIcon";
 export { default as SearchIcon } from "./icons/SearchIcon";
 export { default as GoogleIcon } from "./icons/GoogleIcon";
 export { default as SavedIcon } from "./icons/SavedIcon";
+export { default as EidtIcon } from "./icons/EidtIcon";

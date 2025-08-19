@@ -18,7 +18,11 @@ interface FormErrors {
   general?: string;
 }
 
-export default function ChangeEmailSection(): React.ReactNode {
+interface ChangeEmailSectionProps {
+  onClose?: () => void;
+}
+
+export default function ChangeEmailSection({ onClose }: ChangeEmailSectionProps): React.ReactNode {
   const { userDetail } = useRootStore();
   const { fetchUserDetail } = useUserDetail();
   
@@ -135,7 +139,7 @@ export default function ChangeEmailSection(): React.ReactNode {
       if (response.code === 1) {
         // 成功
         await fetchUserDetail(); // 刷新用户信息
-        setIsVisible(false); // 关闭弹窗
+        onClose?.(); // 调用关闭回调
         // 可以添加成功提示
         console.log("Email changed successfully");
       } else {
@@ -156,7 +160,7 @@ export default function ChangeEmailSection(): React.ReactNode {
 
   // 处理取消
   const handleCancel = () => {
-    setIsVisible(false);
+    onClose?.(); // 调用关闭回调
   };
 
   // 如果不可见，不渲染

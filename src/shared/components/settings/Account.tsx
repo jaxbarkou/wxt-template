@@ -6,20 +6,27 @@ import { PlusIcon, RefreshCwIcon, Loader2 } from "lucide-react";
 import { useRootStore } from "@/store";
 import { useUserDetail } from "@/hooks/useUserDetail";
 import { foramtAddress } from "@/lib/utils";
-import { SavedIcon } from "@/components/custom/svg";
+import { SavedIcon, EidtIcon } from "@/components/custom/svg";
 import { changeNickName } from "@/lib/api/user";
 import ChangeEmailSection from "./ChangeEmail";
+import Google2FaBind from "./Google2FaBind";
+import ChangePasswordSection from "./ChangePassword"; // 添加导入
+
 const Account: React.FC = () => {
   const { userDetail } = useRootStore();
   const { fetchUserDetail } = useUserDetail();
   const [nickName, setNickName] = useState(userDetail?.nickName || "");
   const [editNickNameModalOpen, setEditNickNameModalOpen] = useState(false);
-  const [isSaving, setIsSaving] = useState(false); // 添加loading状态
+  const [isSaving, setIsSaving] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [showGoogle2FaBindModal, setShowGoogle2FaBindModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false); // 添加密码弹窗状态
+
   const accountConnections = [
     {
       icon: "https://c.animaapp.com/tsXhjynw/img/vector-6.svg",
       label: "Crypto Wallet",
-      value: foramtAddress(userDetail?.address || "-"),
+      value: foramtAddress(userDetail?.address || ""),
       hasAction: true,
     },
     {
@@ -27,12 +34,16 @@ const Account: React.FC = () => {
       label: "E-Mail",
       value: userDetail?.email || "-",
       hasAction: true,
+      showEidt: userDetail?.email ? true : false,
+      showPlus: userDetail?.email ? false : true,
     },
     {
       icon: "https://c.animaapp.com/tsXhjynw/img/vector-6.svg",
       label: "XIcon (Twitter)",
       value: userDetail?.twitter || "-",
       hasAction: true,
+      showEidt: userDetail?.twitter ? true : false,
+      showPlus: userDetail?.twitter ? false : true,
     },
     {
       icon: "https://c.animaapp.com/tsXhjynw/img/vector-2.svg",
@@ -45,26 +56,30 @@ const Account: React.FC = () => {
 
   const securitySettings = [
     {
-      icon: "https://c.animaapp.com/tsXhjynw/img/vector-6.svg",
-      label: "2FA",
-      value: "Updated on Aug 9, 2025",
-      hasAction: true,
-    },
-    {
       icon: "https://c.animaapp.com/tsXhjynw/img/vector-2.svg",
       label: "Password",
-      value: "Set up to enable email login",
-      hasAction: false,
-      showPlus: true,
+      value: userDetail?.password ? "Click to change password" : "Click to set password",
+      hasAction: true, // 改为true，表示可以操作
+      showPlus: !userDetail?.password ? true : false,
+      showEidt: userDetail?.password ? true : false,
+    },
+    {
+      icon: "https://c.animaapp.com/tsXhjynw/img/vector-6.svg",
+      label: "2FA",
+      value: userDetail?.authenticatorStatus ? "Manage your 2FA settings" : "Set up 2FA for security",
+      hasAction: true,
+      showEidt: userDetail?.authenticatorStatus ? true : false,
+      showPlus: !userDetail?.authenticatorStatus ? true : false,
     },
   ];
+
   const handleChangeNickName = async () => {
     if (!nickName || isSaving) {
       return;
     }
-    
-    setIsSaving(true); // 开始loading
-    
+
+    setIsSaving(true);
+
     try {
       const res = await changeNickName(nickName);
       console.log("res", res);
@@ -74,11 +89,38 @@ const Account: React.FC = () => {
       }
     } catch (error) {
       console.error("修改昵称失败:", error);
-      // 可以在这里添加错误提示
     } finally {
-      setIsSaving(false); // 结束loading
+      setIsSaving(false);
     }
   };
+
+  // 处理各种操作
+  const handleAction = (item: any) => {
+    if (item.label === "E-Mail") {
+      setShowEmailModal(true);
+    }
+    if (item.label === "2FA") {
+      setShowGoogle2FaBindModal(true);
+    }
+    if (item.label === "Password") {
+      setShowPasswordModal(true);
+    }
+    // 其他连接项的处理可以在这里添加
+  };
+
+  // 处理各种弹窗关闭
+  const handleEmailModalClose = () => {
+    setShowEmailModal(false);
+  };
+  
+  const handleGoogle2FaBindModalClose = () => {
+    setShowGoogle2FaBindModal(false);
+  };
+
+  const handlePasswordModalClose = () => {
+    setShowPasswordModal(false);
+  };
+
   return (
     <div className="">
       {/* User Profile Section */}
@@ -93,7 +135,9 @@ const Account: React.FC = () => {
               {!editNickNameModalOpen ? (
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-normal text-variable-collection">
-                   {userDetail?.nickName?userDetail?.nickName: `Username - `}
+                    {userDetail?.nickName
+                      ? userDetail?.nickName
+                      : `Username - `}
                   </span>
                   <img
                     className="w-2.5 h-2.5"
@@ -111,11 +155,13 @@ const Account: React.FC = () => {
                     placeholder="Username"
                     value={nickName}
                     onChange={(e) => setNickName(e.target.value)}
-                    disabled={isSaving} // 保存时禁用输入
+                    disabled={isSaving}
                   />
                   <div
-                    className={`w-[24px] h-full border-l border-[#F67C00] rounded-r-[4px] flex items-center justify-center cursor-pointer ${
-                      isSaving ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#fff] hover:bg-opacity-10'
+                    className={`w-[24px] h-full border-l border-[#F67C00] flex items-center justify-center cursor-pointer ${
+                      isSaving
+                        ? "opacity-50 cursor-not-allowed"
+                        : "hover:bg-[#F67C00] hover:bg-opacity-10"
                     }`}
                     onClick={() => !isSaving && handleChangeNickName()}
                   >
@@ -155,11 +201,36 @@ const Account: React.FC = () => {
                   )}
                 </div>
                 <div className="flex items-center gap-2">
-                  <img
-                    className="w-[13px] h-[13px]"
-                    alt={connection.label}
-                    src={connection.icon}
-                  />
+                  {connection.value && connection.value !== "-" ? (
+                    <span className="text-sm text-[#979797] font-normal text-right text-variable-collection">
+                      {connection.value}
+                    </span>
+                  ) : (
+                    <span></span>
+                  )}
+                  {!connection.showPlus && !connection.showEidt && (
+                    <img
+                      className="w-[13px] h-[13px]"
+                      alt={connection.label}
+                      src={connection.icon}
+                    />
+                  )}
+                  {connection.showPlus && (
+                    <div
+                      className="cursor-pointer hover:opacity-70 transition-opacity"
+                      onClick={() => handleAction(connection)}
+                    >
+                      <PlusIcon className="w-4 h-4 text-variable-collection" />
+                    </div>
+                  )}
+                  {connection.showEidt && (
+                    <div
+                      className="cursor-pointer hover:opacity-70 transition-opacity"
+                      onClick={() => handleAction(connection)}
+                    >
+                      <EidtIcon className="w-4 h-4 text-variable-collection" />
+                    </div>
+                  )}
                 </div>
               </div>
               {index < accountConnections.length - 1 && (
@@ -183,24 +254,36 @@ const Account: React.FC = () => {
             <div key={setting.label}>
               <div className="flex items-center justify-between p-4">
                 <div className="flex items-center gap-3">
-                  <img
-                    className="w-[13px] h-[13px]"
-                    alt={setting.label}
-                    src={setting.icon}
-                  />
                   <span className="text-sm font-normal text-variable-collection">
                     {setting.label}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-normal text-right text-variable-collection">
+                  <span className="text-sm font-normal text-right text-[#979797] text-variable-collection">
                     {setting.value}
                   </span>
-                  {setting.showPlus && (
-                    <PlusIcon className="w-4 h-4 text-variable-collection" />
+                  {!setting.showPlus && !setting.showEidt && (
+                    <img
+                      className="w-[13px] h-[13px]"
+                      alt={setting.label}
+                      src={setting.icon}
+                    />
                   )}
-                  {setting.hasAction && (
-                    <RefreshCwIcon className="w-4 h-4 text-variable-collection" />
+                  {setting.showPlus && (
+                    <div
+                      className="cursor-pointer hover:opacity-70 transition-opacity"
+                      onClick={() => handleAction(setting)}
+                    >
+                      <PlusIcon className="w-4 h-4 text-variable-collection" />
+                    </div>
+                  )}
+                  {setting.showEidt && (
+                    <div
+                      className="cursor-pointer hover:opacity-70 transition-opacity"
+                      onClick={() => handleAction(setting)}
+                    >
+                      <EidtIcon className="w-4 h-4 text-variable-collection" />
+                    </div>
                   )}
                 </div>
               </div>
@@ -211,7 +294,11 @@ const Account: React.FC = () => {
           ))}
         </CardContent>
       </Card>
-      <ChangeEmailSection />
+
+      {/* 各种弹窗 */}
+      {showEmailModal && <ChangeEmailSection onClose={handleEmailModalClose} />}
+      {showGoogle2FaBindModal && <Google2FaBind onClose={handleGoogle2FaBindModalClose} />}
+      {showPasswordModal && <ChangePasswordSection onClose={handlePasswordModalClose} />}
     </div>
   );
 };

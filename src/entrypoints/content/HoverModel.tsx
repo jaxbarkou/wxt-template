@@ -5,11 +5,14 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { X } from "lucide-react";
+
 interface AppProps {
   symbol?: string;
+  onClose?: () => void;
 }
 
-const HoverModel: React.FC<AppProps> = ({ symbol }) => {
+const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
   const [position, setPosition] = useState({ x: -9999, y: -9999 });
   // const [isLoading, setIsLoading] = useState(false);
   const [projectsData, setProjectsData] = useState(null);
@@ -144,12 +147,13 @@ const HoverModel: React.FC<AppProps> = ({ symbol }) => {
                     src="https://c.animaapp.com/ow4Izvy8/img/group-48096858@2x.png"
                   />
                 </Button>
-                <Button variant="ghost" size="icon" className="w-5 h-5 p-0">
-                  <img
-                    className="w-5 h-5"
-                    alt="Group"
-                    src="https://c.animaapp.com/ow4Izvy8/img/group-48096900@2x.png"
-                  />
+                <Button
+                  onClick={onClose}
+                  variant="ghost"
+                  size="icon"
+                  className="w-5 h-5 p-0"
+                >
+                  <X className="w-5 h-5" />
                 </Button>
               </div>
             </header>

@@ -5,17 +5,40 @@ const hoverTooltip = async (ctx: any) => {
   // 改进的关键词替换功能
   const processedNodes = new WeakSet(); // 用于跟踪已处理的节点
 
+  // =========================
+  // [修改] —— 全局单例标记与存储
+  // 只要页面里有这个对象，就说明已经有一个 tooltip 在管理中
+  // =========================
+  const g = window as any;
+  if (!g.__WXT_TOOLTIP_SINGLETON__) {
+    g.__WXT_TOOLTIP_SINGLETON__ = {
+      mounted: false, // 是否已挂载一个 tooltip
+      elements: null as null | { root: any; wrapper: HTMLDivElement },
+      position: null as null | { x: number; y: number },
+      symbol: null as null | string,
+    };
+  }
+
   // 遍历并替换文本节点中的关键词
-  // 使用正则表达式匹配 $SYMBOL 格式的关键词，并替换
-  // 为每个匹配的关键词创建一个高亮元素 弹窗
   const walkAndReplaceTextNodes = (node: Node) => {
     // 避免重复处理
     if (processedNodes.has(node)) return;
 
+    // =========================
+    // [修改] —— 跳过不应处理的节点类型，避免在<script>等标签里替换
+    // =========================
+    if (
+      node.nodeType === Node.ELEMENT_NODE &&
+      node instanceof HTMLElement &&
+      ["SCRIPT", "STYLE", "NOSCRIPT", "IFRAME"].includes(node.tagName)
+    ) {
+      return;
+    }
+
     if (
       node.nodeType === Node.TEXT_NODE &&
       node.nodeValue &&
-      !node.parentElement?.classList.contains("wxt-hover-word") // 避免处理已经是高亮元素的子节点
+      !node.parentElement?.classList.contains("wxt-hover-word")
     ) {
       const text = node.nodeValue;
 
@@ -37,7 +60,6 @@ const hoverTooltip = async (ctx: any) => {
         );
       }
 
-      // 只有在有匹配项时才替换节点
       if (hasMatch) {
         const parent = node.parentNode;
         if (!parent) return;
@@ -60,10 +82,10 @@ const hoverTooltip = async (ctx: any) => {
   let hideTimeout: NodeJS.Timeout | null = null;
 
   // 只挂一次全局 tooltip 监听函数
-  if (!(window as any).__tooltipEventsInitialized__) {
-    (window as any).__tooltipEventsInitialized__ = true;
+  if (!g.__tooltipEventsInitialized__) {
+    g.__tooltipEventsInitialized__ = true;
 
-    (window as any).__tooltipMouseEnter = () => {
+    g.__tooltipMouseEnter = () => {
       isHoveringTooltip = true;
       if (hideTimeout) {
         clearTimeout(hideTimeout);
@@ -71,7 +93,7 @@ const hoverTooltip = async (ctx: any) => {
       }
     };
 
-    (window as any).__tooltipMouseLeave = () => {
+    g.__tooltipMouseLeave = () => {
       isHoveringTooltip = false;
       startHideTimer();
     };
@@ -82,9 +104,63 @@ const hoverTooltip = async (ctx: any) => {
     if (hideTimeout) clearTimeout(hideTimeout);
     hideTimeout = setTimeout(() => {
       if (!isHoveringTooltip && !isHoveringKeyword) {
-        ui.remove();
+        // =========================
+        // [修改] —— 使用单例的 remove 流程
+        // 只要隐藏，就把 mounted 置为 false，并清理 elements
+        // =========================
+        handleHide();
       }
     }, 300);
+  }
+
+  function handleHide() {
+    ui.remove();
+    if (g.__WXT_TOOLTIP_SINGLETON__.elements) {
+      g.__WXT_TOOLTIP_SINGLETON__.elements.root?.unmount?.();
+      g.__WXT_TOOLTIP_SINGLETON__.elements.wrapper?.remove?.();
+    }
+    g.__WXT_TOOLTIP_SINGLETON__.elements = null;
+    g.__WXT_TOOLTIP_SINGLETON__.mounted = false;
+    g.__WXT_TOOLTIP_SINGLETON__.position = null;
+    g.__WXT_TOOLTIP_SINGLETON__.symbol = null;
+  }
+
+  // =========================
+  // [修改] —— 专用函数：复用已存在的 tooltip，更新位置与内容
+  // 而不是重复 mount 第二个
+  // =========================
+  function ensureSingleTooltipAndUpdate(
+    position: { x: number; y: number },
+    symbol: string | null
+  ) {
+    const S = g.__WXT_TOOLTIP_SINGLETON__;
+
+    // 如果已经 mounted，则复用现有 wrapper + root
+    if (S.mounted && S.elements) {
+      const { wrapper, root } = S.elements;
+      wrapper.style.left = `${position.x}px`;
+      wrapper.style.top = `${position.y}px`;
+
+      if (symbol !== S.symbol) {
+        root.render(
+          <HoverModel
+            symbol={symbol || undefined}
+            onClose={() => {
+              handleHide();
+            }}
+          />
+        );
+        S.symbol = symbol;
+      }
+      S.position = position;
+      return; // 不再重复 mount
+    }
+
+    // 如果还没 mounted，则触发 mount，一次且仅一次
+    g.__tooltipPosition__ = position; // 兼容原 onMount 读取
+    g.__tooltipSymbol__ = symbol;
+    ui.mount();
+    // ui.mount() 后会在 onMount 里把 elements 写入单例并置为 mounted=true
   }
 
   // 主监听逻辑
@@ -120,22 +196,17 @@ const hoverTooltip = async (ctx: any) => {
         currentPosition.x = Math.max(0, currentPosition.x);
         currentPosition.y = Math.max(0, currentPosition.y);
 
-        (window as any).__tooltipPosition__ = currentPosition;
-        (window as any).__tooltipSymbol__ = symbol;
-
-        isHoveringKeyword = true;
+        // =========================
+        // [修改] —— 不再直接 ui.mount() 第二个实例
+        // 改为调用 ensureSingleTooltipAndUpdate 复用/更新
+        // =========================
         if (hideTimeout) clearTimeout(hideTimeout);
-
-        if (!(window as any).__WXT_UI_MOUNTED__) {
-          ui.mount();
-          (window as any).__WXT_UI_MOUNTED__ = true; // 标记已挂载
-        }
-        // ui.mount();
+        ensureSingleTooltipAndUpdate(currentPosition, symbol);
+        isHoveringKeyword = true;
       });
 
       element.addEventListener("mouseleave", () => {
         isHoveringKeyword = false;
-        (window as any).__WXT_UI_MOUNTED__ = false; // 重置挂载状态
         startHideTimer();
       });
     }
@@ -155,27 +226,47 @@ const hoverTooltip = async (ctx: any) => {
       if (position) {
         const x = position.x;
         const y = position.y;
-        console.log("hover-ui mounted at:", x, y, "for symbol:", symbol);
         wrapper.classList.add("fixed", "w-[200px]", "h-[200px]", "z-[999999]");
         wrapper.style.left = `${x}px`;
         wrapper.style.top = `${y}px`;
+
         container.append(wrapper);
         const root = ReactDOM.createRoot(wrapper);
-        root.render(<HoverModel symbol={symbol} />); // 传递代币符号给App组件
+        root.render(<HoverModel symbol={symbol} onClose={handleHide} />);
+
+        // =========================
+        // [修改] —— 把生成的 elements 写入单例，并标记 mounted
+        // =========================
+        const S = (window as any).__WXT_TOOLTIP_SINGLETON__;
+        S.elements = { root, wrapper };
+        S.mounted = true;
+        S.position = position;
+        S.symbol = symbol;
+
         return { root, wrapper };
       }
       return null;
     },
     onRemove: (elements) => {
-      elements?.root?.unmount();
-      elements?.wrapper?.remove();
+      elements?.root?.unmount?.();
+      elements?.wrapper?.remove?.();
+
+      // =========================
+      // [修改] —— onRemove 同步清理单例状态
+      // =========================
+      const S = (window as any).__WXT_TOOLTIP_SINGLETON__;
+      if (S) {
+        S.elements = null;
+        S.mounted = false;
+        S.position = null;
+        S.symbol = null;
+      }
     },
   });
 
   // 初始处理
   try {
     walkAndReplaceTextNodes(document.body);
-    // 为现有的高亮元素添加事件监听器
     document.querySelectorAll(".wxt-hover-word").forEach(addHoverListeners);
   } catch (error) {
     console.error("初始处理时出错:", error);
@@ -187,14 +278,11 @@ const hoverTooltip = async (ctx: any) => {
       mutations.forEach((mutation) => {
         mutation.addedNodes.forEach((node) => {
           if (node.nodeType === Node.ELEMENT_NODE) {
-            // 检查新添加的元素是否包含关键词
             walkAndReplaceTextNodes(node);
-            // 为新添加的高亮元素添加事件监听器
             (node as Element)
               .querySelectorAll?.(".wxt-hover-word")
               .forEach(addHoverListeners);
           } else if (node.nodeType === Node.TEXT_NODE) {
-            // 检查新添加的文本节点
             walkAndReplaceTextNodes(node);
           }
         });

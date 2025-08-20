@@ -34,6 +34,7 @@ export interface UserSlice {
   userDetail: UserDetail | null;
   loginModalOpen: boolean;
   loginType: LoginType;
+  settings: Record<string, boolean>;
   updateLoginType: (loginType: LoginType) => void;
   setLoginModalOpen: (open: boolean) => void;
   updateToken: (token: string) => void;
@@ -41,6 +42,7 @@ export interface UserSlice {
   clearUserDetail: () => void;
   setBloomFilterData: (data: BloomFilterData) => void;
   setHasHydrated: (val: boolean) => void;
+  updateSetting: (key: string, value: boolean) => void;
 }
 
 const baseBloomFilterData: BloomFilterData = {
@@ -63,6 +65,7 @@ export const createUserSlice: StateCreator<
     userDetail: null,
     loginModalOpen: false,
     loginType: LoginType.Email,
+    settings: {},
     updateLoginType: (loginType: LoginType) => {
       set({ loginType });
     },
@@ -83,6 +86,14 @@ export const createUserSlice: StateCreator<
     },
     setHasHydrated: (val: boolean) => {
       set({ hasHydrated: val });
+    },
+    updateSetting: (key: string, value: boolean) => {
+      set((state) => ({
+        settings: {
+          ...state.settings,
+          [key]: value,
+        },
+      }));
     },
   };
 };

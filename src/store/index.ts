@@ -32,6 +32,7 @@ export const useRootStore = create<RootState>()(
             bloomFilterData: state.bloomFilterData,
             token: state.token,
             userDetail: state.userDetail,
+            settings: state.settings,
           }),
         }
       )

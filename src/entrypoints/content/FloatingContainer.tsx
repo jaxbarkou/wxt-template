@@ -1,12 +1,40 @@
-import React from 'react';
+import React, { useState } from 'react';
 import FloatingLogo from './FloatingLogo';
 
 const FloatingContainer: React.FC = () => {
-  // 打开侧边栏
+  const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
+
+  // 切换侧边栏状态
+  const handleToggleSidePanel = () => {
+    if (isSidePanelOpen) {
+      // 关闭侧边栏
+      chrome.runtime.sendMessage({ type: "CLOSE_SIDEPANEL" }, (response) => {
+        if (response?.success) {
+          console.log("侧边栏已关闭");
+          setIsSidePanelOpen(false);
+        } else {
+          console.log("关闭侧边栏失败:", response?.message);
+        }
+      });
+    } else {
+      // 打开侧边栏
+      chrome.runtime.sendMessage({ type: "OPEN_SIDEPANEL" }, (response) => {
+        if (response?.success) {
+          console.log("侧边栏已打开");
+          setIsSidePanelOpen(true);
+        } else {
+          console.log("打开侧边栏失败:", response?.message);
+        }
+      });
+    }
+  };
+
+  // 打开侧边栏（用于菜单按钮）
   const handleOpenSidePanel = () => {
     chrome.runtime.sendMessage({ type: "OPEN_SIDEPANEL" }, (response) => {
       if (response?.success) {
         console.log("侧边栏已打开");
+        setIsSidePanelOpen(true);
       } else {
         console.log("打开侧边栏失败:", response?.message);
       }
@@ -57,10 +85,12 @@ const FloatingContainer: React.FC = () => {
 
   return (
     <FloatingLogo
+      onToggleSidePanel={handleToggleSidePanel}
       onOpenSidePanel={handleOpenSidePanel}
       onOpenUser={handleOpenUser}
       onOpenAbout={handleOpenAbout}
       onOpenOptions={handleOpenOptions}
+      isSidePanelOpen={isSidePanelOpen}
     />
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "@/assets/style/globals.css";
 import { StarIcon } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -6,6 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { X } from "lucide-react";
+import MoreIcon from "@/assets/imgaes/more.png";
+import ShareIcon from "@/assets/imgaes/shared.png";
+import DisplayHoverCard from "@/shared/components/settings/DisplayHoverCard";
 
 interface AppProps {
   symbol?: string;
@@ -16,6 +19,7 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
   const [position, setPosition] = useState({ x: -9999, y: -9999 });
   // const [isLoading, setIsLoading] = useState(false);
   const [projectsData, setProjectsData] = useState(null);
+  const [showHoverCard, setShowHoverCard] = useState(false);
 
   const socialLinks = [
     { label: "Website", active: false },
@@ -128,23 +132,35 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="w-5 h-5 p-0 rounded"
-                >
-                  <img
-                    className="w-3 h-3.5"
-                    alt="Union"
-                    src="https://c.animaapp.com/ow4Izvy8/img/union.svg"
-                  />
-                </Button>
+              <div className="relative flex items-center gap-3">
+                {/* More 按钮 */}
+                <div className="relative">
+                  <Button
+                    onClick={() => setShowHoverCard((v) => !v)}
+                    variant="ghost"
+                    size="icon"
+                    className="w-5 h-5 p-0"
+                  >
+                    <img
+                      className="w-[20px] h-[20px]"
+                      alt="More"
+                      src={MoreIcon}
+                    />
+                  </Button>
+
+                  {/* 下拉展示设置卡片 */}
+                  {showHoverCard && (
+                    <div className="absolute left-[-180px] top-[28px] z-[100000] w-[260px] h-[90px]">
+                      <DisplayHoverCard className="w-[260px] h-[84px] shadow-[0px_0px_8px_#00000029]" />
+                    </div>
+                  )}
+                </div>
+
                 <Button variant="ghost" size="icon" className="w-5 h-5 p-0">
                   <img
-                    className="w-5 h-5"
-                    alt="Group"
-                    src="https://c.animaapp.com/ow4Izvy8/img/group-48096858@2x.png"
+                    className="w-[20px] h-[20px]"
+                    alt="Share"
+                    src={ShareIcon}
                   />
                 </Button>
                 <Button

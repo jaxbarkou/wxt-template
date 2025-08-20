@@ -11,6 +11,7 @@ import { changeNickName } from "@/lib/api/user";
 import ChangeEmailSection from "./ChangeEmail";
 import Google2FaBind from "./Google2FaBind";
 import ChangePasswordSection from "./ChangePassword"; // 添加导入
+import DisplayHoverCard from "./DisplayHoverCard";
 
 const Account: React.FC = () => {
   const { userDetail } = useRootStore();
@@ -58,7 +59,9 @@ const Account: React.FC = () => {
     {
       icon: "https://c.animaapp.com/tsXhjynw/img/vector-2.svg",
       label: "Password",
-      value: userDetail?.password ? "Click to change password" : "Click to set password",
+      value: userDetail?.password
+        ? "Click to change password"
+        : "Click to set password",
       hasAction: true, // 改为true，表示可以操作
       showPlus: !userDetail?.password ? true : false,
       showEidt: userDetail?.password ? true : false,
@@ -66,7 +69,9 @@ const Account: React.FC = () => {
     {
       icon: "https://c.animaapp.com/tsXhjynw/img/vector-6.svg",
       label: "2FA",
-      value: userDetail?.authenticatorStatus ? "Manage your 2FA settings" : "Set up 2FA for security",
+      value: userDetail?.authenticatorStatus
+        ? "Manage your 2FA settings"
+        : "Set up 2FA for security",
       hasAction: true,
       showEidt: userDetail?.authenticatorStatus ? true : false,
       showPlus: !userDetail?.authenticatorStatus ? true : false,
@@ -112,7 +117,7 @@ const Account: React.FC = () => {
   const handleEmailModalClose = () => {
     setShowEmailModal(false);
   };
-  
+
   const handleGoogle2FaBindModalClose = () => {
     setShowGoogle2FaBindModal(false);
   };
@@ -295,10 +300,16 @@ const Account: React.FC = () => {
         </CardContent>
       </Card>
 
+      <DisplayHoverCard />
+
       {/* 各种弹窗 */}
       {showEmailModal && <ChangeEmailSection onClose={handleEmailModalClose} />}
-      {showGoogle2FaBindModal && <Google2FaBind onClose={handleGoogle2FaBindModalClose} />}
-      {showPasswordModal && <ChangePasswordSection onClose={handlePasswordModalClose} />}
+      {showGoogle2FaBindModal && (
+        <Google2FaBind onClose={handleGoogle2FaBindModalClose} />
+      )}
+      {showPasswordModal && (
+        <ChangePasswordSection onClose={handlePasswordModalClose} />
+      )}
     </div>
   );
 };

@@ -8,11 +8,23 @@ export default defineBackground(() => {
     // 添加打开侧边栏的消息处理
     if (message.type === "OPEN_SIDEPANEL") {
       if (sender.tab?.id) {
+        chrome.sidePanel.setOptions({
+          enabled: true,
+        });
         chrome.sidePanel.open({ tabId: sender.tab.id });
         sendResponse({ success: true, message: "侧边栏已打开" });
       } else {
         sendResponse({ success: false, message: "无法获取标签页ID" });
       }
+      return true;
+    }
+
+    // 添加关闭侧边栏的消息处理
+    if (message.type === "CLOSE_SIDEPANEL") {
+      chrome.sidePanel.setOptions({
+        enabled: false,
+      });
+      sendResponse({ success: true, message: "侧边栏状态已更新" });
       return true;
     }
 

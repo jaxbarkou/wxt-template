@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
 
 interface FloatingLogoProps {
+  onToggleSidePanel: () => void;
   onOpenSidePanel: () => void;
   onOpenUser: () => void;
   onOpenAbout: () => void;
   onOpenOptions: () => void;
+  isSidePanelOpen: boolean;
 }
 
 const FloatingLogo: React.FC<FloatingLogoProps> = ({
+  onToggleSidePanel,
   onOpenSidePanel,
   onOpenUser,
   onOpenAbout,
   onOpenOptions,
+  isSidePanelOpen,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -82,7 +86,8 @@ const FloatingLogo: React.FC<FloatingLogoProps> = ({
     width: '24px',
     height: '24px',
     borderRadius: '50%',
-    background: '#F67C00'
+    background: isSidePanelOpen ? '#10b981' : '#F67C00', // 侧边栏打开时显示绿色
+    transition: 'background-color 0.3s ease'
   };
 
   return (
@@ -110,7 +115,7 @@ const FloatingLogo: React.FC<FloatingLogoProps> = ({
               e.currentTarget.style.backgroundColor = '#3b82f6';
               e.currentTarget.style.transform = 'scale(1)';
             }}
-            title="打开侧边栏"
+            title={isSidePanelOpen ? "侧边栏已打开" : "打开侧边栏"}
           >
             <svg style={iconStyle} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -189,6 +194,7 @@ const FloatingLogo: React.FC<FloatingLogoProps> = ({
 
       {/* 主Logo按钮 */}
       <button
+        onClick={onToggleSidePanel}
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = 'scale(1.1)';
           e.currentTarget.style.background = '#fff';
@@ -198,9 +204,11 @@ const FloatingLogo: React.FC<FloatingLogoProps> = ({
           e.currentTarget.style.background = '#fff';
         }}
         style={mainButtonStyle}
-        title="WXT Extension"
+        title={isSidePanelOpen ? "关闭侧边栏" : "打开侧边栏"}
       >
-        <p style={mainIconStyle} className='text-[12px] text-[#2C2C2C]'>WXT</p>
+        <p style={mainIconStyle} className='text-[12px] text-white font-medium'>
+          {isSidePanelOpen ? '✓' : 'WXT'}
+        </p>
       </button>
     </div>
   );

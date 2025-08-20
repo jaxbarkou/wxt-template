@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useCallback, useMemo, use } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,11 +9,100 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeftIcon } from "lucide-react";
+import { AssetsNetworkItem, CreditsPlanItem, NetworkItem } from "@/modal/user";
+import { getAssetsNetworkList, getCreditsPlans } from "@/lib/api/user";
+import { QRCodeSVG } from "qrcode.react";
+import { CopyIcon, CheckIcon } from "lucide-react";
+import useCopyClipboard from "@/hooks/useCopyClipboard";
 
 const TopUpDetail = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [isCopied, setCopied] = useCopyClipboard();
+  const id = searchParams.get("id");
+  const currency = searchParams.get("currency");
+  const [selectedCurrency, setSelectedCurrency] = useState<
+    string | undefined
+  >();
+  const [currencyList, setCurrencyList] = useState<AssetsNetworkItem[]>([]);
+  const [curNetwork, setCurNetwork] = useState<string | null>(null);
+  const [networkList, setNetworkList] = useState<NetworkItem[]>([]);
+  const [curPlan, setCurPlan] = useState<CreditsPlanItem | null>(null);
+  const fetchAssetsNetworkList = useCallback(async () => {
+    try {
+      const response = await getAssetsNetworkList();
+      if (response.code === 1 && response.result) {
+        setCurrencyList(response.result);
+        let networks: NetworkItem[] = [];
+        response.result.forEach((item) => {
+          if (item.symbol === currency) {
+            networks = item.networks;
+          }
+        });
+        setNetworkList(networks);
+        setCurNetwork(networks[0].chain);
+      }
+    } catch (error) {
+      console.error("Failed", error);
+    }
+  }, [currency]);
+
+  const fetchPlans = useCallback(async () => {
+    try {
+      const response = await getCreditsPlans(selectedCurrency || "");
+      if (
+        response.result &&
+        response.result?.plans &&
+        response.result?.plans.length > 0
+      ) {
+        response.result?.plans.forEach((plan) => {
+          if (plan.id === id) {
+            setCurPlan(plan);
+          }
+        });
+      }
+    } catch (error) {
+      console.error("Failed", error);
+    }
+  }, [selectedCurrency, id]);
+
+  useEffect(() => {
+    if (currency) {
+      setSelectedCurrency(currency);
+    }
+  }, [currency]);
+
+  useEffect(() => {
+    if (selectedCurrency) {
+      const selected = currencyList.find(
+        (item) => item.symbol === selectedCurrency
+      );
+      if (selected && selected.networks) {
+        setNetworkList(selected.networks);
+        setCurNetwork(selected.networks[0].chain);
+      }
+    }
+  }, [selectedCurrency, currencyList]);
+
+  const curNetworkItem = useMemo(() => {
+    return networkList.find((item) => item.chain === curNetwork);
+  }, [curNetwork, networkList]);
+
+  const curCurrencyItem = useMemo(() => {
+    return currencyList.find((item) => item.symbol === selectedCurrency);
+  }, [selectedCurrency, currencyList]);
+
+  useEffect(() => {
+    fetchAssetsNetworkList();
+  }, []);
+
+  useEffect(() => {
+    if (selectedCurrency) {
+      fetchPlans();
+    }
+  }, [selectedCurrency]);
   return (
     <div className="w-full max-w-sm min-h-screen mx-auto bg-white">
       <div className="bg-[#f6f6f8] w-full min-h-screen relative">
@@ -34,14 +123,41 @@ const TopUpDetail = () => {
                 Credits Top Up
               </h1>
             </div>
+            <Select
+              value={selectedCurrency}
+              onValueChange={setSelectedCurrency}
+              disabled
+            >
+              <SelectTrigger
+                data-size="custom"
+                className="w-auto px-3 py-1 h-auto rounded-[22px] border border-variable-collection bg-white h-6 mr-4"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-normal text-brand-black">
+                    <SelectValue />
+                  </span>
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                {currencyList.map((currency) => (
+                  <SelectItem key={currency.symbol} value={currency.symbol}>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-normal ">
+                        {currency.symbol}
+                      </span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="p-3">
             <div className="text-sm font-normal text-center text-brand-black">
-              Top up 2,000 Yomo's Credits
+              Top up {curPlan?.credits} Yomo's Credits
             </div>
 
             <div className="text-2xl font-bold text-center text-brand-black mt-2.5">
-              12.85 USDT
+              {curPlan?.list_price} {curPlan?.currency}
             </div>
 
             {/* Promote Code Input */}
@@ -53,7 +169,7 @@ const TopUpDetail = () => {
             {/* Network Selector */}
             <div className="flex items-center justify-center gap-2 mt-10">
               <span className="text-xs font-normal">Select Network</span>
-              <Select defaultValue="bsc">
+              <Select value={curNetwork || ""} onValueChange={setCurNetwork}>
                 <SelectTrigger
                   data-size="custom"
                   className="w-20 h-6 text-xs rounded-full border-variable-collection"
@@ -63,27 +179,49 @@ const TopUpDetail = () => {
                   </div>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="bsc">BSC</SelectItem>
+                  {networkList.map((net) => (
+                    <SelectItem key={net.chainId} value={net.chain}>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-normal ">
+                          {net.chain}
+                        </span>
+                      </div>
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
             <div className="flex justify-center mt-5">
               <div className="relative w-36 h-36">
-                <img
-                  className="w-full h-full"
-                  alt="QR Code"
-                  src="https://c.animaapp.com/ZCTEL7lb/img/rectangle-44@2x.png"
+                <QRCodeSVG
+                  value={curNetworkItem?.assetContract || ""}
+                  size={144}
+                  level="M"
                 />
                 <img
                   className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 w-7 h-7"
                   alt="Yomo Logo"
-                  src="https://c.animaapp.com/ZCTEL7lb/img/2b5c7d80-7bcd-4cfb-8bd9-d1760a752afc-1@2x.png"
+                  src={curCurrencyItem?.image || ""}
                 />
               </div>
             </div>
 
-            <div className="text-xs font-normal text-center break-all">
-              0xec7842178520bb71f30523bcce4c10adc7e1cec4
+            <div className="flex items-center justify-center mt-3 text-sm font-normal text-center break-all">
+              <span>{curNetworkItem?.assetContract}</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-6 h-6 p-0 hover:bg-gray-100"
+                onClick={() => {
+                  setCopied(curNetworkItem?.assetContract || "");
+                }}
+              >
+                {isCopied ? (
+                  <CheckIcon className="w-4 h-4 text-gray-400" />
+                ) : (
+                  <CopyIcon className="w-4 h-4 text-gray-400" />
+                )}
+              </Button>
             </div>
             {/* Notice Section */}
             <Card className="py-0 mt-5 bg-white rounded-lg">
@@ -92,20 +230,21 @@ const TopUpDetail = () => {
 
                 <div className="text-xs font-normal ">
                   <span className="text-brand-gray1">Send only </span>
-                  <span className="text-brand-primary">USDT</span>
+                  <span className="text-brand-primary">
+                    {curCurrencyItem?.symbol}
+                  </span>
                   <span className="text-brand-gray1"> to this address.</span>
-                  <br />
                   <span className="text-brand-gray1">
                     Ensure the network is{" "}
                   </span>
-                  <span className="text-brand-primary">BSC (BEP20)</span>
+                  <span className="text-brand-primary">
+                    {curNetworkItem?.chain}
+                  </span>
                   <span className="text-brand-gray1">.</span>
                 </div>
 
                 <div className="text-xs font-normal text-brand-gray1">
-                  Expected arrival & unlock
-                  <br />
-                  15 Network Confirmations
+                  Expected arrival & unlock 15 Network Confirmations
                 </div>
               </CardContent>
             </Card>

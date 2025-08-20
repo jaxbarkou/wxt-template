@@ -49,3 +49,83 @@ export type OperateLog = {
   remark: string;
   createdAt: string;
 };
+
+export interface CreditsInfo {
+  id: string;
+  uid: number;
+  balance: string; // 账户余额
+  created_at: string; // 创建时间
+  updated_at: string; // 更新时间
+  daily_credits: string;
+}
+
+export interface CreditsHistoryItem {
+  id: string;
+  uid: number;
+  balance_before: string;
+  balance_change: string;
+  biz_type: string;
+  biz_title: string;
+  created_at: string; // 创建时间
+}
+
+export interface CreditsPlanItem {
+  id: string;
+  currency: string;
+  credits: number; // 价格
+  is_popular: number;
+  list_price: string;
+  list_price_usdt: string;
+  discount_percentage: number; // 折扣百分比
+  created_at: string; // 创建时间
+  updated_at: string; // 更新时间
+  amount_due: string; // 价格
+  fx_rate_used: string; // 汇率
+}
+
+export interface CreditsPlanType {
+  plans: CreditsPlanItem[];
+  request_id: string;
+  ttl: number;
+  unpaid_order_id_list: string[];
+}
+
+export interface AssetsItem {
+  symbol: string;
+  assetContract: string;
+  decimals: string;
+  depositContract: string;
+  withdrawalFee: string;
+  minWithdrawal: string;
+  supportWithdraw: boolean;
+  image: string;
+}
+
+export interface NetworkItem {
+  chainId: number;
+  chain: string;
+  assetContract: string;
+  decimals: string;
+  withdrawalFee: string;
+  minWithdrawal: string;
+  supportWithdraw: boolean;
+  tag: string;
+  topUpBlock: string;
+  redeemBlock: string;
+}
+
+export interface NetworkAssetsItem {
+  chainId: number;
+  chain: string;
+  tag: string;
+  topUpBlock: string;
+  redeemBlock: string;
+  assets: AssetsItem[];
+}
+
+export interface AssetsNetworkItem {
+  symbol: string;
+  image: string;
+  supportWithdraw: string;
+  networks: NetworkItem[];
+}

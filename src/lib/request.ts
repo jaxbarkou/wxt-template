@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig } from "axios";
 import _ from "lodash";
-import { API_URL, API_URL2,API_URL3 } from "@/config";
+import { API_URL, API_URL2, API_URL3, API_URL4, API_URL5 } from "@/config";
 
 interface MyResponseType<T> {
   code: number;
@@ -30,8 +30,23 @@ export const base3Api = axios.create({
   timeout: 60000,
 });
 
+export const base4Api = axios.create({
+  baseURL: `${API_URL4}/api/v1/`,
+  timeout: 60000,
+});
+
+export const base5Api = axios.create({
+  baseURL: `${API_URL5}/v1/`,
+  timeout: 60000,
+});
+
 const request = async <T = any>(
-  instance: typeof baseApi | typeof base2Api = baseApi,
+  instance:
+    | typeof baseApi
+    | typeof base2Api
+    | typeof base3Api
+    | typeof base4Api
+    | typeof base5Api = baseApi,
   config: AxiosRequestConfig
 ): Promise<MyResponseType<T>> => {
   try {

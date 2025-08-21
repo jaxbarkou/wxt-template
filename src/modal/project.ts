@@ -176,6 +176,32 @@ export interface Tokenomics {
   support_chains_source?: string;
   referral_docs?: string[];
   distribution_overview?: string;
+  distribution_details?: {
+    community_launch?: {
+      percentage: number;
+      vesting: string;
+    };
+    ecosystem_growth?: {
+      percentage: number;
+      vesting: string;
+    };
+    dao_treasury?: {
+      percentage: number;
+      vesting: string;
+    };
+    investors?: {
+      percentage: number;
+      vesting: string;
+    };
+    public_sale?: {
+      percentage: number;
+      vesting: string;
+    };
+    team?: {
+      percentage: number;
+      vesting: string;
+    };
+  };
 }
 
 // 活动信息

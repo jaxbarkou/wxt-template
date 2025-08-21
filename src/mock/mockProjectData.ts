@@ -132,6 +132,33 @@ const mockProjectData: ProjectData = {
     referral_docs: ["https://docs.defix.io/tokenomics"],
     distribution_overview:
       "40% community, 20% team, 20% investors, 20% ecosystem fund",
+    // 添加详细的代币分布信息
+    distribution_details: {
+      community_launch: {
+        percentage: 25,
+        vesting: "40% at TGE + 36 months vesting"
+      },
+      ecosystem_growth: {
+        percentage: 22,
+        vesting: "9.09% at TGE + 36 months vesting"
+      },
+      dao_treasury: {
+        percentage: 18.33,
+        vesting: "16.36% at TGE + 36 months vesting"
+      },
+      investors: {
+        percentage: 16.67,
+        vesting: "20% after 6 months cliff + 80% over 24 months"
+      },
+      public_sale: {
+        percentage: 3,
+        vesting: "33.33% at TGE + 66.67% over 6 months"
+      },
+      team: {
+        percentage: 15,
+        vesting: "2% after 6 months cliff + 98% over 30 months"
+      }
+    }
   },
   campaign: {
     campaign_title: "DeFiX Airdrop Campaign",

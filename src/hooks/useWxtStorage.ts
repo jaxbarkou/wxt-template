@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { storage } from 'wxt/utils/storage';
+import { storage } from 'wxt/utils/storage'; 
 
 // 定义设置项
 export const displayHoverCardItem = storage.defineItem('local:displayHoverCard', {

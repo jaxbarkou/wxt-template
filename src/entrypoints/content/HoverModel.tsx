@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import "@/assets/style/globals.css";
 import { StarIcon } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,6 +9,9 @@ import { X } from "lucide-react";
 import MoreIcon from "@/assets/imgaes/more.png";
 import ShareIcon from "@/assets/imgaes/shared.png";
 import DisplayHoverCard from "@/shared/components/settings/DisplayHoverCard";
+import mockProjectData from "@/mock/mockProjectData";
+import { ProjectData } from "@/modal/project";
+import PanelTvlChat from "@/components/custom/PanelTvlChat";
 
 interface AppProps {
   symbol?: string;
@@ -18,42 +21,57 @@ interface AppProps {
 const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
   const [position, setPosition] = useState({ x: -9999, y: -9999 });
   // const [isLoading, setIsLoading] = useState(false);
-  const [projectsData, setProjectsData] = useState(null);
+  const [projectData, setProjectData] = useState<ProjectData | null>(
+    mockProjectData
+  );
   const [showHoverCard, setShowHoverCard] = useState(false);
 
-  const socialLinks = [
-    { label: "Website", active: false },
-    { label: "Twitter", active: false },
-    { label: "Defillama", active: false },
-    { label: "Telegram", active: false },
-    { label: "Discord", active: false },
-  ];
+  const socialLinks = useMemo(() => {
+    return [
+      { label: "Website", url: projectData?.social_media_links?.website || "" },
+      { label: "Twitter", url: projectData?.social_media_links?.twitter || "" },
+      {
+        label: "Defillama",
+        url: projectData?.social_media_links?.defliama || "",
+      },
+      {
+        label: "Telegram",
+        url: projectData?.social_media_links?.telegram || "",
+      },
+      { label: "Discord", url: projectData?.social_media_links?.discord || "" },
+    ];
+  }, [projectData]);
 
-  const tradingMetrics = [
-    {
-      label: "Trading Volume(24h)",
-      value: "$890.25K",
-      change: "-32.46%",
-      changeColor: "text-[#f60000]",
-    },
-    { label: "Circulating Market Cap", value: "$43.56M", rank: "#147" },
-    { label: "Fully Diluted Valuation", value: "$238.46M" },
-  ];
+  const questData = useMemo(() => {
+    if (!projectData?.campaign) return [];
+    let cam = projectData.campaign;
+    return [
+      {
+        label: "奖励总价值",
+        value: `${cam?.community_rewards}  ${cam?.campaign_title}`,
+      },
+      { label: "参与人数", value: `${cam?.participants}` },
+      { label: "社区攻略", value: "--" },
+    ];
+  }, [projectData]);
 
-  const questData = [
-    { label: "奖励总价值", value: "100K EIGEN ($15K)" },
-    { label: "参与人数", value: "8,329" },
-    { label: "社区攻略", value: "3篇，点赞最高 1.2K" },
-  ];
-
-  const communityData = [
-    { label: "XIcon(Twitter)", value: "220.09K (0.12%/7d)" },
-    { label: "推特提及量", value: "8,329 (+1.25%/7d)" },
-    { label: "情感", value: "😀 68%  😡 12%  😐 20%" },
-  ];
+  const communityData = useMemo(() => {
+    if (projectData?.social_media_stats) {
+      const mtData = projectData?.social_media_stats?.twitter;
+      const followers = mtData?.followers;
+      const tinc = mtData?.followers_7d_increment;
+      const men = mtData?.mentions;
+      const minc = mtData?.mentions_7d_increment;
+      return [
+        { label: "XIcon(Twitter)", value: `${followers} (${tinc}/7d)` },
+        { label: "推特提及量", value: `${men} (${minc}/7d)` },
+        // { label: "情感", value: "😀 68%  😡 12%  😐 20%" },
+      ];
+    }
+    return [];
+  }, [projectData]);
 
   const chartDates = ["07.01", "07.04", "07.07", "07.10", "07.14"];
-  const chartValues = ["100", "50", "0"];
 
   const fetchBaseData = useCallback(async () => {
     if (!symbol) return;
@@ -63,9 +81,9 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
         { type: "FETCH_PROJECTS_DATA", url },
         (res) => {
           if (res.success && res.data?.code === 200) {
-            setProjectsData(res.data?.data || null);
+            setProjectData(res.data?.data || null);
           } else {
-            setProjectsData(null);
+            setProjectData(null);
           }
         }
       );
@@ -84,7 +102,7 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
   }, [symbol]);
 
   useEffect(() => {
-    fetchBaseData();
+    // fetchBaseData();
   }, [symbol]);
 
   // 鼠标事件处理
@@ -116,19 +134,20 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
             <header className="flex items-center justify-between p-3">
               <div className="flex items-center gap-3">
                 <Avatar className="w-10 h-10 bg-brand-primary">
+                  <AvatarImage src={projectData?.project_info?.logo} />
                   <AvatarFallback className="text-white bg-brand-primary">
-                    E
+                    {projectData?.project_info?.name?.charAt(0) || "Y"}
                   </AvatarFallback>
                 </Avatar>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h1 className="[font-family:'Arboria-Medium-☞',Helvetica] font-normal text-black text-sm">
-                      EigenLayer
+                    <h1 className="text-sm font-normal text-black">
+                      {projectData?.project_info?.name}
                     </h1>
                     <StarIcon className="w-[15px] h-[15px]" />
                   </div>
-                  <p className="[font-family:'Arboria-Book-☞',Helvetica] font-normal text-gray-600 text-xs">
-                    Verifiable Cloud Service Platform
+                  <p className="text-xs font-normal text-gray-600 ">
+                    {projectData?.project_info?.short_intro}
                   </p>
                 </div>
               </div>
@@ -180,136 +199,54 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
                 <Badge
                   key={index}
                   variant="secondary"
-                  className="w-[70px] h-6 bg-brand-gray1 rounded-[22px] justify-center text-xs [font-family:'Arboria-Book-☞',Helvetica] font-normal text-gray-700 cursor-pointer hover:opacity-80"
+                  className="w-[70px] h-6 bg-[#E9E9E9] rounded-[22px] justify-center text-xs  font-normal text-brand-black cursor-pointer hover:opacity-80"
                 >
-                  {link.label}
+                  <a href={link.url} target="_blank" rel="noopener noreferrer">
+                    {link.label}
+                  </a>
                 </Badge>
               ))}
             </nav>
 
-            {/* Main Content Area - Flex Layout */}
-            <div className="flex flex-col flex-1 px-3">
-              {/* Chart and Trading Metrics Row */}
-              <div className="flex gap-4 mb-4">
-                {/* Chart Section */}
-                <div className="flex-1">
-                  <div className="relative">
-                    {/* Token Price Section */}
-                    <section className="px-3.5 mb-6">
-                      <div className="[font-family:'Arboria-Book-☞',Helvetica] font-normal text-gray-600 text-xs mb-2">
-                        Token Price ($EIGEN)
-                      </div>
-                      <div className="[font-family:'Arboria-Medium-Regular',Helvetica] font-normal text-xl">
-                        <span className="text-[#1aba14]">$1.3704 </span>
-                        <span className="text-[#2c2c2c] text-sm">(+3.51%)</span>
-                      </div>
-                    </section>
-
-                    {/* Chart area */}
-                    <div className="ml-[34px] relative">
-                      <img
-                        className="w-[223px] h-[49px]"
-                        alt="Rectangle"
-                        src="https://c.animaapp.com/ow4Izvy8/img/rectangle-34624904.svg"
-                      />
-                      <img
-                        className="absolute w-[223px] h-[45px] top-1 left-0"
-                        alt="Vector"
-                        src="https://c.animaapp.com/ow4Izvy8/img/vector-3.svg"
-                      />
-                      <img
-                        className="absolute w-[223px] h-[42px] top-3 left-0"
-                        alt="Vector"
-                        src="https://c.animaapp.com/ow4Izvy8/img/vector-2.svg"
-                      />
-                    </div>
-
-                    {/* X-axis labels */}
-                    <div className="flex justify-between ml-[34px] w-[223px] mt-1">
-                      {chartDates.map((date, index) => (
-                        <div
-                          key={index}
-                          className="[font-family:'Arboria-Book-☞',Helvetica] text-gray-500 text-[10px] whitespace-nowrap font-normal"
-                        >
-                          {date}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Trading Metrics Card */}
-                <Card className="w-[257px] bg-[#f6f6f8] rounded-lg border-0 py-0">
-                  <CardContent className="p-3 space-y-3">
-                    {tradingMetrics.map((metric, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between"
-                      >
-                        <div className="[font-family:'Arboria-Book-☞',Helvetica] font-normal text-gray-600 text-xs">
-                          {metric.label}
-                        </div>
-                        <div className="[font-family:'Arboria-Medium-Regular',Helvetica] font-normal text-xs text-right">
-                          <span className="text-[#2c2c2c]">{metric.value}</span>
-                          {metric.change && (
-                            <span className={metric.changeColor}>
-                              {" "}
-                              {metric.change}
-                            </span>
-                          )}
-                          {metric.rank && (
-                            <span className="text-[#9e9e9e]">
-                              {" "}
-                              {metric.rank}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                    <div className="flex items-center justify-between">
-                      <div className="[font-family:'Arboria-Book-☞',Helvetica] font-normal text-gray-600 text-xs">
-                        Support Exchanges
-                      </div>
-                      <div className="flex -space-x-2">
-                        <div className="w-5 h-5 bg-[#d9d9d9] rounded-[10px] border border-solid border-variable-collection" />
-                        <div className="w-5 h-5 bg-[#d9d9d9] rounded-[10px] border border-solid border-[#7c90f6]" />
-                        <div className="w-5 h-5 bg-[#d9d9d9] rounded-[10px] border border-solid border-variable-collection" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Bottom Cards Row */}
-              <div className="flex gap-4">
-                {/* Quest Campaigns Card */}
-                <Card className="flex-1 bg-[#f6f6f8] rounded-lg border-0 py-0">
+            <div className="grid items-stretch grid-cols-2 gap-4 px-3">
+              {/* 融资信息 FundraisingInfo */}
+              {projectData?.fundraising_info && (
+                <Card className="bg-[#f6f6f8] rounded-2 border-0 py-0 flex ">
                   <CardContent className="p-3">
-                    <h3 className="[font-family:'Arboria-Medium-☞',Helvetica] font-normal text-black text-sm mb-4">
-                      Quest Campaigns
+                    <h3 className="mb-1 text-sm font-normal">Total Raised</h3>
+                    <h2 className="text-[20px] font-bold">
+                      {projectData?.fundraising_info?.total_raised}
+                    </h2>
+                    <h3 className="mt-5 mb-2 text-sm font-normal ">
+                      Investors
                     </h3>
-                    <div className="space-y-3">
-                      {questData.map((item, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center justify-between"
-                        >
-                          <div className="[font-family:'Arboria-Book-☞',Helvetica] text-gray-600 text-xs font-normal">
-                            {item.label}
-                          </div>
-                          <div className="[font-family:'Arboria-Medium-☞',Helvetica] font-normal text-black text-xs text-right">
-                            {item.value}
-                          </div>
-                        </div>
-                      ))}
+                    <div className="flex items-center">
+                      {projectData?.fundraising_info?.investors &&
+                        projectData?.fundraising_info?.investors.map(
+                          (investor, index) => (
+                            <Avatar
+                              key={investor.name}
+                              className="w-5 h-5 bg-[#D9D9D9]"
+                            >
+                              <AvatarImage
+                                src={investor?.logo || ""}
+                                alt={investor.name}
+                              />
+                              <AvatarFallback className="text-white bg-[#D9D9D9]">
+                                {investor?.name?.charAt(0) || "Y"}
+                              </AvatarFallback>
+                            </Avatar>
+                          )
+                        )}
                     </div>
                   </CardContent>
                 </Card>
-
-                {/* Community Heat Card */}
-                <Card className="flex-1 bg-[#f6f6f8] rounded-lg border-0 py-0">
+              )}
+              {/* 社交媒体统计 SocialMedia */}
+              {projectData?.social_media_stats && (
+                <Card className=" bg-[#f6f6f8] rounded-lg border-0 py-0 flex ">
                   <CardContent className="p-3">
-                    <h3 className="[font-family:'Arboria-Medium-☞',Helvetica] text-black text-sm font-normal mb-4">
+                    <h3 className="mb-4 text-sm font-normal text-black ">
                       社区热度
                     </h3>
                     <div className="space-y-3">
@@ -318,10 +255,10 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
                           key={index}
                           className="flex items-center justify-between"
                         >
-                          <div className="[font-family:'Arboria-Book-☞',Helvetica] text-gray-600 text-xs font-normal">
+                          <div className="text-xs font-normal text-gray-600 ">
                             {item.label}
                           </div>
-                          <div className="[font-family:'Arboria-Medium-☞',Helvetica] font-normal text-black text-xs text-right">
+                          <div className="text-xs font-normal text-right text-black ">
                             {item.value}
                           </div>
                         </div>
@@ -329,9 +266,69 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
                     </div>
                   </CardContent>
                 </Card>
-              </div>
+              )}
+              {/* 链上数据 OnChainData */}
+              {projectData?.on_chain_data && (
+                <Card className="flex py-0 bg-transparent border-0 ">
+                  <CardContent className="p-3">
+                    <h3 className="mb-1 text-sm font-normal">
+                      Total Value Locked
+                    </h3>
+                    <h2 className="text-[20px] font-bold align-bottom">
+                      {projectData?.on_chain_data?.tvl}{" "}
+                      <span className="font-normal font-sm">
+                        (+{projectData?.on_chain_data?.tvl_7d_increment}%/7d)
+                      </span>
+                    </h2>
+                    <div className="flex items-center justify-between w-full">
+                      <PanelTvlChat />
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+              {/* 市场数据 MarketData */}
+              {projectData?.market_data && (
+                <Card className="flex py-0 bg-transparent border-0 rounded-2 ">
+                  <CardContent className="p-3">
+                    <h3 className="mb-1 text-sm font-normal">
+                      Token Price ({projectData?.tokenomics?.token_symbol})
+                    </h3>
+                    <h2 className="text-[20px] font-bold text-brand-green">
+                      {projectData?.market_data?.token_price}
+                      <span className="text-sm font-normal text-brand-black">
+                        {" "}
+                        (+{`--`} %)
+                      </span>
+                    </h2>
+                  </CardContent>
+                </Card>
+              )}
+              {/* Quest Campaigns Card */}
+              {projectData?.campaign && (
+                <Card className="bg-[#f6f6f8] rounded-2 border-0 py-0 flex ">
+                  <CardContent className="p-3">
+                    <h3 className="mb-4 text-sm font-normal text-black">
+                      Quest Campaigns
+                    </h3>
+                    <div className="space-y-3">
+                      {questData.map((item, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between"
+                        >
+                          <div className="text-xs font-normal text-gray-600 ">
+                            {item.label}
+                          </div>
+                          <div className="text-xs font-normal text-right text-black ">
+                            {item.value}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </div>
-
             {/* Footer */}
             <footer className="flex items-center justify-between p-3 mt-auto">
               <div className="flex items-center gap-3">
@@ -339,21 +336,19 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
                   <AvatarFallback className="bg-[#d9d9d9]"></AvatarFallback>
                 </Avatar>
                 <div className="flex items-center gap-2">
-                  <div className="[font-family:'Lemon',Helvetica] font-normal text-black text-xl">
-                    Yomo
-                  </div>
+                  <div className="text-xl font-normal text-black ">Yomo</div>
                   <img
                     className="w-px h-4"
                     alt="Line"
                     src="https://c.animaapp.com/ow4Izvy8/img/line-16.svg"
                   />
-                  <div className="[font-family:'Arboria-Medium-☞',Helvetica] font-normal text-gray-600 text-[13px]">
+                  <div className=" font-normal text-gray-600 text-[13px]">
                     your web3 navigator
                   </div>
                 </div>
               </div>
               <Button className="h-auto bg-brand-primary rounded-[22px] px-3 py-1.5 hover:opacity-90">
-                <span className="[font-family:'Arboria-Medium-☞',Helvetica] font-normal text-white text-[13px] mr-2">
+                <span className=" font-normal text-white text-[13px] mr-2">
                   View more
                 </span>
                 <img

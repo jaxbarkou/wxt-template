@@ -165,7 +165,7 @@ const mockProjectData: ProjectData = {
     participants: 50000,
     platforms: ["Galxe", "QuestN"],
     community_rewards:
-      "5% of total supply distributed to campaign participants",
+      "100",
   },
 };
 

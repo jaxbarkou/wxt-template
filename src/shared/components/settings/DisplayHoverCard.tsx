@@ -1,29 +1,36 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { useRootStore } from "@/store";
+import { useWxtStorage } from "@/hooks/useWxtStorage";
 
 interface DisplayHoverCardProps {
   title?: string;
   description?: string;
-  settingKey?: string;
   className?: string;
 }
 
 const DisplayHoverCard: React.FC<DisplayHoverCardProps> = ({
   title = "Display hover card",
   description = "You can also enable or disable these in Web widgets.",
-  settingKey = "displayHoverCard",
   className = ""
 }) => {
-  const { settings, updateSetting } = useRootStore();
-
-  const isEnabled = settings[settingKey] || false;
+  const { isEnabled, setValue, loading } = useWxtStorage();
 
   const handleToggle = (checked: boolean) => {
-    console.log("handleToggle", checked);
-    updateSetting(settingKey, checked);
+    setValue(checked);
   };
+
+  if (loading) {
+    return (
+      <Card className={`bg-white border-0 py-0 ${className}`}>
+        <CardContent className="p-0">
+          <div className="flex items-center justify-center p-[12px] h-[60px]">
+            <div className="text-sm text-gray-500">Loading...</div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className={`bg-white border-0 py-0 ${className}`}>

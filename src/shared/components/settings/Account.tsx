@@ -300,7 +300,7 @@ const Account: React.FC = () => {
         </CardContent>
       </Card>
 
-      <DisplayHoverCard />
+      <DisplayHoverCard className="mt-3" />
 
       {/* 各种弹窗 */}
       {showEmailModal && <ChangeEmailSection onClose={handleEmailModalClose} />}

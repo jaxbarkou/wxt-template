@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo, use } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,8 +11,19 @@ import {
 } from "@/components/ui/select";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeftIcon } from "lucide-react";
-import { AssetsNetworkItem, CreditsPlanItem, NetworkItem } from "@/modal/user";
-import { getAssetsNetworkList, getCreditsPlans } from "@/lib/api/user";
+import {
+  AssetsNetworkItem,
+  CreateOrderParams,
+  CreditsPlanItem,
+  DepositAddressType,
+  NetworkItem,
+} from "@/modal/user";
+import {
+  createCreditsOrder,
+  getAssetsNetworkList,
+  getCreditsPlans,
+  getDepositAddress,
+} from "@/lib/api/user";
 import { QRCodeSVG } from "qrcode.react";
 import { CopyIcon, CheckIcon } from "lucide-react";
 import useCopyClipboard from "@/hooks/useCopyClipboard";
@@ -30,6 +41,10 @@ const TopUpDetail = () => {
   const [curNetwork, setCurNetwork] = useState<string | null>(null);
   const [networkList, setNetworkList] = useState<NetworkItem[]>([]);
   const [curPlan, setCurPlan] = useState<CreditsPlanItem | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [request_id, setRequestId] = useState("");
+  const [depositAddressData, setDepositAddressData] =
+    useState<DepositAddressType | null>(null);
   const fetchAssetsNetworkList = useCallback(async () => {
     try {
       const response = await getAssetsNetworkList();
@@ -63,10 +78,45 @@ const TopUpDetail = () => {
           }
         });
       }
+      if (response.result?.request_id) {
+        setRequestId(response.result?.request_id);
+      }
     } catch (error) {
       console.error("Failed", error);
     }
   }, [selectedCurrency, id]);
+
+  const curNetworkItem = useMemo(() => {
+    return networkList.find((item) => item.chain === curNetwork);
+  }, [curNetwork, networkList]);
+
+  const toCreateOrder = useCallback(async () => {
+    if (
+      curNetworkItem &&
+      !isLoading &&
+      curPlan &&
+      selectedCurrency &&
+      request_id
+    ) {
+      // Create order logic here
+      try {
+        setIsLoading(true);
+        let params: CreateOrderParams = {
+          plan_id: curPlan?.id || "",
+          chain_id: curNetworkItem.chainId,
+          currency: selectedCurrency || "",
+          token_address: curNetworkItem?.assetContract,
+          plan_request_id: request_id,
+        };
+        const response = await createCreditsOrder(params);
+        console.log("Order created", response);
+      } catch (error) {
+        console.error("Create order failed", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  }, [curNetworkItem, isLoading, curPlan, selectedCurrency]);
 
   useEffect(() => {
     if (currency) {
@@ -86,13 +136,22 @@ const TopUpDetail = () => {
     }
   }, [selectedCurrency, currencyList]);
 
-  const curNetworkItem = useMemo(() => {
-    return networkList.find((item) => item.chain === curNetwork);
-  }, [curNetwork, networkList]);
-
   const curCurrencyItem = useMemo(() => {
     return currencyList.find((item) => item.symbol === selectedCurrency);
   }, [selectedCurrency, currencyList]);
+
+  const fetchDepositAddress = useCallback(async () => {
+    try {
+      if (curNetworkItem?.chain) {
+        const response = await getDepositAddress(curNetworkItem.chain);
+        if (response.result) {
+          setDepositAddressData(response.result);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch deposit address", error);
+    }
+  }, [curNetworkItem]);
 
   useEffect(() => {
     fetchAssetsNetworkList();
@@ -103,6 +162,19 @@ const TopUpDetail = () => {
       fetchPlans();
     }
   }, [selectedCurrency]);
+
+  useEffect(() => {
+    if (curNetworkItem && curPlan) {
+      toCreateOrder();
+    }
+  }, [curNetworkItem, curPlan]);
+
+  useEffect(() => {
+    if (curNetworkItem) {
+      fetchDepositAddress();
+    }
+  }, [curNetworkItem]);
+
   return (
     <div className="w-full max-w-sm min-h-screen mx-auto bg-white">
       <div className="bg-[#f6f6f8] w-full min-h-screen relative">
@@ -194,7 +266,7 @@ const TopUpDetail = () => {
             <div className="flex justify-center mt-5">
               <div className="relative w-36 h-36">
                 <QRCodeSVG
-                  value={curNetworkItem?.assetContract || ""}
+                  value={depositAddressData?.address || ""}
                   size={144}
                   level="M"
                 />
@@ -207,13 +279,13 @@ const TopUpDetail = () => {
             </div>
 
             <div className="flex items-center justify-center mt-3 text-sm font-normal text-center break-all">
-              <span>{curNetworkItem?.assetContract}</span>
+              <span>{depositAddressData?.address}</span>
               <Button
                 variant="ghost"
                 size="sm"
                 className="w-6 h-6 p-0 hover:bg-gray-100"
                 onClick={() => {
-                  setCopied(curNetworkItem?.assetContract || "");
+                  setCopied(depositAddressData?.address || "");
                 }}
               >
                 {isCopied ? (

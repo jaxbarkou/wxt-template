@@ -1,8 +1,10 @@
 import { HelpCircleIcon } from "lucide-react";
-import React from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { CreditsInfo } from "@/modal/user";
+import { getCreditsInfo } from "@/lib/api/user";
 
 const historyData = [
   {
@@ -50,6 +52,20 @@ const historyData = [
 ];
 
 const Credits = () => {
+  const [creditsDetail, setCreditsDetail] = useState<CreditsInfo | null>(null);
+  const fetchCredits = async () => {
+    try {
+      const response = await getCreditsInfo();
+      if (response.result && response.result?.account) {
+        setCreditsDetail(response.result?.account);
+      }
+    } catch (error) {
+      console.error("Failed", error);
+    }
+  };
+  useEffect(() => {
+    fetchCredits();
+  }, []);
   return (
     <div className="">
       <div className="mt-0">
@@ -65,7 +81,9 @@ const Credits = () => {
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm font-normal ">Balance</span>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-normal ">1,500</span>
+                <span className="text-sm font-normal ">
+                  {creditsDetail?.balance || "--"}
+                </span>
                 <HelpCircleIcon className="w-3.5 h-3.5 " />
               </div>
             </div>

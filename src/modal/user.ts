@@ -69,6 +69,30 @@ export interface CreditsHistoryItem {
   created_at: string; // 创建时间
 }
 
+export interface CreateOrderParams {
+  plan_id: string;
+  chain_id: number;
+  currency: string;
+  token_address: string;
+  plan_request_id: string;
+}
+
+export interface CreditsOrderItem {
+  id: string;
+  uid: number;
+  plan_id: string;
+  pay_currency: string;
+  list_price_usdt: string;
+  discount_percentage: string;
+  credits: number;
+  status: string; // 订单状态
+  expires_at: string;
+  actual_paid_at: string;
+  cancelled_at: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface CreditsPlanItem {
   id: string;
   currency: string;
@@ -128,4 +152,11 @@ export interface AssetsNetworkItem {
   image: string;
   supportWithdraw: string;
   networks: NetworkItem[];
+}
+
+export interface DepositAddressType {
+  uid: number;
+  chainId: number;
+  chain: string;
+  address: string;
 }

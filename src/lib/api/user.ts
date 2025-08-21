@@ -6,6 +6,7 @@ import {
   CreditsInfo,
   CreditsPlanItem,
   CreditsPlanType,
+  DepositAddressType,
   NetworkAssetsItem,
   OperateLog,
   UserInfo,
@@ -131,6 +132,14 @@ export const getCreditsPlans = (currency: string) => {
   });
 };
 
+export const createCreditsOrder = (data: any) => {
+  return request<boolean>(base4Api, {
+    url: `/credits/orders`,
+    method: "POST",
+    data,
+  });
+};
+
 export const getCreditsOrderDetail = (orderId: string) => {
   return request<{ plans: CreditsPlanItem[] }>(base4Api, {
     url: `/credits/orders/details/${orderId}`,
@@ -157,5 +166,13 @@ export const getAssetsNetworkList = () => {
   return request<AssetsNetworkItem[]>(base5Api, {
     url: `/network/network`,
     method: "GET",
+  });
+};
+
+export const getDepositAddress = (chain: string) => {
+  return request<DepositAddressType>(base5Api, {
+    url: `/wallet/deposit/address`,
+    method: "GET",
+    params: { chain },
   });
 };

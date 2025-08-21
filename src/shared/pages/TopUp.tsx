@@ -1,5 +1,5 @@
 import { ArrowLeftIcon } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -10,71 +10,64 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useNavigate } from "react-router-dom";
+import { AssetsNetworkItem, CreditsPlanItem } from "@/modal/user";
+import { getAssetsNetworkList, getCreditsPlans } from "@/lib/api/user";
+import popularBg from "@/assets/images/popular-bg.png";
+import popularImg from "@/assets/images/popular.png";
 
 const TopUp = () => {
-  const [selectedCurrency, setSelectedCurrency] = useState("USDT");
   const navigate = useNavigate();
-  const currencies = [
-    {
-      value: "USDT",
-      label: "USDT",
-      icon: "https://c.animaapp.com/nRJll2SP/img/---1.png",
-    },
-    {
-      value: "PELL",
-      label: "$PELL",
-      icon: "https://c.animaapp.com/nRJll2SP/img/---1.png",
-    },
-    {
-      value: "BTC",
-      label: "BTC",
-      icon: "https://c.animaapp.com/nRJll2SP/img/---1.png",
-    },
-    {
-      value: "ETH",
-      label: "ETH",
-      icon: "https://c.animaapp.com/nRJll2SP/img/---1.png",
-    },
-  ];
+  const [selectedCurrency, setSelectedCurrency] = useState("USDT");
+  const [currencyList, setCurrencyList] = useState<AssetsNetworkItem[]>([]);
+  const [creditOptions, setCreditOptions] = useState<CreditsPlanItem[]>([]);
+  const [unpaidOrders, setUnpaidOrders] = useState<string[]>([]);
+  const isUnpaid = useMemo(() => unpaidOrders.length > 0, [unpaidOrders]);
 
-  const creditOptions = [
-    {
-      credits: "+2000 Credits",
-      savings: "Save 20%",
-      price: "16 USDT",
-      isPopular: true,
+  const fetchAssetsNetworkList = async () => {
+    try {
+      const response = await getAssetsNetworkList();
+      if (response.code === 1 && response.result) {
+        setCurrencyList(response.result);
+        setSelectedCurrency(response.result[0].symbol); // Set default selected currency
+      }
+    } catch (error) {
+      console.error("Failed", error);
+    }
+  };
+
+  const fetchPlans = useCallback(async () => {
+    try {
+      const response = await getCreditsPlans(selectedCurrency);
+      if (response.result) {
+        setCreditOptions(response.result?.plans);
+        if (
+          response.result?.unpaid_order_id_list &&
+          response.result?.unpaid_order_id_list.length > 0
+        ) {
+          setUnpaidOrders(response.result?.unpaid_order_id_list);
+        }
+      }
+    } catch (error) {
+      console.error("Failed", error);
+    }
+  }, [selectedCurrency]);
+
+  const goDetail = useCallback(
+    (id: string) => {
+      navigate(`/top-up-detail?id=${id}&currency=${selectedCurrency}`);
     },
-    {
-      credits: "+5000 Credits",
-      savings: "Save 20%",
-      price: "37.5 USDT",
-      isPopular: false,
-    },
-    {
-      credits: "+1,500 Credits",
-      savings: "Save 20%",
-      price: "13.5 USDT",
-      isPopular: false,
-    },
-    {
-      credits: "+1,000 Credits",
-      savings: "Save 20%",
-      price: "9.5 USDT",
-      isPopular: false,
-    },
-    {
-      credits: "+500 Credits",
-      savings: "",
-      price: "5 USDT",
-      isPopular: false,
-    },
-    {
-      credits: "+100 Credits",
-      savings: "",
-      price: "1 USDT",
-      isPopular: false,
-    },
-  ];
+    [navigate, selectedCurrency]
+  );
+
+  useEffect(() => {
+    fetchAssetsNetworkList();
+  }, []);
+
+  useEffect(() => {
+    if (selectedCurrency) {
+      fetchPlans();
+    }
+  }, [selectedCurrency]);
 
   return (
     <div className="w-full min-h-screen mx-auto bg-white">
@@ -103,7 +96,10 @@ const TopUp = () => {
           </div>
 
           <Select value={selectedCurrency} onValueChange={setSelectedCurrency}>
-            <SelectTrigger className="w-auto px-3 py-1 h-auto rounded-[22px] border border-variable-collection bg-white">
+            <SelectTrigger
+              data-size="custom"
+              className="w-auto px-3 py-1 h-auto rounded-[22px] border border-variable-collection bg-white h-6"
+            >
               <div className="flex items-center gap-2">
                 <span className="text-xs font-normal text-brand-black">
                   <SelectValue />
@@ -111,11 +107,11 @@ const TopUp = () => {
               </div>
             </SelectTrigger>
             <SelectContent>
-              {currencies.map((currency) => (
-                <SelectItem key={currency.value} value={currency.value}>
+              {currencyList.map((currency) => (
+                <SelectItem key={currency.symbol} value={currency.symbol}>
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-normal ">
-                      {currency.label}
+                      {currency.symbol}
                     </span>
                   </div>
                 </SelectItem>
@@ -129,30 +125,41 @@ const TopUp = () => {
             {creditOptions.map((option, index) => (
               <Card
                 key={index}
-                className="relative py-0 overflow-hidden transition-shadow duration-200 bg-white border-0 rounded-lg shadow-sm cursor-pointer hover:shadow-lg"
+                className="relative py-0 overflow-visible transition-shadow duration-200 bg-white border-0 rounded-lg shadow-sm cursor-pointer hover:shadow-lg"
                 onClick={() => {
-                  navigate("/top-up-detail");
+                  goDetail(option.id);
                 }}
               >
                 <CardContent className="px-0 text-center min-h-[100px] flex flex-col">
                   <div className="flex flex-col items-center justify-center flex-1">
-                    {option.isPopular && (
-                      <div className="absolute flex items-center transform -translate-x-1/2 -top-2 left-1/2"></div>
+                    {option.is_popular === 1 && (
+                      <div
+                        style={{ backgroundImage: `url(${popularBg})` }}
+                        className="absolute left-0 top-[-10px] flex items-center  bg-no-repeat bg-cover bg-center w-[96px] h-[25px]"
+                      >
+                        <img
+                          className="w-[17px] h-auto mt-[-15px]"
+                          src={popularImg}
+                          alt=""
+                        />
+                        <span className="text-[10px] text-white leading-none mt-[-10px]">
+                          {" "}
+                          Popular Choice
+                        </span>
+                      </div>
                     )}
 
                     <div className="my-1 text-base font-bold text-brand-black">
                       {option.credits}
                     </div>
 
-                    {option.savings && (
-                      <div className="mb-3 text-sm font-normal text-brand-gray1">
-                        {option.savings}
-                      </div>
-                    )}
+                    <div className="mb-3 text-sm font-normal text-brand-gray1">
+                      Save {option.discount_percentage}%
+                    </div>
                   </div>
-                  <div className="flex items-center justify-center w-full py-1.5 bg-brand-primary/20">
+                  <div className="flex items-center justify-center w-full py-1.5 bg-brand-primary/20 rounded-b-lg ">
                     <div className="text-sm font-bold bottom-4 text-brand-black">
-                      {option.price}
+                      {option.list_price} {option.currency}
                     </div>
                   </div>
                 </CardContent>
@@ -160,9 +167,9 @@ const TopUp = () => {
             ))}
           </div>
         </div>
-        <div className="mt-8 text-xs font-normal text-center text-brand-gray1">
+        {/* <div className="mt-8 text-xs font-normal text-center text-brand-gray1">
           Price from CoinGecko · Refreshes in 04:59
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -1,6 +1,15 @@
-import request, { base3Api } from "@/lib/request";
+import request, { base3Api, base4Api, base5Api } from "@/lib/request";
 import { SendEmailCodeType } from "@/modal";
-import { OperateLog, UserInfo } from "@/modal/user";
+import {
+  AssetsNetworkItem,
+  CreditsHistoryItem,
+  CreditsInfo,
+  CreditsPlanItem,
+  CreditsPlanType,
+  NetworkAssetsItem,
+  OperateLog,
+  UserInfo,
+} from "@/modal/user";
 /**
  * 用户相关 API
  */
@@ -8,12 +17,12 @@ import { OperateLog, UserInfo } from "@/modal/user";
 // 获取用户详情
 export const getUserDetail = async () => {
   return request<UserInfo>(base3Api, {
-    url: '/user/userDetail',
-    method: 'GET'
+    url: "/user/userDetail",
+    method: "GET",
   });
 };
 
-// 
+//
 export const getTwitterUrl = () => {
   return request<string>(base3Api, {
     url: `/user/twitter/auth/url`,
@@ -95,6 +104,58 @@ export const sendEmailCode = (type: SendEmailCodeType) => {
 export const getOperateLog = () => {
   return request<OperateLog[]>(base3Api, {
     url: `/user/getOperateLog`,
+    method: "GET",
+  });
+};
+
+// top-up
+export const getCreditsInfo = () => {
+  return request<{ account: CreditsInfo }>(base4Api, {
+    url: `/credits/accounts/me`,
+    method: "GET",
+  });
+};
+
+export const getCreditsHistory = () => {
+  return request<{ histories: CreditsHistoryItem[] }>(base4Api, {
+    url: `/credits/accounts/history`,
+    method: "GET",
+  });
+};
+
+export const getCreditsPlans = (currency: string) => {
+  return request<CreditsPlanType>(base4Api, {
+    url: `/credits/plans`,
+    method: "GET",
+    params: { currency },
+  });
+};
+
+export const getCreditsOrderDetail = (orderId: string) => {
+  return request<{ plans: CreditsPlanItem[] }>(base4Api, {
+    url: `/credits/orders/details/${orderId}`,
+    method: "GET",
+  });
+};
+
+export const cancelCreditsOrder = (orderId: string) => {
+  return request<boolean>(base4Api, {
+    url: `/credits/orders/details/${orderId}`,
+    method: "DELETE",
+  });
+};
+
+// network assets conf
+export const getNetworkAssets = () => {
+  return request<NetworkAssetsItem[]>(base5Api, {
+    url: `/network/asset`,
+    method: "GET",
+  });
+};
+
+export const getAssetsNetworkList = () => {
+  return request<AssetsNetworkItem[]>(base5Api, {
+    url: `/network/network`,
     method: "GET",
   });
 };

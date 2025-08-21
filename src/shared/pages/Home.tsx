@@ -1,13 +1,62 @@
-import { useState } from "react";
+// Copyright (c) 2025 Bytedance Ltd. and/or its affiliates
+// SPDX-License-Identifier: MIT
 
-const Home: React.FC = () => {
-  return (
-    <>
-      <div className="min-h-screen p-4">
-        <h2>Home Page</h2>
-      </div>
-    </>
+"use client";
+
+import { useMemo } from "react";
+import {
+  Dialog,
+  DialogContent2,
+} from "@/components/base/dialog";
+import { useStore } from "@/core/store";
+import { AddChat } from "@/components/alia/icons/add-chat"
+import { History } from "@/components/alia/icons/history";
+import { cn } from "@/lib/utils";
+
+import { MessagesBlock } from "../components/home/messages-block";
+import { ResearchBlock } from "../components/home/research-block";
+import { closeResearch } from "@/core/store";
+import { ChatHistoryDialog } from "@/components/alia/chat-history-dialog";
+
+export default function Home() {
+  const openResearchId = useStore((state) => state.openResearchId);
+  const doubleColumnMode = useMemo(
+    () => openResearchId !== null,
+    [openResearchId],
   );
-};
-
-export default Home;
+  const [open, setOpen] = useState();
+  const t = useTranslations("settings.reportStyle");
+  console.log("doubleColumnMode", doubleColumnMode);
+  console.log("openResearchId", openResearchId);
+  return (
+    <div
+      className={cn(
+        "flex flex-col h-full w-full justify-center-safe p-4"
+      )}
+    >
+      <div className="flex fill-destructive w-full gap-4 cursor-pointer">
+        <AddChat/>
+        <ChatHistoryDialog/>
+      </div>
+      <MessagesBlock className={cn("calc((100vw-538px) transition-all duration-300 ease-out")} />
+      <Dialog
+        open={doubleColumnMode} 
+        onOpenChange={() => {
+          closeResearch();
+        }}
+      >
+        <DialogContent2 className="h-[calc(100vh-50px)]">
+          <ResearchBlock
+            className={cn(
+              "pb-4 transition-all duration-300 ease-out",
+              !doubleColumnMode && "scale-0",
+              doubleColumnMode && "",
+            )}
+            researchId={openResearchId}
+          />
+        </DialogContent2>
+      </Dialog>
+      {/* <ChatHistory open={open} onOpenChange={() => setOpen(false)} /> */}
+    </div>
+  );
+}   

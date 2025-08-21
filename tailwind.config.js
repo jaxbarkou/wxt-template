@@ -9,6 +9,11 @@ module.exports = {
         primary: "var(--primary)", // 或者 'hsl(var(--primary))' / 'oklch(var(--primary))'
         primaryForeground: "var(--primary-foreground)",
       },
+      fontFamily: {
+        sans: ['Arboria-Medium'], // 默认字体
+        // serif: ['Merriweather', 'ui-serif', 'Georgia'],
+        // mono: ['Fira Code', 'ui-monospace', 'SFMono-Regular'],
+      },
     },
   },
   plugins: [],

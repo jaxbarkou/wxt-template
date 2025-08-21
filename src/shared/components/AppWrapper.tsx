@@ -16,6 +16,7 @@ import {
   TopUp,
   TopUpDetail,
   Settings,
+  Search,
 } from "../pages";
 import { AppMode } from "../types";
 import { RainbowKitProvider } from "./RainbowKitProvider";
@@ -79,6 +80,7 @@ const AppWrapper: React.FC<AppWrapperProps> = ({ mode }) => {
               <Route path="/top-up" element={<TopUp />} />
               <Route path="/top-up-detail" element={<TopUpDetail />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/search" element={<Search />} />
               {/* 其他路由 */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

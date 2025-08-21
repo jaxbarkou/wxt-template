@@ -7,3 +7,4 @@ export { default as Login } from './Login';
 export { default as TopUp } from './TopUp';
 export { default as TopUpDetail } from './TopUpDetail';
 export { default as Settings } from './Settings';
+export { default as Search } from './Search';

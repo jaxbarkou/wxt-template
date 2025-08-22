@@ -1,6 +1,7 @@
 import { StateCreator } from "zustand";
 import { RootState } from "./index";
 import { BloomFilterData, LoginType } from "@/modal";
+import { CreditsInfo } from "@/modal/user";
 
 // 用户详情类型定义
 export interface UserDetail {
@@ -32,6 +33,7 @@ export interface UserSlice {
   bloomFilterData: BloomFilterData;
   token: string | undefined;
   userDetail: UserDetail | null;
+  creditsInfo: CreditsInfo | null;
   loginModalOpen: boolean;
   loginType: LoginType;
   settings: Record<string, boolean>;
@@ -40,6 +42,8 @@ export interface UserSlice {
   updateToken: (token: string) => void;
   setUserDetail: (userDetail: UserDetail) => void;
   clearUserDetail: () => void;
+  setCreditsInfo: (creditsInfo: CreditsInfo) => void;
+  clearCreditsInfo: () => void;
   setBloomFilterData: (data: BloomFilterData) => void;
   setHasHydrated: (val: boolean) => void;
   updateSetting: (key: string, value: boolean) => void;
@@ -63,6 +67,7 @@ export const createUserSlice: StateCreator<
     bloomFilterData: baseBloomFilterData,
     token: "",
     userDetail: null,
+    creditsInfo: null,
     loginModalOpen: false,
     loginType: LoginType.Email,
     settings: {},
@@ -80,6 +85,12 @@ export const createUserSlice: StateCreator<
     },
     clearUserDetail: () => {
       set({ userDetail: null });
+    },
+    setCreditsInfo: (creditsInfo: CreditsInfo) => {
+      set({ creditsInfo });
+    },
+    clearCreditsInfo: () => {
+      set({ creditsInfo: null });
     },
     setBloomFilterData: (data: BloomFilterData) => {
       set({ bloomFilterData: data });

@@ -3,7 +3,8 @@
   display: flex;
   height: 100vh;
   background: white;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
   gap: 0;
   transition: all 0.3s ease;
 }
@@ -59,7 +60,7 @@
 
 /* 右侧导航栏 */
 .right-sidebar {
-  background: #F6F6F8;
+  background: #f6f6f8;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -199,7 +200,6 @@
   transition: opacity 0.2s ease;
 }
 
-
 .bottom-left {
   display: flex;
   align-items: center;
@@ -209,19 +209,22 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  border-radius: 22px;
+  background: #fafafa;
+  padding: 4px 8px;
 }
 
 .points-icon {
   width: 12px;
   height: 12px;
-  background: #dc3545;
+  background: #f67c00;
   border-radius: 50%;
 }
 
 .points-text {
-  font-size: 14px;
-  font-weight: 600;
-  color: #212529;
+  font-size: 12px;
+  font-weight: 400;
+  color: #979797;
 }
 
 .bottom-center {
@@ -260,7 +263,7 @@
   justify-content: center;
   width: 30px;
   height: 30px;
-  background: #FF8C00;
+  background: #ff8c00;
   border-radius: 50%;
   cursor: pointer;
 }
@@ -275,62 +278,62 @@
   .layout-container {
     grid-template-columns: 1fr 50px;
   }
-  
+
   .top-section {
     padding: 15px;
     gap: 15px;
   }
-  
+
   .logo-circle {
     width: 25px;
     height: 25px;
   }
-  
+
   .page-title {
     font-size: 24px;
   }
-  
+
   .search-input {
     padding: 10px 40px 10px 14px;
     font-size: 13px;
   }
-  
+
   .search-button {
     width: 28px;
     height: 28px;
     font-size: 12px;
   }
-  
+
   .page-content {
     padding: 0;
   }
-  
+
   .right-sidebar {
     padding: 15px 0;
   }
-  
+
   .nav-item {
     padding: 6px;
   }
-  
+
   .nav-icon {
     font-size: 16px;
   }
-  
+
   .bottom-bar {
-    padding: 0 15px;
+    padding: 0 12px;
     height: 50px;
   }
-  
+
   .bottom-center {
     gap: 12px;
   }
-  
+
   .bottom-item {
     width: 28px;
     height: 28px;
   }
-  
+
   .bottom-icon {
     font-size: 14px;
   }
@@ -445,7 +448,7 @@
   top: 50px;
   right: 0;
   border-radius: 8px;
-  background: #F6F6F8;
+  background: #f6f6f8;
   box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.16);
   min-width: 300px;
   animation: slideIn 0.2s ease;
@@ -478,7 +481,6 @@
   border-radius: 8px;
   box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.16);
   padding: 12px 12px 0 12px;
-
 }
 
 /* 水平导航栏 */
@@ -513,7 +515,7 @@
 .credits-card {
   margin-bottom: 12px;
   border-radius: 8px;
-  background: #F6F6F8;
+  background: #f6f6f8;
   padding: 12px 12px 0 12px;
 }
 
@@ -546,7 +548,7 @@
 }
 
 .sign-in-btn {
-  background: #FF8C00;
+  background: #ff8c00;
   color: white;
   border: none;
   border-radius: 20px;
@@ -578,7 +580,7 @@
 }
 
 .arrow {
-  color: #2C2C2C;
+  color: #2c2c2c;
   font-weight: bold;
 }
 
@@ -590,13 +592,12 @@
   align-items: center;
   padding: 12px;
   border-radius: 8px;
-  background: #F6F6F8;
+  background: #f6f6f8;
   font-size: 14px;
   color: #212529;
   cursor: pointer;
   transition: background-color 0.2s;
 }
-
 
 .share-yomo-card {
   display: flex;
@@ -604,7 +605,7 @@
   align-items: center;
   padding: 12px;
   border-radius: 8px;
-  background: #F6F6F8;
+  background: #f6f6f8;
   border-radius: 12px;
   cursor: pointer;
   transition: background-color 0.2s;
@@ -636,7 +637,7 @@
 }
 
 /* 面板顶部操作栏 */
-.expand-panel-header{
+.expand-panel-header {
   padding: 12px 12px 0 12px;
 }
 .expand-panel-header .nav-top-actions {
@@ -710,7 +711,7 @@
 }
 
 .bottom-nav-item.active {
-  background: #FF8C00;
+  background: #ff8c00;
 }
 
 .bottom-nav-item:hover svg {
@@ -719,14 +720,14 @@
 
 .bottom-nav-item.active svg {
   color: white;
-} 
+}
 
 /* 底部积分栏 */
 .bottom-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 0 12px;
   height: 60px;
   flex-shrink: 0;
 }
@@ -736,29 +737,10 @@
   align-items: center;
 }
 
-.points-display {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.points-icon {
-  width: 12px;
-  height: 12px;
-  background: #dc3545;
-  border-radius: 50%;
-}
-
-.points-text {
-  font-size: 14px;
-  font-weight: 600;
-  color: #212529;
-}
-
 .bottom-right-icons {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 2px;
 }
 
 .bottom-item {
@@ -782,7 +764,7 @@
 
 .bottom-item:hover svg {
   color: #495057;
-} 
+}
 
 /* User弹窗容器 */
 .nav-item-container {
@@ -838,4 +820,4 @@
 .user-popup .share-card:last-child,
 .user-popup .share-yomo-card:last-child {
   margin-bottom: 0;
-} 
+}

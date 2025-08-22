@@ -36,8 +36,6 @@ const Login: React.FC = () => {
           "Email registration successful, token:",
           response.result.token
         );
-        // 注册成功后获取用户详情
-        await fetchUserDetail();
       }
     } catch (error) {
       console.error("Error during email registration:", error);

@@ -8,29 +8,11 @@ export type GetSuggestions = (query: string) => Promise<string[]> | string[];
 export interface SearchInputProps {
   value: string;
   onChange: (value: string) => void;
-  onSelect: (value: string) => void;
+  onSelect: (value: string, project?: any) => void;
   placeholder?: string;
   className?: string;
-  getSuggestions?: GetSuggestions;
+  searchProjects?: (query: string) => Promise<any[]>;
 }
-
-const defaultDataset = [
-  "Pell Network",
-  "Pell Token",
-  "Pell Protocol",
-  "Pell DeFi",
-  "Pell Staking",
-  "Pell Network Review",
-  "Pell Network Price",
-  "Pell Network Tokenomics",
-  "Pell Network Analysis",
-  "Pell Network News",
-  "Bitcoin Restaking",
-  "BTCFi Projects",
-  "DeFi Protocols",
-  "Cryptocurrency Research",
-  "Blockchain Security",
-];
 
 export const SearchInput: React.FC<SearchInputProps> = ({
   value,
@@ -38,47 +20,47 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   onSelect,
   placeholder = "Search...",
   className = "",
-  getSuggestions,
+  searchProjects,
 }) => {
   const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [projects, setProjects] = useState<any[]>([]);
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
+  const [isSearching, setIsSearching] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const resolveSuggestions = useMemo<GetSuggestions>(
-    () =>
-      getSuggestions ||
-      ((query: string) =>
-        defaultDataset.filter((s) =>
-          s.toLowerCase().includes(query.toLowerCase())
-        )),
-    [getSuggestions]
-  );
+  // 处理搜索
+  const handleSearch = async (query: string) => {
+    const q = query.trim();
+    if (!q) {
+      setSuggestions([]);
+      setProjects([]);
+      setOpen(false);
+      setActiveIndex(-1);
+      return;
+    }
 
-  useEffect(() => {
-    let cancelled = false;
-    const run = async () => {
-      const q = value.trim();
-      if (!q) {
+    if (searchProjects) {
+      setIsSearching(true);
+      try {
+        const result = await searchProjects(q);
+        const projectNames = result.map((project) => project.project_name || project.name || "").filter(Boolean);
+        setProjects(result);
+        setSuggestions(projectNames.slice(0, 8));
+        setOpen(projectNames.length > 0);
+        setActiveIndex(-1);
+      } catch (error) {
+        console.error("搜索失败:", error);
         setSuggestions([]);
+        setProjects([]);
         setOpen(false);
-        setActiveIndex(-1);
-        return;
+      } finally {
+        setIsSearching(false);
       }
-      const result = await Promise.resolve(resolveSuggestions(q));
-      if (!cancelled) {
-        const next = result.slice(0, 8);
-        setSuggestions(next);
-        setOpen(next.length > 0);
-        setActiveIndex(-1);
-      }
-    };
-    run();
-    return () => {
-      cancelled = true;
-    };
-  }, [value, resolveSuggestions]);
+    }
+  };
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -89,6 +71,15 @@ export const SearchInput: React.FC<SearchInputProps> = ({
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  // 清理定时器
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
   }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -103,16 +94,17 @@ export const SearchInput: React.FC<SearchInputProps> = ({
       setActiveIndex((p) => (p > 0 ? p - 1 : -1));
       return;
     }
-    if (e.key === "Enter") {
-      e.preventDefault();
-      if (activeIndex >= 0 && suggestions[activeIndex]) {
-        const chosen = suggestions[activeIndex];
-        onSelect(chosen);
-        setOpen(false);
-        setActiveIndex(-1);
+          if (e.key === "Enter") {
+        e.preventDefault();
+        if (activeIndex >= 0 && suggestions[activeIndex]) {
+          const chosen = suggestions[activeIndex];
+          const project = projects.find(p => (p.project_name || p.name || "") === chosen);
+          onSelect(chosen, project);
+          setOpen(false);
+          setActiveIndex(-1);
+        }
+        return;
       }
-      return;
-    }
     if (e.key === "Escape") {
       setOpen(false);
       setActiveIndex(-1);
@@ -124,14 +116,28 @@ export const SearchInput: React.FC<SearchInputProps> = ({
       <Input
         ref={inputRef}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => {
+          onChange(e.target.value);
+          // 清除之前的定时器
+          if (searchTimeoutRef.current) {
+            clearTimeout(searchTimeoutRef.current);
+          }
+          // 设置新的定时器，500ms后执行搜索
+          searchTimeoutRef.current = setTimeout(() => {
+            handleSearch(e.target.value);
+          }, 500);
+        }}
         onKeyDown={handleKeyDown}
         onFocus={() => suggestions.length > 0 && setOpen(true)}
         className="border border-[#E9E9E9] bg-transparent h-10 pl-4 pr-10 text-sm placeholder:text-gray-400 shadow-none w-full"
         placeholder={placeholder}
       />
       <div className="absolute right-2 top-1/2 -translate-y-1/2 transform flex items-center gap-2">
-        <SearchRightIcon size={16} color="#2C2C2C" />
+        {isSearching ? (
+          <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+        ) : (
+          <SearchRightIcon size={16} color="#2C2C2C" />
+        )}
       </div>
 
       {open && suggestions.length > 0 && (
@@ -142,7 +148,8 @@ export const SearchInput: React.FC<SearchInputProps> = ({
               className={`px-4 py-3 cursor-pointer text-sm hover:bg-gray-50 transition-colors ${idx === activeIndex ? "bg-gray-100" : ""}`}
               onMouseEnter={() => setActiveIndex(idx)}
               onClick={() => {
-                onSelect(s);
+                const project = projects.find(p => (p.project_name || p.name || "") === s);
+                onSelect(s, project);
                 setOpen(false);
                 setActiveIndex(-1);
               }}

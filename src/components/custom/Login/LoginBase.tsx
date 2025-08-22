@@ -21,16 +21,13 @@ export enum LoginState {
 
 const LoginBase: React.FC = () => {
   const { loginModalOpen, setLoginModalOpen, token } = useRootStore();
-  const { fetchUserDetail } = useUserDetail();
   const { isConnected } = useAccount();
   const { handleLogin } = useLogin("");
   const [curState, setCurState] = useState<LoginState>(LoginState.Base);
   const handleStateChange = (state: LoginState) => {
     setCurState(state);
   };
-  const shouldFetchUserDetail = useMemo(() => {
-    return !!token;
-  }, [token]);
+ 
   useEffect(() => {
     const lightData = JSON.parse(localStorage.getItem("yomo") || "{}");
     const token = _.get(lightData, "state.token", "");
@@ -43,11 +40,7 @@ const LoginBase: React.FC = () => {
     setCurState(LoginState.Base);
   }, [loginModalOpen]);
 
-  useEffect(() => {
-    if (shouldFetchUserDetail) {
-      fetchUserDetail();
-    }
-  }, [shouldFetchUserDetail, fetchUserDetail]);
+ 
 
   return (
     <Drawer open={loginModalOpen} onOpenChange={setLoginModalOpen}>

@@ -10,31 +10,9 @@ import "@/shared/styles/Layout.css";
 import { useRootStore } from "@/store";
 import { useNavigate } from "react-router-dom";
 
-interface LoginStatusProps {
-  isLoggedIn: boolean;
-  userInfo?: {
-    username: string;
-    email: string;
-  };
-  credits?: {
-    balance: string;
-    dailyEarn: string;
-    totalStaked: string;
-    totalEarned: string;
-  };
-}
 
-const LoginStatus: React.FC<LoginStatusProps> = ({
-  isLoggedIn,
-  userInfo = { username: "Kai", email: "useremail@gmail.com" },
-  credits = {
-    balance: "1,500",
-    dailyEarn: "+150",
-    totalStaked: "0",
-    totalEarned: "0",
-  },
-}) => {
-  const { setLoginModalOpen,token } = useRootStore();
+const LoginStatus: React.FC = () => {
+  const { setLoginModalOpen,token,userDetail } = useRootStore();
   const navigate = useNavigate();
   const goTopUp = () => {
     navigate("/top-up");
@@ -85,9 +63,9 @@ const LoginStatus: React.FC<LoginStatusProps> = ({
           <UserIcon size={40} color="#F67C00" />
           <div className="user-info-text text-[#2C2C2C] ml-1">
             <p className="text-[14px] font-bold">
-              Username - {userInfo.username}
+              Username - {userDetail?.nickName||'-'}
             </p>
-            <p className="text-[12px]">{userInfo.email}</p>
+            <p className="text-[12px]">{userDetail?.email||'-'}</p>
           </div>
         </div>
         <div className="user-info-right">
@@ -112,7 +90,7 @@ const LoginStatus: React.FC<LoginStatusProps> = ({
         <div className="credits-row border-b border-[#E9E9E9]">
           <div className="flex items-center credits-row-left">
             <span className="mr-1">
-              {credits.balance} {credits.dailyEarn} /day
+              1500 +150 /day
             </span>
           </div>
           <div className="credits-row-right">

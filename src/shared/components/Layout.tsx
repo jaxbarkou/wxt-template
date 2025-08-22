@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   SearchIcon,
@@ -23,7 +23,6 @@ import {
   TabIcon,
   ChatIcon,
 } from "@/components/custom/svg";
-import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
@@ -34,6 +33,9 @@ import "@/shared/styles/Layout.css";
 import LoginStatus from "./LoginStatus";
 import LoginBase from "@/components/custom/Login/LoginBase";
 import { useMode } from "../context/ModeProvider";
+import { useRootStore } from "@/store";
+import { useUserDetail } from "@/hooks/useUserDetail";
+import { useCreditsInfo } from "@/hooks/useCreditsInfo";
 
 // 顶部操作栏配置
 const topActions = [
@@ -79,15 +81,28 @@ const bottomItems = [
 
 // 移除mode参数
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { loginModalOpen, setLoginModalOpen, token } = useRootStore();
+  const { fetchUserDetail } = useUserDetail();
+  const { fetchCreditsInfo, creditsInfo } = useCreditsInfo();
   const { mode } = useMode();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isHoveringExpand, setIsHoveringExpand] = useState(false);
   // 添加登录状态状态
   const [isUserHovered, setIsUserHovered] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+
+  const shouldFetchUserDetail = useMemo(() => {
+    return !!token;
+  }, [token]);
+
+  useEffect(() => {
+    if (shouldFetchUserDetail) {
+      fetchUserDetail();
+      fetchCreditsInfo();
+    }
+  }, [shouldFetchUserDetail, fetchUserDetail, fetchCreditsInfo]);
 
   const handleNavItemClick = (item: any) => {
     if (item.path) {
@@ -258,19 +273,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               onMouseEnter={() => setIsUserHovered(true)}
               onMouseLeave={() => setIsUserHovered(false)}
             >
-              <LoginStatus
-                isLoggedIn={true}
-                userInfo={{
-                  username: "Kai",
-                  email: "useremail@gmail.com",
-                }}
-                credits={{
-                  balance: "1,500",
-                  dailyEarn: "+150",
-                  totalStaked: "0",
-                  totalEarned: "0",
-                }}
-              />
+              <LoginStatus />
             </div>
           )}
         </div>
@@ -307,8 +310,12 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           <div className="bottom-bar">
             <div className="bottom-left">
               <div className="points-display">
-                <div className="points-icon">🔴</div>
-                <span className="points-text">1,500</span>
+                <div className="points-icon"></div>
+                <span className="points-text">
+                  {creditsInfo?.balance
+                    ? Number(creditsInfo.balance).toLocaleString()
+                    : "0"}
+                </span>
               </div>
             </div>
             <div className="bottom-center">
@@ -346,8 +353,12 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             {/* 左侧积分显示 */}
             <div className="bottom-left">
               <div className="points-display">
-                <div className="points-icon">🔴</div>
-                <span className="points-text">1,500</span>
+                <div className="points-icon"></div>
+                <span className="points-text">
+                  {creditsInfo?.balance
+                    ? Number(creditsInfo.balance).toLocaleString()
+                    : "0"}
+                </span>
               </div>
             </div>
 
@@ -360,7 +371,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 <LoveIcon size={18} color="#6c757d" />
               </div>
               <div className="bottom-item">
-                <PromptBorIcon size={18} color="#6c757d" />
+                <PromptBorIcon size={22} color="#6c757d" />
               </div>
               <div className="bottom-item">
                 <EmaiIcon size={18} color="#6c757d" />
@@ -436,19 +447,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                   </div>
                   <div className="expand-panel-bottom">
                     {/* 使用封装的登录状态组件 */}
-                    <LoginStatus
-                      isLoggedIn={isLoggedIn}
-                      userInfo={{
-                        username: "Kai",
-                        email: "useremail@gmail.com",
-                      }}
-                      credits={{
-                        balance: "1,500",
-                        dailyEarn: "+150",
-                        totalStaked: "0",
-                        totalEarned: "0",
-                      }}
-                    />
+                    <LoginStatus />
 
                     {/* 底部导航栏 */}
                     <div className="bottom-nav-panel">

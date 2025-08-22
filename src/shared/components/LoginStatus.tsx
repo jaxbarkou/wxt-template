@@ -8,11 +8,13 @@ import {
 } from "@/components/custom/svg";
 import "@/shared/styles/Layout.css";
 import { useRootStore } from "@/store";
+import { useCreditsInfo } from "@/hooks/useCreditsInfo";
 import { useNavigate } from "react-router-dom";
 
 
 const LoginStatus: React.FC = () => {
   const { setLoginModalOpen,token,userDetail } = useRootStore();
+  const { creditsInfo } = useCreditsInfo();
   const navigate = useNavigate();
   const goTopUp = () => {
     navigate("/top-up");
@@ -90,7 +92,7 @@ const LoginStatus: React.FC = () => {
         <div className="credits-row border-b border-[#E9E9E9]">
           <div className="flex items-center credits-row-left">
             <span className="mr-1">
-              1500 +150 /day
+              {creditsInfo?.balance} +{creditsInfo?.daily_credits} /day 
             </span>
           </div>
           <div className="credits-row-right">

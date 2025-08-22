@@ -65,8 +65,8 @@ const topNavigationItems = [
 const bottomNavigationItems = [
   { id: "home", icon: "home", label: "Home", path: "/" },
   { id: "mobile", icon: "mobile", label: "Mobile", path: "" },
-  { id: "settings", icon: "settings", label: "Settings", path: "/settings" },
-  { id: "user", icon: "user", label: "User", path: "/user" },
+//   { id: "settings", icon: "settings", label: "Settings", path: "/settings" },
+  { id: "user", icon: "user", label: "User", path: "/settings" },
 ];
 
 // 底部积分栏配置

@@ -27,3 +27,4 @@ export { default as GoogleIcon } from "./icons/GoogleIcon";
 export { default as SavedIcon } from "./icons/SavedIcon";
 export { default as EidtIcon } from "./icons/EidtIcon";
 export { default as SearchRightIcon } from "./icons/SearchRightIcon";
+export { default as ChatIcon } from "./icons/ChatIcon";

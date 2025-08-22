@@ -21,6 +21,7 @@ import {
   PromptBorIcon,
   EmaiIcon,
   TabIcon,
+  ChatIcon,
 } from "@/components/custom/svg";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,46 +35,46 @@ import LoginStatus from "./LoginStatus";
 import LoginBase from "@/components/custom/Login/LoginBase";
 import { useMode } from "../context/ModeProvider";
 
-
 // 顶部操作栏配置
 const topActions = [
   { id: "fold", icon: "fold", label: "折叠", path: null },
-  {
-    id: "fullpage",
-    icon: "fullpage",
-    label: "打开options页面",
-    path: "/options",
-  },
+  //   {
+  //     id: "fullpage",
+  //     icon: "fullpage",
+  //     label: "打开options页面",
+  //     path: "/options",
+  //   },
 ];
 
 // 上半部分导航项配置
 const topNavigationItems = [
-  { id: "search", icon: "search", label: "搜索", path: "/search" },
-  { id: "pentagram", icon: "pentagram", label: "收藏", path: "/favorites" },
-  { id: "earth", icon: "earth", label: "全球", path: "/global" },
-  { id: "lamp", icon: "lamp", label: "发现", path: "/discover" },
-  { id: "gift", icon: "gift", label: "礼物", path: "/gift" },
-  { id: "more", icon: "more", label: "更多", path: "/more" },
-  { id: "twitter", icon: "twitter", label: "Twitter", path: "/twitter" },
-  { id: "telegram", icon: "telegram", label: "Telegram", path: "/telegram" },
+  { id: "search", icon: "search", label: "Research", path: "/search" },
+  { id: "chat", icon: "chat", label: "Chat", path: "/" },
+  //   { id: "pentagram", icon: "pentagram", label: "收藏", path: "" },
+  { id: "earth", icon: "earth", label: "Community", path: "" },
+  { id: "lamp", icon: "lamp", label: "News", path: "" },
+  { id: "gift", icon: "gift", label: "Campaigns", path: "" },
+  { id: "more", icon: "more", label: "More", path: "" },
+  { id: "twitter", icon: "twitter", label: "Twitter", path: "" },
+  { id: "telegram", icon: "telegram", label: "Telegram", path: "" },
 ];
 
 // 下半部分导航项配置
 const bottomNavigationItems = [
-  { id: "home", icon: "home", label: "首页", path: "/" },
-  { id: "mobile", icon: "mobile", label: "移动", path: "/mobile" },
-  { id: "settings", icon: "settings", label: "设置", path: "/settings" },
-  { id: "user", icon: "user", label: "用户", path: "/user" },
+  { id: "home", icon: "home", label: "Home", path: "/" },
+  { id: "mobile", icon: "mobile", label: "Mobile", path: "" },
+  { id: "settings", icon: "settings", label: "Settings", path: "/settings" },
+  { id: "user", icon: "user", label: "User", path: "/user" },
 ];
 
 // 底部积分栏配置
 const bottomItems = [
   { id: "points", icon: "🔴", label: "1,500", path: null },
-  { id: "gift", icon: "🎁", label: "礼物", path: "/gift" },
-  { id: "heart", icon: "❤️", label: "喜欢", path: "/heart" },
-  { id: "help", icon: "❓", label: "帮助", path: "/help" },
-  { id: "mail", icon: "✉️", label: "邮件", path: "/mail" },
-  { id: "user-bottom", icon: "👤", label: "用户", path: "/user" },
+  { id: "gift", icon: "🎁", label: "Campaigns", path: "/gift" },
+  { id: "heart", icon: "❤️", label: "Likes", path: "/heart" },
+  { id: "help", icon: "❓", label: "Help", path: "/help" },
+  { id: "mail", icon: "✉️", label: "Mail", path: "/mail" },
+  { id: "user-bottom", icon: "👤", label: "User", path: "/user" },
 ];
 
 // 移除mode参数
@@ -101,18 +102,18 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   };
 
   // 渲染图标的辅助函数
-  const renderIcon = (iconType: string) => {
+  const renderIcon = (iconType: string, isDisabled: boolean = false) => {
     const iconProps = {
       size: 20,
-      color: "#6c757d",
-      hoverColor: "#495057",
+      color: isDisabled ? "#adb5bd" : "#6c757d",
+      hoverColor: isDisabled ? "#adb5bd" : "#495057",
     };
 
     // 为顶部操作栏的图标设置更小的尺寸
     const smallIconProps = {
       size: 16,
-      color: "#6c757d",
-      hoverColor: "#495057",
+      color: isDisabled ? "#adb5bd" : "#6c757d",
+      hoverColor: isDisabled ? "#adb5bd" : "#495057",
     };
 
     switch (iconType) {
@@ -140,35 +141,44 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         return <SettingIcon {...iconProps} />;
       case "user":
         return <UserIcon {...iconProps} />;
+      case "chat":
+        return <ChatIcon {...iconProps} />;
       case "fold":
         return <FoldIcon {...smallIconProps} />;
       case "fullpage":
         return <FullPageIcon {...smallIconProps} />;
       case "expand":
         return <ExpandIcon {...smallIconProps} />;
+
       default:
         return null;
     }
   };
 
   // 渲染带Tooltip的导航项
-  const renderNavItem = (item: any) => (
-    <Tooltip key={item.id}>
-      <TooltipTrigger asChild>
-        <div
-          className={`nav-item ${
-            location.pathname === item.path ? "active" : ""
-          } flex items-center justify-center`}
-          onClick={() => handleNavItemClick(item)}
-        >
-          <span className="nav-icon">{renderIcon(item.icon)}</span>
-        </div>
-      </TooltipTrigger>
-      <TooltipContent side="left">
-        <p>{item.label}</p>
-      </TooltipContent>
-    </Tooltip>
-  );
+  const renderNavItem = (item: any) => {
+    const isDisabled = !item.path;
+
+    return (
+      <Tooltip key={item.id}>
+        <TooltipTrigger asChild>
+          <div
+            className={`nav-item ${
+              location.pathname === item.path ? "active" : ""
+            } ${isDisabled ? "disabled" : ""} flex items-center justify-center`}
+            onClick={() => !isDisabled && handleNavItemClick(item)}
+          >
+            <span className="nav-icon">
+              {renderIcon(item.icon, isDisabled)}
+            </span>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent side="left">
+          <p>{item.label}</p>
+        </TooltipContent>
+      </Tooltip>
+    );
+  };
 
   // 为顶部操作栏创建专门的渲染函数
   const renderTopActionItem = (item: any) => (
@@ -214,6 +224,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   // 为下半部分导航项创建专门的渲染函数
   const renderBottomNavItem = (item: any) => {
+    const isDisabled = !item.path;
+
     if (item.icon === "user") {
       return (
         <div key={item.id} className="nav-item-container">
@@ -222,12 +234,16 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               <div
                 className={`nav-item ${
                   location.pathname === item.path ? "active" : ""
+                } ${
+                  isDisabled ? "disabled" : ""
                 } flex items-center justify-center`}
-                onClick={() => handleNavItemClick(item)}
-                onMouseEnter={() => setIsUserHovered(true)}
-                onMouseLeave={() => setIsUserHovered(false)}
+                onClick={() => !isDisabled && handleNavItemClick(item)}
+                onMouseEnter={() => !isDisabled && setIsUserHovered(true)}
+                onMouseLeave={() => !isDisabled && setIsUserHovered(false)}
               >
-                <span className="nav-icon">{renderIcon(item.icon)}</span>
+                <span className="nav-icon">
+                  {renderIcon(item.icon, isDisabled)}
+                </span>
               </div>
             </TooltipTrigger>
             <TooltipContent side="left">
@@ -236,7 +252,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           </Tooltip>
 
           {/* User悬停弹窗 */}
-          {isUserHovered && (
+          {isUserHovered && !isDisabled && (
             <div
               className="user-popup"
               onMouseEnter={() => setIsUserHovered(true)}
@@ -267,10 +283,12 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           <div
             className={`nav-item ${
               location.pathname === item.path ? "active" : ""
-            } flex items-center justify-center`}
-            onClick={() => handleNavItemClick(item)}
+            } ${isDisabled ? "disabled" : ""} flex items-center justify-center`}
+            onClick={() => !isDisabled && handleNavItemClick(item)}
           >
-            <span className="nav-icon">{renderIcon(item.icon)}</span>
+            <span className="nav-icon">
+              {renderIcon(item.icon, isDisabled)}
+            </span>
           </div>
         </TooltipTrigger>
         <TooltipContent side="left">

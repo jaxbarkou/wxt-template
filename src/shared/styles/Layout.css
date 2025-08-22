@@ -151,6 +151,21 @@
   justify-content: center;
 }
 
+.nav-item.disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+  color: #adb5bd;
+}
+
+.nav-item.disabled:hover {
+  background: transparent;
+  transform: none;
+}
+
+.nav-item.disabled:hover .nav-icon {
+  transform: none;
+}
+
 .nav-item:hover {
   background: #fff;
   transform: translateY(-1px);

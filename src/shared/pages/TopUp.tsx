@@ -11,9 +11,14 @@ import {
 } from "@/components/ui/select";
 import { useNavigate } from "react-router-dom";
 import { AssetsNetworkItem, CreditsPlanItem } from "@/modal/user";
-import { getAssetsNetworkList, getCreditsPlans } from "@/lib/api/user";
+import {
+  cancelCreditsOrder,
+  getAssetsNetworkList,
+  getCreditsPlans,
+} from "@/lib/api/user";
 import popularBg from "@/assets/images/popular-bg.png";
 import popularImg from "@/assets/images/popular.png";
+import { BaseDialog } from "@/components/custom/Modal/BaseDialog";
 
 const TopUp = () => {
   const navigate = useNavigate();
@@ -22,7 +27,7 @@ const TopUp = () => {
   const [creditOptions, setCreditOptions] = useState<CreditsPlanItem[]>([]);
   const [unpaidOrders, setUnpaidOrders] = useState<string[]>([]);
   const isUnpaid = useMemo(() => unpaidOrders.length > 0, [unpaidOrders]);
-
+  const [orderOpen, setOrderOpen] = useState<boolean>(false);
   const fetchAssetsNetworkList = async () => {
     try {
       const response = await getAssetsNetworkList();
@@ -54,9 +59,13 @@ const TopUp = () => {
 
   const goDetail = useCallback(
     (id: string) => {
-      navigate(`/top-up-detail?id=${id}&currency=${selectedCurrency}`);
+      if (isUnpaid) {
+        setOrderOpen(true);
+        return;
+      }
+      navigate(`/top-up-detail?id=${id}&currency=${selectedCurrency}&unpay=0`);
     },
-    [navigate, selectedCurrency]
+    [navigate, selectedCurrency, isUnpaid]
   );
 
   useEffect(() => {
@@ -68,6 +77,34 @@ const TopUp = () => {
       fetchPlans();
     }
   }, [selectedCurrency]);
+
+  useEffect(() => {
+    if (isUnpaid) {
+      setOrderOpen(true);
+    }
+  }, [isUnpaid]);
+
+  const handleCancelOrder = useCallback(async () => {
+    try {
+      console.log("Cancelling order...", { isUnpaid, unpaidOrders });
+      if (isUnpaid) {
+        let res = await cancelCreditsOrder(unpaidOrders[0]);
+        if (res.result) {
+          fetchPlans();
+          setUnpaidOrders([]);
+          setOrderOpen(false);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to cancel order", error);
+    }
+  }, [isUnpaid, unpaidOrders]);
+
+  const toContinueOrder = useCallback(() => {
+    navigate(
+      `/top-up-detail?id=${unpaidOrders[0]}&currency=${selectedCurrency}&unpay=1`
+    );
+  }, [unpaidOrders, selectedCurrency]);
 
   return (
     <div className="w-full min-h-screen mx-auto bg-white">
@@ -170,6 +207,38 @@ const TopUp = () => {
         {/* <div className="mt-8 text-xs font-normal text-center text-brand-gray1">
           Price from CoinGecko · Refreshes in 04:59
         </div> */}
+        <BaseDialog open={orderOpen} onOpenChange={setOrderOpen}>
+          <div className="bg-white rounded-lg border-0 h-[auto] p-4">
+            <div className="p-0 space-y-4">
+              {/* Header with title and close button */}
+              <header className="flex items-center justify-between">
+                <h2 className=" font-size-[16px] font-medium text-[#2c2c2c] text-base tracking-[0] leading-[normal]">
+                  Tip
+                </h2>
+              </header>
+
+              <div className="">
+                <h3 className="">There are already pending payment orders</h3>
+                {/* Action buttons */}
+                <div className="flex gap-3 pt-2 mt-6">
+                  <Button
+                    variant="outline"
+                    className="flex-1 h-[26px] rounded-[30px] font-medium text-sm text-center"
+                    onClick={handleCancelOrder}
+                  >
+                    Cancel order
+                  </Button>
+                  <Button
+                    className="flex-1 h-[26px] bg-[#f67c00] hover:bg-[#f67c00]/90  rounded-[30px] font-medium text-white text-sm text-center tracking-[0] leading-[normal] disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={toContinueOrder}
+                  >
+                    Continue to pay
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </BaseDialog>
       </div>
     </div>
   );

@@ -36,7 +36,7 @@ export const base4Api = axios.create({
 });
 
 export const base5Api = axios.create({
-  baseURL: `${API_URL5}/v1/`,
+  baseURL: `${API_URL5}`,
   timeout: 60000,
 });
 export const base6Api = axios.create({

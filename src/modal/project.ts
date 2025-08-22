@@ -155,13 +155,13 @@ export interface ExchangeInfo {
 
 // 市场数据
 export interface MarketData {
-  token_price?: number;
+  token_price?: string;
   token_price_desc?: string;
-  trading_volume_24h?: number;
+  trading_volume_24h?: string;
   trading_volume_24h_desc?: string;
-  circulating_market_cap?: number;
+  circulating_market_cap?: string;
   circulating_market_cap_source?: string;
-  fully_diluted_valuation?: number;
+  fully_diluted_valuation?: string;
   fully_diluted_valuation_source?: string;
   support_exchanges: ExchangeInfo[];
 }

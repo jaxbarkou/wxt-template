@@ -20,7 +20,7 @@ export function BaseDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className={cn("w-[320px] h-auto rounded-2 shadow-xl border-0")}
+        className={cn("w-[320px] h-auto rounded-2 shadow-xl border-0 p-0")}
         style={{ backgroundColor: bgColor }}
       >
         <DialogTitle asChild>

@@ -11,7 +11,7 @@ const Settings: React.FC = () => {
     { value: "earns", label: "Earns" },
   ];
   return (
-    <div className="w-full min-h-screen mx-auto bg-[#F6F6F8]">
+    <div className="w-full h-full mx-auto bg-[#F6F6F8]">
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center gap-3">
           <h1 className="text-base font-normal text-brand-black">Settings</h1>

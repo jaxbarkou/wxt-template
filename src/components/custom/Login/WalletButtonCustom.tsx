@@ -24,7 +24,7 @@ export const WalletButtonCustom: React.FC = () => {
         return (
           <Button
             variant="outline"
-            className="justify-start w-full h-12 gap-3 text-base bg-white rounded-2 border-neutral-200"
+            className="justify-center w-full h-12 gap-3 text-brand-black bg-white rounded-2 border-neutral-200"
             onClick={connect}
             disabled={loading}
           >

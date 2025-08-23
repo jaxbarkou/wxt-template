@@ -52,8 +52,8 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
         label: "Total Reward Value",
         value: `${cam?.community_rewards}  ${cam?.campaign_title}`,
       },
-              { label: "Participants", value: `${cam?.participants}` },
-        { label: "Community Guide", value: "--" },
+      { label: "Participants", value: `${cam?.participants}` },
+      { label: "Community Guide", value: "--" },
     ];
   }, [projectData]);
 
@@ -205,7 +205,7 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
               <>
                 {projectData && (
                   <div>
-                                          {/* 头部信息 */}
+                    {/* 头部信息 */}
                     <header className="flex items-center justify-between p-3">
                       <div className="flex items-center gap-3">
                         <Avatar className="w-10 h-10 bg-brand-primary">
@@ -228,7 +228,7 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
                       </div>
                       <RightOpt />
                     </header>
-                                          {/* 社交链接 */}
+                    {/* 社交链接 */}
                     <nav className="flex gap-2 px-3">
                       {socialLinks.map((link, index) => (
                         <div key={index}>
@@ -495,7 +495,7 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
                 </div>
               </div>
             )}
-                                  {/* 底部信息 */}
+            {/* 底部信息 */}
             <Footer />
           </CardContent>
         </Card>

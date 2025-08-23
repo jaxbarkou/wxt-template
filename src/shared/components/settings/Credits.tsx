@@ -1,10 +1,11 @@
 import { HelpCircleIcon } from "lucide-react";
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { CreditsInfo } from "@/modal/user";
-import { getCreditsInfo } from "@/lib/api/user";
+import { useCreditsInfo } from "@/hooks/useCreditsInfo";
+import NoImg from "@/assets/images/model-no-data.png";
+import { useNavigate } from "react-router-dom";
 
 const historyData = [
   {
@@ -52,20 +53,15 @@ const historyData = [
 ];
 
 const Credits = () => {
-  const [creditsDetail, setCreditsDetail] = useState<CreditsInfo | null>(null);
-  const fetchCredits = async () => {
-    try {
-      const response = await getCreditsInfo();
-      if (response.result && response.result?.account) {
-        setCreditsDetail(response.result?.account);
-      }
-    } catch (error) {
-      console.error("Failed", error);
-    }
-  };
+  const { fetchCreditsInfo, creditsInfo } = useCreditsInfo();
+  const navigate = useNavigate();
+
   useEffect(() => {
-    fetchCredits();
-  }, []);
+    fetchCreditsInfo();
+  }, [fetchCreditsInfo]);
+  const goTopUp = () => {
+    navigate("/top-up");
+  };
   return (
     <div className="">
       <div className="mt-0">
@@ -73,7 +69,10 @@ const Credits = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-normal">Credits</h2>
-              <Button className="bg-brand-primary  text-[13px]  font-normal h-6 px-4 rounded-[22px] hover:bg-brand-primary/90">
+              <Button
+                onClick={goTopUp}
+                className="bg-brand-primary  text-[13px]  font-normal h-6 px-4 rounded-[22px] hover:bg-brand-primary/90"
+              >
                 Top Up
               </Button>
             </div>
@@ -82,7 +81,7 @@ const Credits = () => {
               <span className="text-sm font-normal ">Balance</span>
               <div className="flex items-center gap-2">
                 <span className="text-sm font-normal ">
-                  {creditsDetail?.balance || "--"}
+                  {creditsInfo?.balance || "--"}
                 </span>
                 <HelpCircleIcon className="w-3.5 h-3.5 " />
               </div>
@@ -95,7 +94,7 @@ const Credits = () => {
                 Daily refresh credits
               </span>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-normal ">150+123</span>
+                <span className="text-sm font-normal ">--</span>
                 <HelpCircleIcon className="w-3.5 h-3.5 " />
               </div>
             </div>
@@ -109,7 +108,7 @@ const Credits = () => {
             <div className="flex items-center justify-between">
               <span className="text-sm font-normal ">Stake to Boost</span>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-normal ">15x</span>
+                <span className="text-sm font-normal ">--x</span>
                 <HelpCircleIcon className="w-3.5 h-3.5 " />
               </div>
             </div>
@@ -126,7 +125,7 @@ const Credits = () => {
             </div>
 
             <div className="space-y-0">
-              {historyData.map((item, index) => (
+              {/* {historyData.map((item, index) => (
                 <div key={index}>
                   <div className="flex items-center justify-between py-2">
                     <div className="flex-1">
@@ -143,7 +142,13 @@ const Credits = () => {
                     <Separator className="bg-brand-gray1/20" />
                   )}
                 </div>
-              ))}
+              ))} */}
+              <div className="flex flex-col items-center justify-center h-[330px]">
+                <img className="w-[145px] h-[109px]" src={NoImg} alt="" />
+                <p className="mt-4 text-sm font-normal text-center text-brand-gray1">
+                  No data yet
+                </p>
+              </div>
             </div>
           </CardContent>
         </Card>

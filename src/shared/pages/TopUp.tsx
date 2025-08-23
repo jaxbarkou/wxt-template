@@ -86,7 +86,6 @@ const TopUp = () => {
 
   const handleCancelOrder = useCallback(async () => {
     try {
-      console.log("Cancelling order...", { isUnpaid, unpaidOrders });
       if (isUnpaid) {
         let res = await cancelCreditsOrder(unpaidOrders[0]);
         if (res.result) {

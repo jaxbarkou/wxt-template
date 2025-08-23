@@ -28,7 +28,7 @@ const LoginBase: React.FC = () => {
   const handleStateChange = (state: LoginState) => {
     setCurState(state);
   };
- 
+
   useEffect(() => {
     const lightData = JSON.parse(localStorage.getItem("yomo") || "{}");
     const token = _.get(lightData, "state.token", "");
@@ -40,8 +40,6 @@ const LoginBase: React.FC = () => {
   useEffect(() => {
     setCurState(LoginState.Base);
   }, [loginModalOpen]);
-
- 
 
   return (
     <Drawer open={loginModalOpen} onOpenChange={setLoginModalOpen}>
@@ -88,7 +86,8 @@ const LoginBase: React.FC = () => {
                 <div className="px-6 pb-6 mt-2 space-y-4">
                   <Button
                     variant="outline"
-                    className="justify-start w-full h-12 gap-3 text-base bg-white rounded-2 border-neutral-200"
+                    className="justify-center w-full h-12 gap-3 bg-white text-brand-black rounded-2 border-neutral-200"
+                    disabled
                   >
                     <span className="inline-flex items-center justify-center w-6 h-6">
                       <GoogleIcon />
@@ -98,7 +97,7 @@ const LoginBase: React.FC = () => {
 
                   <Button
                     variant="outline"
-                    className="justify-start w-full h-12 gap-3 text-base bg-white rounded-2 border-neutral-200"
+                    className="justify-center w-full h-12 gap-3 bg-white text-brand-black rounded-2 border-neutral-200"
                     onClick={() => handleStateChange(LoginState.EmailLogin)}
                   >
                     <Mail className="w-5 h-5" />

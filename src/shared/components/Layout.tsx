@@ -104,7 +104,15 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     }
   }, [shouldFetchUserDetail, fetchUserDetail, fetchCreditsInfo]);
 
+
+
   const handleNavItemClick = (item: any) => {
+    // 检查settings页面是否需要登录
+    if (item.path === '/settings' && !token) {
+      setLoginModalOpen(true);
+      return;
+    }
+    
     if (item.path) {
       navigate(item.path);
     }
@@ -364,16 +372,28 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
             {/* 右侧图标 */}
             <div className="bottom-right-icons">
-              <div className="bottom-item">
+              <div 
+                className="bottom-item disabled"
+                style={{ cursor: 'not-allowed', opacity: 0.5 }}
+              >
                 <GiftIcon size={18} color="#F67C00" />
               </div>
-              <div className="bottom-item">
+              <div 
+                className="bottom-item disabled"
+                style={{ cursor: 'not-allowed', opacity: 0.5 }}
+              >
                 <LoveIcon size={18} color="#6c757d" />
               </div>
-              <div className="bottom-item">
+              <div 
+                className="bottom-item disabled"
+                style={{ cursor: 'not-allowed', opacity: 0.5 }}
+              >
                 <PromptBorIcon size={22} color="#6c757d" />
               </div>
-              <div className="bottom-item">
+              <div 
+                className="bottom-item disabled"
+                style={{ cursor: 'not-allowed', opacity: 0.5 }}
+              >
                 <EmaiIcon size={18} color="#6c757d" />
               </div>
             </div>
@@ -428,21 +448,35 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
                   {/* 水平导航栏 */}
                   <div className="horizontal-nav">
-                    <div className="nav-item-horizontal">
+                    <div 
+                      className="nav-item-horizontal clickable"
+                      onClick={() => navigate('/search')}
+                      style={{ cursor: 'pointer' }}
+                    >
                       <SearchIcon size={16} color="#6c757d" />
                       <span>Research</span>
                     </div>
-                    <div className="nav-item-horizontal">
-                      <PentagramIcon size={16} color="#6c757d" />
+                    <div 
+                      className="nav-item-horizontal clickable"
+                      onClick={() => navigate('/')}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <ChatIcon size={16} color="#6c757d" />
+                      <span>Chat</span>
+                    </div>
+                    <div 
+                      className="nav-item-horizontal disabled"
+                      style={{ cursor: 'not-allowed', opacity: 0.5 }}
+                    >
+                      <GiftIcon size={16} color="#6c757d" />
                       <span>Campaigns</span>
                     </div>
-                    <div className="nav-item-horizontal">
-                      <EarthIcon size={16} color="#6c757d" />
+                    <div 
+                      className="nav-item-horizontal disabled"
+                      style={{ cursor: 'not-allowed', opacity: 0.5 }}
+                    >
+                      <LampIcon size={16} color="#6c757d" />
                       <span>News</span>
-                    </div>
-                    <div className="nav-item-horizontal">
-                      <SearchIcon size={16} color="#6c757d" />
-                      <span>Chat</span>
                     </div>
                   </div>
                   <div className="expand-panel-bottom">
@@ -452,25 +486,58 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                     {/* 底部导航栏 */}
                     <div className="bottom-nav-panel">
                       <div className="bottom-nav-left">
-                        <div className="bottom-nav-item">
+                        <div 
+                          className="bottom-nav-item disabled"
+                          style={{ cursor: 'not-allowed', opacity: 0.5 }}
+                        >
                           <TwitterIcon size={16} color="#6c757d" />
                         </div>
-                        <div className="bottom-nav-item">
+                        <div 
+                          className="bottom-nav-item disabled"
+                          style={{ cursor: 'not-allowed', opacity: 0.5 }}
+                        >
                           <TelegramIcon size={16} color="#6c757d" />
                         </div>
                       </div>
 
                       <div className="bottom-nav-right">
-                        <div className="bottom-nav-item">
+                        <div 
+                          className="bottom-nav-item clickable"
+                          onClick={() => navigate('/')}
+                          style={{ cursor: 'pointer' }}
+                        >
                           <HomeIcon size={16} color="#6c757d" />
                         </div>
-                        <div className="bottom-nav-item">
+                        <div 
+                          className="bottom-nav-item disabled"
+                          style={{ cursor: 'not-allowed', opacity: 0.5 }}
+                        >
                           <MobileIcon size={16} color="#6c757d" />
                         </div>
-                        <div className="bottom-nav-item">
+                        <div 
+                          className="bottom-nav-item clickable"
+                          onClick={() => {
+                            if (!token) {
+                              setLoginModalOpen(true);
+                            } else {
+                              navigate('/settings');
+                            }
+                          }}
+                          style={{ cursor: 'pointer' }}
+                        >
                           <SettingIcon size={16} color="#6c757d" />
                         </div>
-                        <div className="bottom-nav-item active">
+                        <div 
+                          className="bottom-nav-item active clickable"
+                          onClick={() => {
+                            if (!token) {
+                              setLoginModalOpen(true);
+                            } else {
+                              navigate('/settings');
+                            }
+                          }}
+                          style={{ cursor: 'pointer' }}
+                        >
                           <UserIcon size={16} color="white" />
                         </div>
                       </div>

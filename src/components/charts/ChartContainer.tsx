@@ -41,14 +41,14 @@ const ChartContainer: React.FC<ChartContainerProps> = ({
   }
 
   return (
-          <Card className={`bg-white border border-gray-200 ${className} p-0`}>
-        {title && (
-          <div className="px-3 py-2 border-b border-gray-100">
-            <h3 className="text-xs font-medium text-gray-600">{title}</h3>
-          </div>
-        )}
-        <CardContent className="p-0 m-0">{children}</CardContent>
-      </Card>
+    <Card className={`bg-white border border-gray-200 ${className} p-0`}>
+      {title && (
+        <div className="px-3 py-2 border-b border-gray-100">
+          <h3 className="text-xs font-medium text-gray-600">{title}</h3>
+        </div>
+      )}
+      <CardContent className="p-0 m-0">{children}</CardContent>
+    </Card>
   );
 };
 

@@ -101,6 +101,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   useEffect(() => {
     if (yomoInitToken) {
       logout();
+      navigate("/");
     }
   }, [yomoInitToken]);
 

@@ -9,6 +9,7 @@ import {
   projectData as getProjectData,
 } from "@/lib/api/project";
 import { ProjectItem } from "@/modal/searchResult";
+import ChartContainer from "@/components/charts/ChartContainer";
 import PriceChart from "@/components/charts/PriceChart";
 
 const Search: React.FC = () => {
@@ -112,26 +113,27 @@ const Search: React.FC = () => {
                   className="w-full h-full object-cover rounded-full"
                 />
               </div>
-                             <span className="text-sm text-gray-500">
-                 {selectedProject.project_name} Project Analysis and Summary
-               </span>
+              <span className="text-sm text-gray-500">
+                {selectedProject.project_name} Project Analysis and Summary
+              </span>
             </div>
           )}
         </div>
 
-                 {/* 欢迎状态 - 未选择项目时显示 */}
-         {!selectedProject && !searchResult && (
-           <div className="px-4 py-8 text-center animate-fade-in">
-             <div className="text-black text-lg mb-2 font-medium animate-slide-up [--animation-delay:200ms]">
-               Welcome to Project Research Tool
-             </div>
-             <div className="text-gray-400 text-sm animate-slide-up [--animation-delay:400ms]">
-               Search for projects you're interested in to get detailed analysis reports
-             </div>
-           </div>
-         )}
+        {/* 欢迎状态 - 未选择项目时显示 */}
+        {!selectedProject && !searchResult && (
+          <div className="px-4 py-8 text-center animate-fade-in">
+            <div className="text-black text-lg mb-2 font-medium animate-slide-up [--animation-delay:200ms]">
+              Welcome to Project Research Tool
+            </div>
+            <div className="text-gray-400 text-sm animate-slide-up [--animation-delay:400ms]">
+              Search for projects you're interested in to get detailed analysis
+              reports
+            </div>
+          </div>
+        )}
 
-                 {/* 项目详情 - 仅在选择项目时显示 */}
+        {/* 项目详情 - 仅在选择项目时显示 */}
         {selectedProject && (
           <>
             {/* 项目介绍部分 */}
@@ -167,15 +169,30 @@ const Search: React.FC = () => {
                     Financing Information
                   </div>
                 </div>
-                                <div className="text-xs text-gray-700 leading-relaxed mb-4">
-                   According to public information, {selectedProject?.project_name ||
-                     projectData?.project_info?.name} has received high recognition and support from the capital market in the early stages of the project.
-                   {selectedProject?.project_name ||
-                     projectData?.project_info?.name} has completed {projectData?.fundraising_info?.round_info?.length || 0} rounds of financing, with a total amount exceeding {projectData?.fundraising_info?.total_raised}.
-                   These data fully demonstrate {selectedProject?.project_name ||
-                     projectData?.project_info?.name}'s leading position and great potential in blockchain security and scalability. At the same time, sufficient funding provides strong support for its subsequent development and growth, enabling it to better serve the Bitcoin ecosystem and other protocols.
+                <div className="text-xs text-gray-700 leading-relaxed mb-4">
+                  According to public information,{" "}
+                  {selectedProject?.project_name ||
+                    projectData?.project_info?.name}{" "}
+                  has received high recognition and support from the capital
+                  market in the early stages of the project.
+                  {selectedProject?.project_name ||
+                    projectData?.project_info?.name}{" "}
+                  has completed{" "}
+                  {projectData?.fundraising_info?.round_info?.length || 0}{" "}
+                  rounds of financing, with a total amount exceeding{" "}
+                  {projectData?.fundraising_info?.total_raised}. These data
+                  fully demonstrate{" "}
+                  {selectedProject?.project_name ||
+                    projectData?.project_info?.name}
+                  's leading position and great potential in blockchain security
+                  and scalability. At the same time, sufficient funding provides
+                  strong support for its subsequent development and growth,
+                  enabling it to better serve the Bitcoin ecosystem and other
+                  protocols.
                 </div>
-                                 <div className="text-xs text-gray-700 mb-4">Investment Institutions:</div>
+                <div className="text-xs text-gray-700 mb-4">
+                  Investment Institutions:
+                </div>
                 <Card className="bg-gray-100 border border-gray-200 h-36 mb-2">
                   <CardContent className="p-0 h-full flex items-center justify-center">
                     <div className="text-xs text-gray-500">投资机构列表</div>
@@ -190,7 +207,9 @@ const Search: React.FC = () => {
               <div className="px-4 mb-6">
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-1 h-4 bg-orange-500 rounded"></div>
-                  <div className="text-sm font-medium text-black">Project Data</div>
+                  <div className="text-sm font-medium text-black">
+                    Project Data
+                  </div>
                 </div>
                 {/* <div className="text-xs text-gray-700 mb-3">社区热度与媒体报道</div>
                 <Card className="bg-gray-100 border border-gray-200 h-36 mb-4">
@@ -283,9 +302,9 @@ const Search: React.FC = () => {
                   )} */}
                   {projectData?.social_media_stats?.media_mentions && (
                     <div className="space-y-2">
-                                             <div className="text-xs text-gray-700 font-medium">
-                         Media Coverage
-                       </div>
+                      <div className="text-xs text-gray-700 font-medium">
+                        Media Coverage
+                      </div>
                       <div className="flex flex-wrap gap-2">
                         {projectData.social_media_stats.media_mentions.map(
                           (url: string, index: number) => {
@@ -333,7 +352,6 @@ const Search: React.FC = () => {
                 </div> */}
               </div>
             )}
-
             {/* 市场数据部分 */}
             {projectData?.market_data && (
               <div className="px-4 mb-6">
@@ -341,11 +359,15 @@ const Search: React.FC = () => {
                   <div className="w-1 h-4 bg-orange-500 rounded"></div>
                   <div className="text-sm font-medium text-black">Markets</div>
                 </div>
-                <PriceChart
-                  height={144}
-                  symbol={selectedProject?.token_symbol || "BTC"}
-                  useApi={true}
-                />
+                <div className="px-4 mb-6">
+                  <ChartContainer title="30 days price trend">
+                    <PriceChart
+                      height={144}
+                      symbol={selectedProject?.token_symbol || "BTC"}
+                      useApi={true}
+                    />
+                  </ChartContainer>
+                </div>
                 <div className="space-y-2 text-xs mb-4">
                   <div className="flex items-center justify-between">
                     <span className="text-gray-700">Trading Volume (24H)</span>
@@ -654,36 +676,50 @@ const Search: React.FC = () => {
                 })()}
               </div>
             )}
-                        {/* 项目链接部分 */}
+            {/* 项目链接部分 */}
             {(() => {
               const allPlatforms = [
                 {
                   name: "Discord",
-                  url: selectedProject?.discord_url || projectData?.social_media_links?.discord,
+                  url:
+                    selectedProject?.discord_url ||
+                    projectData?.social_media_links?.discord,
                 },
                 {
                   name: "Telegram",
-                  url: selectedProject?.telegram_url || projectData?.social_media_links?.telegram,
+                  url:
+                    selectedProject?.telegram_url ||
+                    projectData?.social_media_links?.telegram,
                 },
                 {
                   name: "Medium",
-                  url: selectedProject?.medium_url || projectData?.social_media_links?.medium,
+                  url:
+                    selectedProject?.medium_url ||
+                    projectData?.social_media_links?.medium,
                 },
                 {
                   name: "Github",
-                  url: selectedProject?.github_url || projectData?.social_media_links?.github,
+                  url:
+                    selectedProject?.github_url ||
+                    projectData?.social_media_links?.github,
                 },
                 {
                   name: "Website",
-                  url: selectedProject?.website_url || projectData?.social_media_links?.website,
+                  url:
+                    selectedProject?.website_url ||
+                    projectData?.social_media_links?.website,
                 },
                 {
                   name: "Docs",
-                  url: selectedProject?.gitbook_url || projectData?.social_media_links?.defliama,
+                  url:
+                    selectedProject?.gitbook_url ||
+                    projectData?.social_media_links?.defliama,
                 },
                 {
                   name: "dApp",
-                  url: selectedProject?.website_url || projectData?.social_media_links?.website,
+                  url:
+                    selectedProject?.website_url ||
+                    projectData?.social_media_links?.website,
                 },
                 {
                   name: "X(Twitter)",
@@ -692,16 +728,20 @@ const Search: React.FC = () => {
                     : projectData?.social_media_links?.twitter,
                 },
               ];
-              
-              const availablePlatforms = allPlatforms.filter(platform => platform.url);
-              
+
+              const availablePlatforms = allPlatforms.filter(
+                (platform) => platform.url
+              );
+
               if (availablePlatforms.length === 0) return null;
-              
+
               return (
                 <div className="px-4 mb-6">
                   <div className="flex items-center gap-2 mb-3">
                     <div className="w-1 h-4 bg-orange-500 rounded"></div>
-                                         <div className="text-sm font-medium text-black">Project Links</div>
+                    <div className="text-sm font-medium text-black">
+                      Project Links
+                    </div>
                   </div>
                   <div className="grid grid-cols-4 gap-3">
                     {availablePlatforms.map((platform) => (
@@ -728,19 +768,34 @@ const Search: React.FC = () => {
             <div className="px-4 mb-3 mt-4">
               <div className="flex items-center gap-2 ">
                 <div className="w-1 h-4 bg-orange-500 rounded"></div>
-                <div className="text-sm font-medium text-black">Project Summary</div>
+                <div className="text-sm font-medium text-black">
+                  Project Summary
+                </div>
               </div>
             </div>
 
             {/* 总结内容部分 */}
             <div className="px-4 mb-6">
               <div className="text-xs text-gray-700 leading-relaxed">
-                                 According to public information, {selectedProject?.project_name ||
-                   projectData?.project_info?.name} has received high recognition and support from the capital market in the early stages of the project.
-                 {selectedProject?.project_name ||
-                   projectData?.project_info?.name} has completed {projectData?.fundraising_info?.round_info?.length || 0} rounds of financing, with a total amount exceeding {projectData?.fundraising_info?.total_raised || "N/A"}.
-                 These data fully demonstrate {selectedProject?.project_name ||
-                   projectData?.project_info?.name}'s leading position and great potential in blockchain security and scalability. At the same time, sufficient funding provides strong support for its subsequent development and growth, enabling it to better serve the Bitcoin ecosystem and other protocols.
+                According to public information,{" "}
+                {selectedProject?.project_name ||
+                  projectData?.project_info?.name}{" "}
+                has received high recognition and support from the capital
+                market in the early stages of the project.
+                {selectedProject?.project_name ||
+                  projectData?.project_info?.name}{" "}
+                has completed{" "}
+                {projectData?.fundraising_info?.round_info?.length || 0} rounds
+                of financing, with a total amount exceeding{" "}
+                {projectData?.fundraising_info?.total_raised || "N/A"}. These
+                data fully demonstrate{" "}
+                {selectedProject?.project_name ||
+                  projectData?.project_info?.name}
+                's leading position and great potential in blockchain security
+                and scalability. At the same time, sufficient funding provides
+                strong support for its subsequent development and growth,
+                enabling it to better serve the Bitcoin ecosystem and other
+                protocols.
               </div>
               {/* <div className="text-sm text-gray-600 mt-2">
                 以上是 Yomo 为您总结生成的关于{" "}
@@ -756,13 +811,14 @@ const Search: React.FC = () => {
           </>
         )}
 
-                 {/* 警告横幅 */}
+        {/* 警告横幅 */}
         <div className="px-4 pb-8">
-                     <div className="mb-4">
-             <div className="text-xs text-red-600 text-center">
-               All data in the report comes from publicly available data sources on the internet, community, or user-submitted data!
-             </div>
-           </div>
+          <div className="mb-4">
+            <div className="text-xs text-red-600 text-center">
+              All data in the report comes from publicly available data sources
+              on the internet, community, or user-submitted data!
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactECharts from 'echarts-for-react';
+import * as echarts from 'echarts';
 import { usePriceData, PriceDataPoint } from '@/hooks/usePriceData';
 import ChartContainer from './ChartContainer';
 
@@ -31,20 +32,28 @@ const PriceChart: React.FC<PriceChartProps> = ({
   const chartData = useApi ? apiData : (data.length > 0 ? data : generateMockData());
 
   const option = {
-    grid: {
-      top: 0,
-      right: 0,
-      bottom: 0,
-      left: 0,
-      containLabel: false
+    grid: { 
+      left: 0, 
+      right: 0, 
+      top: 0, 
+      bottom: 0, 
+      containLabel: false 
+    },
+    tooltip: { 
+      trigger: "axis", 
+      axisPointer: { type: "line" }, 
+      borderWidth: 0 
     },
     xAxis: {
       type: 'category',
+      boundaryGap: false,
       data: chartData.map(item => item.date),
       show: false
     },
     yAxis: {
       type: 'value',
+      min: Math.min(...chartData.map(item => item.price)) * 0.95,
+      max: Math.max(...chartData.map(item => item.price)) * 1.05,
       show: false
     },
     series: [
@@ -54,73 +63,27 @@ const PriceChart: React.FC<PriceChartProps> = ({
         smooth: true,
         symbol: 'none',
         lineStyle: {
-          color: '#3B82F6',
-          width: 3
+          color: '#F67C00',
+          width: 1
         },
         areaStyle: {
-          color: {
-            type: 'linear',
-            x: 0,
-            y: 0,
-            x2: 0,
-            y2: 1,
-            colorStops: [
-              {
-                offset: 0,
-                color: 'rgba(59, 130, 246, 0.2)'
-              },
-              {
-                offset: 1,
-                color: 'rgba(59, 130, 246, 0.02)'
-              }
-            ]
-          }
+          color: new (echarts as any).graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: "rgba(246,124,0,0.25)" },
+            { offset: 1, color: "rgba(246,124,0,0.00)" },
+          ])
         },
-        emphasis: {
-          focus: 'series',
-          itemStyle: {
-            color: '#3B82F6'
-          }
-        }
+        emphasis: { disabled: true }
       }
     ],
-    tooltip: {
-      trigger: 'axis',
-      backgroundColor: 'rgba(255, 255, 255, 0.98)',
-      borderColor: '#E5E7EB',
-      borderWidth: 1,
-      borderRadius: 8,
-      textStyle: {
-        color: '#374151',
-        fontSize: 12
-      },
-      formatter: (params: any) => {
-        const data = params[0];
-        const date = new Date(data.axisValue).toLocaleDateString();
-        const price = data.value.toFixed(2);
-        return `
-          <div style="padding: 10px;">
-            <div style="font-weight: 600; margin-bottom: 6px; color: #374151;">${date}</div>
-            <div style="color: #3B82F6; font-size: 14px; font-weight: 600;">$${price}</div>
-          </div>
-        `;
-      }
-    }
+    animation: true
   };
 
   return (
-    <ChartContainer 
-      title="30 days price trend"
-      loading={isLoading}
-      error={error}
-      className="mb-2"
-    >
-      <ReactECharts
-        option={option}
-        style={{ height, width: '100%' }}
-        opts={{ renderer: 'canvas' }}
-      />
-    </ChartContainer>
+    <ReactECharts
+      option={option}
+      style={{ height, width: '100%' }}
+      opts={{ renderer: 'canvas' }}
+    />
   );
 };
 
@@ -138,8 +101,12 @@ function generateMockData(): PriceDataPoint[] {
     const change = (Math.random() - 0.5) * volatility;
     const price = basePrice * (1 + change);
     
+    // 使用更简洁的日期格式，类似PanelTvlChat
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    
     data.push({
-      date: date.toISOString().split('T')[0],
+      date: `${month}.${day}`,
       price: Math.round(price * 100) / 100
     });
   }

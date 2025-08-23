@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 import { PlusIcon, RefreshCwIcon, Loader2 } from "lucide-react";
 import { useRootStore } from "@/store";
 import { useUserDetail } from "@/hooks/useUserDetail";
+import { useLogout } from "@/hooks/useLogout";
 import { foramtAddress } from "@/lib/utils";
 import { SavedIcon, EidtIcon } from "@/components/custom/svg";
 import { changeNickName } from "@/lib/api/user";
@@ -12,10 +14,13 @@ import ChangeEmailSection from "./ChangeEmail";
 import Google2FaBind from "./Google2FaBind";
 import ChangePasswordSection from "./ChangePassword"; // 添加导入
 import DisplayHoverCard from "./DisplayHoverCard";
+import { useNavigate } from "react-router-dom";
 
 const Account: React.FC = () => {
   const { userDetail } = useRootStore();
   const { fetchUserDetail } = useUserDetail();
+  const { logout } = useLogout();
+  const navigate = useNavigate();
   const [nickName, setNickName] = useState(userDetail?.nickName || "");
   const [editNickNameModalOpen, setEditNickNameModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -93,7 +98,7 @@ const Account: React.FC = () => {
         await fetchUserDetail();
       }
     } catch (error) {
-      console.error("修改昵称失败:", error);
+      console.error("Failed to modify nickname:", error);
     } finally {
       setIsSaving(false);
     }
@@ -128,7 +133,7 @@ const Account: React.FC = () => {
 
   return (
     <div className="">
-      {/* User Profile Section */}
+      {/* 用户资料部分 */}
       <Card className="py-0 bg-transparent border-0 shadow-none rounded-0">
         <CardContent className="px-0 py-4">
           <div className="flex items-center gap-3">
@@ -187,7 +192,7 @@ const Account: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Account Connections */}
+      {/* 账户连接 */}
       <Card className="py-0 bg-white border-0">
         <CardContent className="p-0">
           {accountConnections.map((connection, index) => (
@@ -246,7 +251,7 @@ const Account: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Security Section */}
+      {/* 安全设置部分 */}
       <Card className="py-0 mt-3 bg-white border-0">
         <CardContent className="p-0">
           <div className="p-4">
@@ -301,6 +306,19 @@ const Account: React.FC = () => {
       </Card>
 
       <DisplayHoverCard className="mt-3" />
+
+      {/* 退出登录按钮 */}
+      <div className="mt-2">
+        <Button
+          onClick={() => {
+            logout();
+            navigate("/");
+          }}
+          className="w-full mt-3"
+        >
+          Logout
+        </Button>
+      </div>
 
       {/* 各种弹窗 */}
       {showEmailModal && <ChangeEmailSection onClose={handleEmailModalClose} />}

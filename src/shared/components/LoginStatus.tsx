@@ -6,6 +6,7 @@ import {
   GiftIcon,
   TabIcon,
 } from "@/components/custom/svg";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import "@/shared/styles/Layout.css";
 import { useRootStore } from "@/store";
 import { useCreditsInfo } from "@/hooks/useCreditsInfo";
@@ -62,7 +63,9 @@ const LoginStatus: React.FC = () => {
     <div className="login-info">
       <div className="flex items-center justify-between mb-3 user-info">
         <div className="flex items-center user-info-left">
-          <UserIcon size={40} color="#F67C00" />
+          <Avatar className="w-10 h-10">
+            <AvatarImage src="https://c.animaapp.com/tsXhjynw/img/image-9@2x.png" />
+          </Avatar>
           <div className="user-info-text text-[#2C2C2C] ml-1">
             <p className="text-[14px] font-bold">
               Username - {userDetail?.nickName||'-'}

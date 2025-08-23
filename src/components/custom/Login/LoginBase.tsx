@@ -12,6 +12,7 @@ import { WalletButtonCustom } from "./WalletButtonCustom";
 import Register from "./Register";
 import EmailLogin from "./EmailLogin";
 import { useUserDetail } from "@/hooks/useUserDetail";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 export enum LoginState {
   Base = "Base",
@@ -69,7 +70,9 @@ const LoginBase: React.FC = () => {
               <div>
                 {/* 头像 + 标题 */}
                 <div className="px-6 pt-1 pb-2 text-center">
-                  <div className="w-24 h-24 mx-auto rounded-full bg-neutral-200 dark:bg-neutral-800" />
+                  <Avatar className="w-24 h-24 mx-auto rounded-full bg-neutral-200 dark:bg-neutral-800">
+                    <AvatarImage src="https://c.animaapp.com/tsXhjynw/img/image-9@2x.png" />
+                  </Avatar>
                   <h2 className="mt-6 text-3xl font-semibold tracking-tight">
                     Log In
                   </h2>

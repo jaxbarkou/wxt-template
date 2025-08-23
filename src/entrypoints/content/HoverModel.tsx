@@ -49,11 +49,11 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
     let cam = projectData.campaign;
     return [
       {
-        label: "奖励总价值",
+        label: "Total Reward Value",
         value: `${cam?.community_rewards}  ${cam?.campaign_title}`,
       },
-      { label: "参与人数", value: `${cam?.participants}` },
-      { label: "社区攻略", value: "--" },
+              { label: "Participants", value: `${cam?.participants}` },
+        { label: "Community Guide", value: "--" },
     ];
   }, [projectData]);
 
@@ -66,8 +66,8 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
       const minc = mtData?.mentions_7d_increment || "--";
       return [
         { label: "XIcon(Twitter)", value: `${followers} (${tinc}/7d)` },
-        { label: "推特提及量", value: `${men} (${minc}/7d)` },
-        { label: "情感", value: "😀 --%  😡 --%  😐 --%" },
+        { label: "Twitter Mentions", value: `${men} (${minc}/7d)` },
+        { label: "Sentiment", value: "😀 --%  😡 --%  😐 --%" },
       ];
     }
     return [];
@@ -205,7 +205,7 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
               <>
                 {projectData && (
                   <div>
-                    {/* Header Section */}
+                                          {/* 头部信息 */}
                     <header className="flex items-center justify-between p-3">
                       <div className="flex items-center gap-3">
                         <Avatar className="w-10 h-10 bg-brand-primary">
@@ -228,7 +228,7 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
                       </div>
                       <RightOpt />
                     </header>
-                    {/* Social Links */}
+                                          {/* 社交链接 */}
                     <nav className="flex gap-2 px-3">
                       {socialLinks.map((link, index) => (
                         <div key={index}>
@@ -396,7 +396,7 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
                           <Card className=" bg-[#f6f6f8] rounded-lg border-0 py-0 flex">
                             <CardContent className="p-3">
                               <h3 className="mb-4 text-sm font-normal text-black ">
-                                社区热度
+                                Community Heat
                               </h3>
                               <div className="space-y-3">
                                 {communityData.map((item, index) => (
@@ -438,7 +438,7 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
                           </Card>
                         )}
 
-                        {/* Quest Campaigns Card */}
+                        {/* 任务活动卡片 */}
                         {projectData?.campaign && (
                           <Card className="bg-[#f6f6f8] rounded-2 border-0 py-0 flex ">
                             <CardContent className="p-3">
@@ -495,7 +495,7 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
                 </div>
               </div>
             )}
-            {/* Footer */}
+                                  {/* 底部信息 */}
             <Footer />
           </CardContent>
         </Card>

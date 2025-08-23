@@ -19,7 +19,7 @@ const Test: React.FC= () => {
         setLogList(res.result || []);
       }
     } catch (error) {
-      console.error("获取日志失败:", error);
+      console.error("Failed to get logs:", error);
     }
   }, []);
 
@@ -29,18 +29,18 @@ const Test: React.FC= () => {
 
   return (
     <div className={`w-full ${mode === "popup" ? "p-4" : "p-8"}`}>
-      <Link to="/">返回</Link>
-      <h1 className="mb-6 text-2xl font-bold">Passkey 功能测试页面</h1>
+      <Link to="/">Back</Link>
+      <h1 className="mb-6 text-2xl font-bold">Passkey Feature Test Page</h1>
 
       {/* Sidepanel环境特殊提示 */}
       {mode === "sidepanel" && (
         <div className="p-4 mb-6 border border-yellow-200 rounded-lg bg-yellow-50">
           <h3 className="mb-2 font-semibold text-yellow-800">
-            ⚠️ Sidepanel 环境限制
+            ⚠️ Sidepanel Environment Limitations
           </h3>
           <p className="mb-3 text-sm text-yellow-700">
-            Sidepanel 环境中的 WebAuthn
-            功能受到浏览器限制，建议在其他环境中测试：
+            WebAuthn functionality in Sidepanel environment
+            is limited by browser restrictions, recommend testing in other environments:
           </p>
           <div className="flex space-x-2">
             <button
@@ -52,27 +52,27 @@ const Test: React.FC= () => {
                   ) {
                     chrome.action.openPopup();
                   } else {
-                    alert("请点击扩展图标打开弹窗");
+                    alert("Please click the extension icon to open popup");
                   }
                 } catch (error) {
-                  alert("请点击扩展图标打开弹窗");
+                  alert("Please click the extension icon to open popup");
                 }
               }}
               className="px-3 py-1 text-sm text-white bg-yellow-600 rounded hover:bg-yellow-700"
             >
-              在 Popup 中测试
+              Test in Popup
             </button>
             <button
               onClick={() => {
                 try {
                   chrome.runtime.openOptionsPage();
                 } catch (error) {
-                  alert("请手动打开扩展设置页面");
+                  alert("Please manually open the extension settings page");
                 }
               }}
               className="px-3 py-1 text-sm text-white bg-blue-600 rounded hover:bg-blue-700"
             >
-              打开 Options 页面
+              Open Options Page
             </button>
           </div>
         </div>
@@ -80,38 +80,38 @@ const Test: React.FC= () => {
 
       <div className="space-y-8">
         <div className="p-6 bg-white rounded-lg shadow">
-          <h2 className="mb-4 text-xl font-bold">Passkey 功能测试</h2>
+          <h2 className="mb-4 text-xl font-bold">Passkey Feature Test</h2>
           <p className="mb-4 text-gray-600">
-            测试完整的Passkey注册和登录流程，包括与后端API的交互。
-            支持多种认证器类型，优先使用平台认证器（指纹/面容识别）。
+            Test complete Passkey registration and login flow, including backend API interaction.
+            Supports multiple authenticator types, prioritizing platform authenticators (fingerprint/face recognition).
           </p>
           <PasskeyTest />
         </div>
 
         <div className="p-4 rounded-lg bg-blue-50">
-          <h3 className="mb-2 font-bold">测试说明：</h3>
+          <h3 className="mb-2 font-bold">Test Instructions:</h3>
           <ul className="space-y-1 text-sm">
             <li>
-              • <strong>Sidepanel 环境</strong>：WebAuthn
-              功能受到浏览器限制，无法正常使用
+              • <strong>Sidepanel Environment</strong>: WebAuthn
+              functionality is limited by browser restrictions and cannot be used normally
             </li>
             <li>
-              • <strong>Popup 环境</strong>：可以正常使用 WebAuthn 功能
+              • <strong>Popup Environment</strong>: Can normally use WebAuthn functionality
             </li>
             <li>
-              • <strong>Options 页面</strong>：独立标签页环境，最适合测试
+              • <strong>Options Page</strong>: Independent tab environment, most suitable for testing
               WebAuthn
             </li>
             <li>
-              • <strong>Content Script</strong>：在支持 HTTPS 的网页中测试
+              • <strong>Content Script</strong>: Test on HTTPS-supported web pages
             </li>
             <li>
-              • <strong>平台认证器</strong>：优先使用指纹/面容识别，更安全便捷
+              • <strong>Platform Authenticator</strong>: Prioritize fingerprint/face recognition, more secure and convenient
             </li>
             <li>
-              • <strong>跨平台认证器</strong>：支持手机扫码、USB密钥等
+              • <strong>Cross-platform Authenticator</strong>: Supports mobile QR code scanning, USB keys, etc.
             </li>
-            <li>• 确保设备支持 Passkey（如 Touch ID、Face ID 等）</li>
+            <li>• Ensure device supports Passkey (such as Touch ID, Face ID, etc.)</li>
           </ul>
         </div>
       </div>

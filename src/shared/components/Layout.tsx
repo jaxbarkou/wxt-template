@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   SearchIcon,
   PentagramIcon,
@@ -39,7 +40,7 @@ import { useCreditsInfo } from "@/hooks/useCreditsInfo";
 
 // 顶部操作栏配置
 const topActions = [
-  { id: "fold", icon: "fold", label: "折叠", path: null },
+  { id: "fold", icon: "fold", label: "Fold", path: null },
   //   {
   //     id: "fullpage",
   //     icon: "fullpage",
@@ -104,15 +105,13 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     }
   }, [shouldFetchUserDetail, fetchUserDetail, fetchCreditsInfo]);
 
-
-
   const handleNavItemClick = (item: any) => {
     // 检查settings页面是否需要登录
-    if (item.path === '/settings' && !token) {
+    if (item.path === "/settings" && !token) {
       setLoginModalOpen(true);
       return;
     }
-    
+
     if (item.path) {
       navigate(item.path);
     }
@@ -263,9 +262,9 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 onMouseEnter={() => !isDisabled && setIsUserHovered(true)}
                 onMouseLeave={() => !isDisabled && setIsUserHovered(false)}
               >
-                <span className="nav-icon">
-                  {renderIcon(item.icon, isDisabled)}
-                </span>
+                <Avatar className="w-8 h-8">
+                  <AvatarImage src="https://c.animaapp.com/tsXhjynw/img/image-9@2x.png" />
+                </Avatar>
               </div>
             </TooltipTrigger>
             <TooltipContent side="left">
@@ -371,27 +370,27 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
             {/* 右侧图标 */}
             <div className="bottom-right-icons">
-              <div 
+              <div
                 className="bottom-item disabled"
-                style={{ cursor: 'not-allowed', opacity: 0.5 }}
+                style={{ cursor: "not-allowed", opacity: 0.5 }}
               >
                 <GiftIcon size={18} color="#F67C00" />
               </div>
-              <div 
+              <div
                 className="bottom-item disabled"
-                style={{ cursor: 'not-allowed', opacity: 0.5 }}
+                style={{ cursor: "not-allowed", opacity: 0.5 }}
               >
                 <LoveIcon size={18} color="#6c757d" />
               </div>
-              <div 
+              <div
                 className="bottom-item disabled"
-                style={{ cursor: 'not-allowed', opacity: 0.5 }}
+                style={{ cursor: "not-allowed", opacity: 0.5 }}
               >
                 <PromptBorIcon size={22} color="#6c757d" />
               </div>
-              <div 
+              <div
                 className="bottom-item disabled"
-                style={{ cursor: 'not-allowed', opacity: 0.5 }}
+                style={{ cursor: "not-allowed", opacity: 0.5 }}
               >
                 <EmaiIcon size={18} color="#6c757d" />
               </div>
@@ -447,32 +446,32 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
                   {/* 水平导航栏 */}
                   <div className="horizontal-nav">
-                    <div 
+                    <div
                       className="nav-item-horizontal clickable"
-                      onClick={() => navigate('/search')}
-                      style={{ cursor: 'pointer' }}
+                      onClick={() => navigate("/search")}
+                      style={{ cursor: "pointer" }}
                     >
                       <SearchIcon size={16} color="#6c757d" />
                       <span>Research</span>
                     </div>
-                    <div 
+                    <div
                       className="nav-item-horizontal clickable"
-                      onClick={() => navigate('/')}
-                      style={{ cursor: 'pointer' }}
+                      onClick={() => navigate("/")}
+                      style={{ cursor: "pointer" }}
                     >
                       <ChatIcon size={16} color="#6c757d" />
                       <span>Chat</span>
                     </div>
-                    <div 
+                    <div
                       className="nav-item-horizontal disabled"
-                      style={{ cursor: 'not-allowed', opacity: 0.5 }}
+                      style={{ cursor: "not-allowed", opacity: 0.5 }}
                     >
                       <GiftIcon size={16} color="#6c757d" />
                       <span>Campaigns</span>
                     </div>
-                    <div 
+                    <div
                       className="nav-item-horizontal disabled"
-                      style={{ cursor: 'not-allowed', opacity: 0.5 }}
+                      style={{ cursor: "not-allowed", opacity: 0.5 }}
                     >
                       <LampIcon size={16} color="#6c757d" />
                       <span>News</span>
@@ -485,57 +484,57 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                     {/* 底部导航栏 */}
                     <div className="bottom-nav-panel">
                       <div className="bottom-nav-left">
-                        <div 
+                        <div
                           className="bottom-nav-item disabled"
-                          style={{ cursor: 'not-allowed', opacity: 0.5 }}
+                          style={{ cursor: "not-allowed", opacity: 0.5 }}
                         >
                           <TwitterIcon size={16} color="#6c757d" />
                         </div>
-                        <div 
+                        <div
                           className="bottom-nav-item disabled"
-                          style={{ cursor: 'not-allowed', opacity: 0.5 }}
+                          style={{ cursor: "not-allowed", opacity: 0.5 }}
                         >
                           <TelegramIcon size={16} color="#6c757d" />
                         </div>
                       </div>
 
                       <div className="bottom-nav-right">
-                        <div 
+                        <div
                           className="bottom-nav-item clickable"
-                          onClick={() => navigate('/')}
-                          style={{ cursor: 'pointer' }}
+                          onClick={() => navigate("/")}
+                          style={{ cursor: "pointer" }}
                         >
                           <HomeIcon size={16} color="#6c757d" />
                         </div>
-                        <div 
+                        <div
                           className="bottom-nav-item disabled"
-                          style={{ cursor: 'not-allowed', opacity: 0.5 }}
+                          style={{ cursor: "not-allowed", opacity: 0.5 }}
                         >
                           <MobileIcon size={16} color="#6c757d" />
                         </div>
-                        <div 
+                        <div
                           className="bottom-nav-item clickable"
                           onClick={() => {
                             if (!token) {
                               setLoginModalOpen(true);
                             } else {
-                              navigate('/settings');
+                              navigate("/settings");
                             }
                           }}
-                          style={{ cursor: 'pointer' }}
+                          style={{ cursor: "pointer" }}
                         >
                           <SettingIcon size={16} color="#6c757d" />
                         </div>
-                        <div 
+                        <div
                           className="bottom-nav-item active clickable"
                           onClick={() => {
                             if (!token) {
                               setLoginModalOpen(true);
                             } else {
-                              navigate('/settings');
+                              navigate("/settings");
                             }
                           }}
-                          style={{ cursor: 'pointer' }}
+                          style={{ cursor: "pointer" }}
                         >
                           <UserIcon size={16} color="white" />
                         </div>

@@ -125,7 +125,7 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
     <div className="fixed top-0 left-0 w-full h-full bg-black/50 z-50 flex items-center justify-center">
       <Card className="bg-white rounded-lg shadow-[0px_0px_2px_#ffffff1a] border-0 w-[90%] py-0">
         <CardContent className="space-y-4 p-0">
-          {/* Header with title and close button */}
+          {/* 标题栏和关闭按钮 */}
           <header className="h-[44px] flex items-center justify-between border-b border-[rgba(151, 151, 151, 0.2)] pl-4 pr-4 pt-2 pb-2">
             <h2 className="[font-family:'Arboria-Medium-Medium',Helvetica] font-size-[16px] font-medium text-[#2c2c2c] text-base tracking-[0] leading-[normal]">
               Change Password
@@ -152,9 +152,9 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
               </div>
             )}
 
-            {/* Form fields */}
+            {/* 表单字段 */}
             <div className="space-y-6 translate-y-[-1rem] animate-fade-in [--animation-delay:200ms]">
-              {/* Old Password */}
+                              {/* 旧密码 */}
               <div className="space-y-2">
                 <Label
                   htmlFor="oldPassword"
@@ -178,7 +178,7 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
                 )}
               </div>
 
-              {/* New Password */}
+                              {/* 新密码 */}
               <div className="space-y-2">
                 <Label
                   htmlFor="newPassword"
@@ -202,7 +202,7 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
                 )}
               </div>
 
-              {/* Confirm Password */}
+                              {/* 确认密码 */}
               <div className="space-y-2">
                 <Label
                   htmlFor="confirmPassword"
@@ -226,7 +226,7 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
                 )}
               </div>
 
-              {/* GA Code */}
+                              {/* 谷歌验证码 */}
               <div className="space-y-2">
                 <Label
                   htmlFor="gaCode"
@@ -250,7 +250,7 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
               </div>
             </div>
 
-            {/* Action buttons */}
+            {/* 操作按钮 */}
             <div className="flex gap-3 pt-2 translate-y-[-1rem] animate-fade-in [--animation-delay:400ms] mt-4">
               <Button
                 variant="outline"

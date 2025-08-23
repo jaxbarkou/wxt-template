@@ -48,7 +48,7 @@ export default function TwoFactorAuthSection({ onClose }: ChangeEmailSectionProp
         setError(response.message || "Failed to get 2FA secret");
       }
     } catch (error: any) {
-      console.error("获取2FA密钥失败:", error);
+      console.error("Failed to get 2FA secret:", error);
       setError(error.message || "Network error");
     } finally {
       setIsLoading(false);
@@ -76,7 +76,7 @@ export default function TwoFactorAuthSection({ onClose }: ChangeEmailSectionProp
         setError(response.message || "Failed to change 2FA secret");
       }
     } catch (error: any) {
-      console.error("更换2FA密钥失败:", error);
+      console.error("Failed to change 2FA secret:", error);
       setError(error.message || "Network error");
     } finally {
       setIsSaving(false);
@@ -140,7 +140,7 @@ export default function TwoFactorAuthSection({ onClose }: ChangeEmailSectionProp
         setError(response.message || "Failed to bind 2FA");
       }
     } catch (error: any) {
-      console.error("绑定2FA失败:", error);
+      console.error("Failed to bind 2FA:", error);
       setError(error.message || "Network error");
     } finally {
       setIsSaving(false);
@@ -204,7 +204,7 @@ export default function TwoFactorAuthSection({ onClose }: ChangeEmailSectionProp
   };
 
   return (
-    <div className="fixed top-0 left-0 z-50 flex items-center justify-center w-full h-full bg-black/50">
+    <div className="fixed top-0 left-0 w-full h-full bg-black/50 z-50 flex items-center justify-center">
       <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogContent className="w-[360px] max-w-[360px] p-0 bg-white rounded-2xl border-0 shadow-lg [&>button]:hidden">
           {/* 使用和ChangeEmail一样的header样式 */}
@@ -269,19 +269,19 @@ export default function TwoFactorAuthSection({ onClose }: ChangeEmailSectionProp
                   {getStepTitle()}
                 </h2>
                 
-                <p className="mb-6 text-sm leading-relaxed text-left text-gray-600">
+                <p className="text-sm text-gray-600 leading-relaxed text-left mb-6">
                   {getStepDescription()}
                 </p>
 
                 {error && (
-                  <div className="p-3 mb-4 border border-red-200 rounded-lg bg-red-50">
-                    <p className="text-sm text-red-600">{error}</p>
+                  <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-red-600 text-sm">{error}</p>
                   </div>
                 )}
 
                 <div className="space-y-6">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-600">Current Code</label>
+                    <label className="text-sm text-gray-600 font-medium">Current Code</label>
                     <Input
                       placeholder="Enter current verification code"
                       value={oldGaCode}
@@ -289,7 +289,7 @@ export default function TwoFactorAuthSection({ onClose }: ChangeEmailSectionProp
                         setOldGaCode(e.target.value);
                         if (error) setError("");
                       }}
-                      className="w-full text-sm bg-white border-gray-200"
+                      className="w-full bg-white border-gray-200 text-sm"
                       disabled={isSaving}
                     />
                   </div>
@@ -297,7 +297,7 @@ export default function TwoFactorAuthSection({ onClose }: ChangeEmailSectionProp
                   <div className="flex gap-3 pt-4">
                     <Button
                       variant="outline"
-                      className="flex-1 h-auto py-3 text-gray-700 border-gray-300 hover:bg-gray-50"
+                      className="flex-1 h-auto py-3 border-gray-300 text-gray-700 hover:bg-gray-50"
                       onClick={handleClose}
                       disabled={isSaving}
                     >
@@ -329,47 +329,47 @@ export default function TwoFactorAuthSection({ onClose }: ChangeEmailSectionProp
                   {getStepTitle()}
                 </h2>
                 
-                <p className="mb-6 text-sm leading-relaxed text-left text-gray-600">
+                <p className="text-sm text-gray-600 leading-relaxed text-left mb-6">
                   {getStepDescription()}
                 </p>
 
                 {error && (
-                  <div className="p-3 mb-4 border border-red-200 rounded-lg bg-red-50">
-                    <p className="text-sm text-red-600">{error}</p>
+                  <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-red-600 text-sm">{error}</p>
                   </div>
                 )}
 
                 <div className="space-y-6">
                   <div className="space-y-4">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-gray-600">密钥</span>
+                      <span className="text-sm text-gray-600 font-medium">密钥</span>
                     </div>
 
                     <div className="relative">
                       <Input
                         value={verificationCode}
                         readOnly
-                        className="pr-10 font-mono text-sm border-gray-200 bg-gray-50"
+                        className="pr-10 bg-gray-50 border-gray-200 text-sm font-mono"
                         placeholder={isLoading ? "Loading..." : "No secret available"}
                       />
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="absolute w-6 h-6 p-0 -translate-y-1/2 right-2 top-1/2 hover:bg-gray-100"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0 hover:bg-gray-100"
                         onClick={handleCopyCode}
                         disabled={!verificationCode || isLoading || isSaving}
                       >
                         {isCopied ? (
-                          <CheckIcon className="w-4 h-4 text-gray-400" />
+                          <CheckIcon className="h-4 w-4 text-gray-400" />
                         ) : (
-                          <CopyIcon className="w-4 h-4 text-gray-400" />
+                          <CopyIcon className="h-4 w-4 text-gray-400" />
                         )}
                       </Button>
                     </div>
                   </div>
 
                   <div className="flex justify-center">
-                    <div className="flex items-center justify-center w-32 h-32 p-2 bg-white border border-gray-200 rounded-lg">
+                    <div className="w-32 h-32 bg-white border border-gray-200 rounded-lg p-2 flex items-center justify-center">
                       {isLoading ? (
                         <div className="flex items-center justify-center w-full h-full">
                           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#f67c00]"></div>
@@ -381,7 +381,7 @@ export default function TwoFactorAuthSection({ onClose }: ChangeEmailSectionProp
                           level="M"
                         />
                       ) : (
-                        <div className="text-xs text-center text-gray-400">
+                        <div className="text-gray-400 text-xs text-center">
                           {error ? "Failed to load QR code" : "No QR code available"}
                         </div>
                       )}
@@ -391,7 +391,7 @@ export default function TwoFactorAuthSection({ onClose }: ChangeEmailSectionProp
                   <div className="flex gap-3 pt-4">
                     <Button
                       variant="outline"
-                      className="flex-1 h-auto py-3 text-gray-700 border-gray-300 hover:bg-gray-50"
+                      className="flex-1 h-auto py-3 border-gray-300 text-gray-700 hover:bg-gray-50"
                       onClick={handleClose}
                       disabled={isSaving}
                     >
@@ -416,47 +416,47 @@ export default function TwoFactorAuthSection({ onClose }: ChangeEmailSectionProp
                   {getStepTitle()}
                 </h2>
                 
-                <p className="mb-6 text-sm leading-relaxed text-left text-gray-600">
+                <p className="text-sm text-gray-600 leading-relaxed text-left mb-6">
                   {getStepDescription()}
                 </p>
 
                 {error && (
-                  <div className="p-3 mb-4 border border-red-200 rounded-lg bg-red-50">
-                    <p className="text-sm text-red-600">{error}</p>
+                  <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-red-600 text-sm">{error}</p>
                   </div>
                 )}
 
                 <div className="space-y-6">
                   <div className="space-y-4">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-gray-600">密钥</span>
+                      <span className="text-sm text-gray-600 font-medium">密钥</span>
                     </div>
 
                     <div className="relative">
                       <Input
                         value={verificationCode}
                         readOnly
-                        className="pr-10 font-mono text-sm border-gray-200 bg-gray-50"
+                        className="pr-10 bg-gray-50 border-gray-200 text-sm font-mono"
                         placeholder={isLoading ? "Loading..." : "No secret available"}
                       />
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="absolute w-6 h-6 p-0 -translate-y-1/2 right-2 top-1/2 hover:bg-gray-100"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0 hover:bg-gray-100"
                         onClick={handleCopyCode}
                         disabled={!verificationCode || isLoading || isSaving}
                       >
                         {isCopied ? (
-                          <CheckIcon className="w-4 h-4 text-gray-400" />
+                          <CheckIcon className="h-4 w-4 text-gray-400" />
                         ) : (
-                          <CopyIcon className="w-4 h-4 text-gray-400" />
+                          <CopyIcon className="h-4 w-4 text-gray-400" />
                         )}
                       </Button>
                     </div>
                   </div>
 
                   <div className="flex justify-center">
-                    <div className="flex items-center justify-center w-32 h-32 p-2 bg-white border border-gray-200 rounded-lg">
+                    <div className="w-32 h-32 bg-white border border-gray-200 rounded-lg p-2 flex items-center justify-center">
                       {isLoading ? (
                         <div className="flex items-center justify-center w-full h-full">
                           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#f67c00]"></div>
@@ -468,7 +468,7 @@ export default function TwoFactorAuthSection({ onClose }: ChangeEmailSectionProp
                           level="M"
                         />
                       ) : (
-                        <div className="text-xs text-center text-gray-400">
+                        <div className="text-gray-400 text-xs text-center">
                           {error ? "Failed to load QR code" : "No QR code available"}
                         </div>
                       )}
@@ -478,7 +478,7 @@ export default function TwoFactorAuthSection({ onClose }: ChangeEmailSectionProp
                   <div className="flex gap-3 pt-4">
                     <Button
                       variant="outline"
-                      className="flex-1 h-auto py-3 text-gray-700 border-gray-300 hover:bg-gray-50"
+                      className="flex-1 h-auto py-3 border-gray-300 text-gray-700 hover:bg-gray-50"
                       onClick={handleClose}
                       disabled={isSaving}
                     >
@@ -504,17 +504,17 @@ export default function TwoFactorAuthSection({ onClose }: ChangeEmailSectionProp
                 </h2>
                 
                 {error && (
-                  <div className="p-3 mb-4 border border-red-200 rounded-lg bg-red-50">
-                    <p className="text-sm text-red-600">{error}</p>
+                  <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-red-600 text-sm">{error}</p>
                   </div>
                 )}
                 
                 <div className="space-y-6">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-600">Ga</label>
+                    <label className="text-sm text-gray-600 font-medium">Ga</label>
                     <Input
                       placeholder="Enter Ga"
-                      className="w-full text-sm bg-white border-gray-200"
+                      className="w-full bg-white border-gray-200 text-sm"
                       value={gaCode}
                       onChange={(e) => {
                         setGaCode(e.target.value);
@@ -560,17 +560,17 @@ export default function TwoFactorAuthSection({ onClose }: ChangeEmailSectionProp
                 </h2>
                 
                 {error && (
-                  <div className="p-3 mb-4 border border-red-200 rounded-lg bg-red-50">
-                    <p className="text-sm text-red-600">{error}</p>
+                  <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-red-600 text-sm">{error}</p>
                   </div>
                 )}
                 
                 <div className="space-y-6">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-600">Ga</label>
+                    <label className="text-sm text-gray-600 font-medium">Ga</label>
                     <Input
                       placeholder="Enter Ga"
-                      className="w-full text-sm bg-white border-gray-200"
+                      className="w-full bg-white border-gray-200 text-sm"
                       value={gaCode}
                       onChange={(e) => {
                         setGaCode(e.target.value);

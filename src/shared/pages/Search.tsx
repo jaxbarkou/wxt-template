@@ -1,51 +1,64 @@
 import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SearchInput } from "@/shared/components/search/SearchInput";
-import { Clock, Share2, Bookmark, MessageCircle, Heart } from "lucide-react";
-import mockProjectData from "@/mock/mockProjectData";
-import ChainLogo from "@/components/custom/svg/icons/ChainLogo";
+import { Clock } from "lucide-react";
 
-const mockSearchSuggestions = [
-  "Pell Network",
-  "Pell Token",
-  "Pell Protocol",
-  "Pell DeFi",
-  "Pell Staking",
-  "Pell Network Review",
-  "Pell Network Price",
-  "Pell Network Tokenomics",
-  "Pell Network Analysis",
-  "Pell Network News",
-  "Bitcoin Restaking",
-  "BTCFi Projects",
-  "DeFi Protocols",
-  "Cryptocurrency Research",
-  "Blockchain Security",
-];
+import ChainLogo from "@/components/custom/svg/icons/ChainLogo";
+import {
+  projectSearch,
+  projectData as getProjectData,
+} from "@/lib/api/project";
+import { ProjectItem } from "@/modal/searchResult";
+import PriceChart from "@/components/charts/PriceChart";
 
 const Search: React.FC = () => {
   const [searchValue, setSearchValue] = useState("");
-  const [isSearching, setIsSearching] = useState(false);
   const [searchResult, setSearchResult] = useState<string | null>(null);
-  const [projectData, setProjectData] = useState(mockProjectData);
+  const [projectData, setProjectData] = useState<any>(null);
+  const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(
+    null
+  );
 
-  const handleSearch = async (query: string) => {
+  const handleProjectSelect = async (project: ProjectItem) => {
+    setSelectedProject(project);
+
+    try {
+      const response: any = await getProjectData({
+        id: project.id,
+        ticker: project.token_symbol || "",
+        domain: project.website_url || project.website || "",
+      });
+      console.log("response", response);
+      if (response) {
+        setProjectData(response);
+      } else {
+        console.error("Failed to get project details:", response.message);
+      }
+    } catch (error) {
+      console.error("Error getting project details:", error);
+    }
+  };
+
+  const handleSearch = async (query: string): Promise<any[]> => {
     if (!query.trim()) {
       setSearchResult(null);
-      return;
+      setSelectedProject(null);
+      return [];
     }
 
-    setIsSearching(true);
-    setSearchResult(null);
-
-    // 模拟搜索延迟
-    setTimeout(() => {
-      setIsSearching(false);
-      setSearchResult(query);
-      // 这里可以调用真实的API，现在使用mock数据
-      setProjectData(mockProjectData);
-    }, 1500);
+    try {
+      const response: any = await projectSearch(query);
+      console.log("response", response);
+      if (response && Array.isArray(response)) {
+        setSearchResult(query);
+        return response;
+      } else {
+        return [];
+      }
+    } catch (error) {
+      console.error("Search error:", error);
+      return [];
+    }
   };
 
   // 格式化数字
@@ -63,11 +76,6 @@ const Search: React.FC = () => {
     return num > 0 ? `+${num.toFixed(2)}%` : `${num.toFixed(2)}%`;
   };
 
-  // 格式化时间戳
-  const formatDate = (timestamp: number) => {
-    return new Date(timestamp * 1000).toLocaleDateString();
-  };
-
   return (
     <div className="bg-white flex justify-center items-start w-[100%] min-h-screen">
       <div className="bg-white w-[100%] min-h-screen relative">
@@ -76,707 +84,685 @@ const Search: React.FC = () => {
           <Clock className="w-4 h-4 text-black" />
         </div>
 
-        {/* Search Input */}
+        {/* 搜索输入框 */}
         <div className="px-4">
           <SearchInput
             value={searchValue}
             onChange={setSearchValue}
-            onSelect={(val) => {
+            onSelect={(val, project) => {
               setSearchValue(val);
-              handleSearch(val);
+              if (project) {
+                handleProjectSelect(project);
+              }
             }}
             placeholder="Search tokens, projects or alpha..."
             className=""
-            getSuggestions={(q) =>
-              mockSearchSuggestions.filter((s) =>
-                s.toLowerCase().includes(q.toLowerCase())
-              )
-            }
+            searchProjects={handleSearch}
           />
         </div>
+
         <div className="mt-3">
-          {/* Loading State */}
-          {isSearching && (
+          {/* 搜索结果标题 */}
+          {searchResult && selectedProject && (
             <div className="px-4 py-3 flex items-center gap-3">
-              <div className="w-4 h-4 bg-gray-300 rounded-full animate-pulse"></div>
-              <span className="text-sm text-gray-500">Searching...</span>
-            </div>
-          )}
-
-          {/* Search Result Title */}
-          {!isSearching && searchResult && (
-            <div className="px-4 py-3 flex items-center gap-3">
-              <div className="w-4 h-4 bg-gray-300 rounded-full"></div>
-              <span className="text-sm text-gray-500">
-                {projectData.project_info.name} 的项目分析和总结
-              </span>
+              <div className="w-4 h-4 bg-gray-300 rounded-full">
+                <img
+                  src={selectedProject.logo_url}
+                  alt={selectedProject.project_name}
+                  className="w-full h-full object-cover rounded-full"
+                />
+              </div>
+                             <span className="text-sm text-gray-500">
+                 {selectedProject.project_name} Project Analysis and Summary
+               </span>
             </div>
           )}
         </div>
-        {/* Project Introduction Section */}
-        <div className="px-4 mb-6">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-1 h-4 bg-orange-500 rounded"></div>
-            <div className="text-sm font-medium text-black">
-              Project Introduction
-            </div>
-          </div>
-          <div className="text-xs text-gray-700 leading-relaxed">
-            {projectData.project_info.short_intro}
-          </div>
-          <div className="text-xs text-gray-700 leading-relaxed">
-            {projectData.project_info.description}
-          </div>
-          <div className="text-xs text-gray-700 leading-relaxed">
-            {projectData.project_info.team_info}
-          </div>
-          <div className="text-xs text-gray-700">
-            {projectData.project_info.sector_analysis}
-          </div>
-          <Card className="bg-gray-100 border border-gray-200 h-36 mb-2 mt-2">
-            <CardContent className="p-0 h-full flex items-center justify-center">
-              <img
-                src={projectData.project_info.logo}
-                alt={projectData.project_info.name}
-                className="w-full h-full object-cover"
-              />
-            </CardContent>
-          </Card>
-        </div>
-        {/* Financing Information Section */}
-        {projectData.fundraising_info && (
-          <div className="px-4 mb-6 mt-4">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-1 h-4 bg-orange-500 rounded"></div>
-              <div className="text-sm font-medium text-black">
-                Financing Information
-              </div>
-            </div>
-            <div className="text-xs text-gray-700 leading-relaxed mb-4">
-              根据公开信息显示，{projectData.project_info.name}
-              在项目早期就获得了资本市场的高度认可和支持，
-              {projectData.project_info.name}
-              已经完成了{projectData.fundraising_info.round_info?.length || 0}
-              轮融资，总额超过了 {projectData.fundraising_info.total_raised}
-              。这些数据充分展示了 {projectData.project_info.name}
-              在区块链安全和可扩展性方面的领先地位和巨大潜力。同时，充足资金也为其后续的开发和发展提供了强有力的保障，让其能够更好地服务于比特币生态和其他协议。
-            </div>
-            <div className="text-xs text-gray-700 mb-4">投资机构：</div>
-            <Card className="bg-gray-100 border border-gray-200 h-36 mb-2">
-              <CardContent className="p-0 h-full flex items-center justify-center">
-                <div className="text-xs text-gray-500">投资机构列表</div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
 
-        {/* Project Data Section */}
-        {(projectData.social_media_stats || projectData.on_chain_data) && (
-          <div className="px-4 mb-6">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-1 h-4 bg-orange-500 rounded"></div>
-              <div className="text-sm font-medium text-black">项目数据</div>
-            </div>
-            <div className="text-xs text-gray-700 mb-3">社区热度与媒体报道</div>
-            <Card className="bg-gray-100 border border-gray-200 h-36 mb-4">
-              <CardContent className="p-0 h-full flex items-center justify-center">
-                <div className="text-xs text-gray-500">投资机构列表</div>
-              </CardContent>
-            </Card>
-            <div className="space-y-2 text-xs mb-4">
-              {projectData.social_media_stats?.twitter && (
-                <div className="flex justify-between">
-                  <span className="text-gray-700">X (Twitter)</span>
-                  <span className="text-black">
-                    {formatNumber(
-                      projectData.social_media_stats.twitter.followers || 0
-                    )}{" "}
-                    <span className="text-green-500">
-                      (
-                      {formatPercentage(
-                        projectData.social_media_stats.twitter
-                          .followers_7d_increment || 0
-                      )}
-                      /7d)
-                    </span>
-                  </span>
-                </div>
-              )}
-              {projectData.social_media_stats?.telegram && (
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Telegram</span>
-                  <span className="text-black">
-                    {formatNumber(
-                      projectData.social_media_stats.telegram.members || 0
-                    )}{" "}
-                    <span className="text-green-500">
-                      (
-                      {formatPercentage(
-                        projectData.social_media_stats.telegram
-                          .members_7d_increment || 0
-                      )}
-                      /7d)
-                    </span>
-                  </span>
-                </div>
-              )}
-              {projectData.social_media_stats?.discord && (
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Discord</span>
-                  <span className="text-black">
-                    {formatNumber(
-                      projectData.social_media_stats.discord.members || 0
-                    )}{" "}
-                    <span className="text-green-500">
-                      (
-                      {formatPercentage(
-                        projectData.social_media_stats.discord
-                          .members_7d_increase || 0
-                      )}
-                      /7d)
-                    </span>
-                  </span>
-                </div>
-              )}
-              {projectData.social_media_stats?.twitter && (
-                <div className="flex justify-between">
-                  <span className="text-gray-700">推特提及量</span>
-                  <span className="text-black">
-                    {formatNumber(
-                      projectData.social_media_stats.twitter.mentions || 0
-                    )}{" "}
-                    <span className="text-green-500">
-                      (
-                      {formatPercentage(
-                        projectData.social_media_stats.twitter
-                          .mentions_7d_increment || 0
-                      )}
-                      /7d)
-                    </span>
-                  </span>
-                </div>
-              )}
-              {projectData.social_media_stats?.twitter?.sentiment && (
-                <div className="flex justify-between">
-                  <span className="text-gray-700">社区情感</span>
-                  <span className="text-black">
-                    😀 {projectData.social_media_stats.twitter.sentiment[0]}% 😡{" "}
-                    {projectData.social_media_stats.twitter.sentiment[2]}% 😐{" "}
-                    {projectData.social_media_stats.twitter.sentiment[1]}%
-                  </span>
-                </div>
-              )}
-              {projectData.social_media_stats?.media_mentions && (
-                <div className="flex justify-between">
-                  <span className="text-gray-700">媒体报道</span>
-                  <div className="flex gap-1">
-                    {projectData.social_media_stats.media_mentions
-                      .slice(0, 3)
-                      .map((item, index) => (
-                        <div
-                          key={index}
-                          className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center"
-                        >
-                          <span className="text-xs text-white font-medium">
-                            {item.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              )}
-            </div>
+                 {/* 欢迎状态 - 未选择项目时显示 */}
+         {!selectedProject && !searchResult && (
+           <div className="px-4 py-8 text-center animate-fade-in">
+             <div className="text-black text-lg mb-2 font-medium animate-slide-up [--animation-delay:200ms]">
+               Welcome to Project Research Tool
+             </div>
+             <div className="text-gray-400 text-sm animate-slide-up [--animation-delay:400ms]">
+               Search for projects you're interested in to get detailed analysis reports
+             </div>
+           </div>
+         )}
 
-            <div className="grid grid-cols-1 gap-4 mb-2">
-              <Card className="bg-gray-100 border border-gray-200 h-36">
-                <CardContent className="p-0 h-full flex items-center justify-center">
-                  <div className="text-xs text-gray-500">
-                    TVL 和 协议交互地址数据折现图
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="bg-gray-100 border border-gray-200 h-36">
-                <CardContent className="p-0 h-full flex items-center justify-center">
-                  <div className="text-xs text-gray-500">TVL 分布饼图</div>
-                </CardContent>
-              </Card>
-            </div>
-            <div className="text-xs text-gray-500 text-right">
-              update date: {new Date().toLocaleString()}
-            </div>
-          </div>
-        )}
-        {/* Markets Section */}
-        {projectData.market_data && (
-          <div className="px-4 mb-6">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-1 h-4 bg-orange-500 rounded"></div>
-              <div className="text-sm font-medium text-black">Markets</div>
-            </div>
-            <Card className="bg-gray-100 border border-gray-200 h-36 mb-2">
-              <CardContent className="p-0 h-full flex items-center justify-center">
-                <div className="text-xs text-gray-500">30 days 价格走势图</div>
-              </CardContent>
-            </Card>
-            <div className="space-y-2 text-xs mb-4">
-              <div className="flex items-center justify-between">
-                <span className="text-gray-700">Trading Volume (24H)</span>
-                <span className="text-black">
-                  $
-                  {formatNumber(
-                    projectData.market_data.trading_volume_24h || 0
-                  )}{" "}
-                  <span className="text-red-500">
-                    {projectData.market_data.trading_volume_24h_desc}
-                  </span>
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-700">Circulating Market Cap</span>
-                <span className="text-black">
-                  $
-                  {formatNumber(
-                    projectData.market_data.circulating_market_cap || 0
-                  )}{" "}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-700">Fully Diluted Valuation</span>
-                <span className="text-black">
-                  $
-                  {formatNumber(
-                    projectData.market_data.fully_diluted_valuation || 0
-                  )}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-700">Support Exchanges</span>
-                <div className="flex gap-1">
-                  {projectData.market_data.support_exchanges?.map(
-                    (exchange, index) => (
-                      <div
-                        key={index}
-                        className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center"
-                        title={exchange.name}
-                      >
-                        <img
-                          src={exchange.logo}
-                          alt={exchange.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    )
-                  ) || <div className="w-3 h-3 bg-gray-300 rounded-full"></div>}
-                </div>
-              </div>
-            </div>
-            <div className="text-xs text-gray-500 text-right">
-              update date: {new Date().toLocaleString()}
-            </div>
-          </div>
-        )}
-        {/* Tokenomics Section */}
-        {projectData.tokenomics && (
-          <div className="px-4 mb-6">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-1 h-4 bg-orange-500 rounded"></div>
-              <div className="text-sm font-medium text-black">Tokenomics</div>
-            </div>
-
-            <div className="space-y-2 text-xs mb-4">
-              <div className="flex justify-between">
-                <span className="text-gray-700">Token Symbol</span>
-                <span className="text-black font-medium">
-                  {projectData.tokenomics.token_symbol}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-700">Circulating Supply</span>
-                <span className="text-black">
-                  {formatNumber(projectData.tokenomics.circulating_supply || 0)}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-700">Total Supply</span>
-                <span className="text-black">
-                  {formatNumber(projectData.tokenomics.total_supply || 0)}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-700">Support Chains</span>
-                <div className="flex gap-1">
-                  {projectData.tokenomics.support_chains?.map(
-                    (chain, index) => (
-                      <ChainLogo key={index} chain={chain} size={18} />
-                    )
-                  ) || <div className="w-3 h-3 bg-gray-300 rounded-full"></div>}
-                </div>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-700">Referral Docs</span>
-                <span className="text-blue-600 underline cursor-pointer">
-                  {projectData.tokenomics.token_symbol} Tokenomics
-                </span>
-              </div>
-            </div>
-
-            <div className="text-xs text-gray-700 mb-2">
-              Distribution Overview
-            </div>
-            <div className="bg-white border border-gray-200 rounded-lg p-3 mb-2">
-              <div className="space-y-2 text-xs mb-4">
-                <div className="flex justify-between items-center border-b border-gray-200 pb-3">
-                  <span className="text-gray-600">Token Symbol:</span>
-                  <span className="font-semibold text-gray-800">
-                    {projectData.tokenomics.token_symbol || "-"}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center  border-b border-gray-200 pb-3">
-                  <span className="text-gray-600">Token Total Supply:</span>
-                  <span className="font-semibold text-gray-800">
-                    {projectData.tokenomics.total_supply
-                      ? formatNumber(projectData.tokenomics.total_supply)
-                      : "-"}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center  border-b border-gray-200 pb-3">
-                  <span className="text-gray-600">
-                    Initial Circulating Supply:
-                  </span>
-                  <span className="font-semibold text-gray-800 text-right">
-                    {projectData.tokenomics.circulating_supply
-                      ? `${formatNumber(
-                          projectData.tokenomics.circulating_supply
-                        )} (${(
-                          (projectData.tokenomics.circulating_supply /
-                            (projectData.tokenomics.total_supply || 1)) *
-                          100
-                        ).toFixed(2)}%)`
-                      : "-"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <div className="text-xs border-b border-gray-100 pb-2">
-                  <div className="flex justify-between items-start mb-1">
-                    <div className="text-gray-600">Community & Launch</div>
-                    <div className="font-semibold text-gray-800">
-                      {projectData.tokenomics.distribution_details
-                        ?.community_launch?.percentage
-                        ? `${projectData.tokenomics.distribution_details.community_launch.percentage}%`
-                        : "-"}
-                    </div>
-                  </div>
-                  <div className="text-gray-500 text-xs">
-                    {projectData.tokenomics.distribution_details
-                      ?.community_launch?.vesting || "-"}
-                  </div>
-                </div>
-
-                <div className="text-xs border-b border-gray-100 pb-2">
-                  <div className="flex justify-between items-start mb-1">
-                    <div className="text-gray-600">Ecosystem Growth</div>
-                    <div className="font-semibold text-gray-800">
-                      {projectData.tokenomics.distribution_details
-                        ?.ecosystem_growth?.percentage
-                        ? `${projectData.tokenomics.distribution_details.ecosystem_growth.percentage}%`
-                        : "-"}
-                    </div>
-                  </div>
-                  <div className="text-gray-500 text-xs">
-                    {projectData.tokenomics.distribution_details
-                      ?.ecosystem_growth?.vesting || "-"}
-                  </div>
-                </div>
-
-                <div className="text-xs border-b border-gray-100 pb-2">
-                  <div className="flex justify-between items-start mb-1">
-                    <div className="text-gray-600">DAO Treasury</div>
-                    <div className="font-semibold text-gray-800">
-                      {projectData.tokenomics.distribution_details?.dao_treasury
-                        ?.percentage
-                        ? `${projectData.tokenomics.distribution_details.dao_treasury.percentage}%`
-                        : "-"}
-                    </div>
-                  </div>
-                  <div className="text-gray-500 text-xs">
-                    {projectData.tokenomics.distribution_details?.dao_treasury
-                      ?.vesting || "-"}
-                  </div>
-                </div>
-
-                <div className="text-xs border-b border-gray-100 pb-2">
-                  <div className="flex justify-between items-start mb-1">
-                    <div className="text-gray-600">Investors</div>
-                    <div className="font-semibold text-gray-800">
-                      {projectData.tokenomics.distribution_details?.investors
-                        ?.percentage
-                        ? `${projectData.tokenomics.distribution_details.investors.percentage}%`
-                        : "-"}
-                    </div>
-                  </div>
-                  <div className="text-gray-500 text-xs">
-                    {projectData.tokenomics.distribution_details?.investors
-                      ?.vesting || "-"}
-                  </div>
-                </div>
-
-                <div className="text-xs border-b border-gray-100 pb-2">
-                  <div className="flex justify-between items-start mb-1">
-                    <div className="text-gray-600">Public Sale</div>
-                    <div className="font-semibold text-gray-800">
-                      {projectData.tokenomics.distribution_details?.public_sale
-                        ?.percentage
-                        ? `${projectData.tokenomics.distribution_details.public_sale.percentage}%`
-                        : "-"}
-                    </div>
-                  </div>
-                  <div className="text-gray-500 text-xs">
-                    {projectData.tokenomics.distribution_details?.public_sale
-                      ?.vesting || "-"}
-                  </div>
-                </div>
-
-                <div className="text-xs pb-2">
-                  <div className="flex justify-between items-start mb-1">
-                    <div className="text-gray-600">Team</div>
-                    <div className="font-semibold text-gray-800">
-                      {projectData.tokenomics.distribution_details?.team
-                        ?.percentage
-                        ? `${projectData.tokenomics.distribution_details.team.percentage}%`
-                        : "-"}
-                    </div>
-                  </div>
-                  <div className="text-gray-500 text-xs">
-                    {projectData.tokenomics.distribution_details?.team
-                      ?.vesting || "-"}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="text-xs text-gray-500 text-right">
-              update date: {new Date().toLocaleString()}
-            </div>
-          </div>
-        )}
-        {/* Market Activity Section */}
-        {projectData.campaign &&
-          projectData.tokenomics &&
-          projectData.market_data && (
+                 {/* 项目详情 - 仅在选择项目时显示 */}
+        {selectedProject && (
+          <>
+            {/* 项目介绍部分 */}
             <div className="px-4 mb-6">
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-1 h-4 bg-orange-500 rounded"></div>
-                <div className="text-sm font-medium text-black">市场活动</div>
-              </div>
-
-              {/* Ongoing Activities */}
-              <div className="mb-4">
-                <div className="text-xs font-medium text-black mb-2">
-                  进行中
-                </div>
-                <div className="space-y-2 text-xs text-gray-700">
-                  <div className="flex justify-between">
-                    <span>奖励总价值</span>
-                    <span>
-                      {projectData.campaign.participants}{" "}
-                      {projectData.tokenomics.token_symbol}($
-                      {(projectData.market_data.token_price || 0) *
-                        (projectData.campaign.participants || 0)}
-                      )
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between">
-                    <span>参与人数</span>
-                    <span>
-                      {formatNumber(projectData.campaign.participants || 0)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>社区攻略</span>
-                    <span>
-                      {projectData.campaign.platforms?.length || 0}篇，点赞最高
-                      1.2K
-                    </span>
-                  </div>
+                <div className="text-sm font-medium text-black">
+                  Project Introduction
                 </div>
               </div>
+              <div className="text-xs text-gray-700 leading-relaxed">
+                {selectedProject?.brief_desc ||
+                  projectData?.project_info?.short_intro}
+              </div>
+              <div className="text-xs text-gray-700 leading-relaxed">
+                {selectedProject?.description ||
+                  projectData?.project_info?.description}
+              </div>
+              <div className="text-xs text-gray-700 leading-relaxed">
+                {projectData?.project_info?.team_info}
+              </div>
+              <div className="text-xs text-gray-700">
+                {projectData?.project_info?.sector_analysis}
+              </div>
+            </div>
 
-              {/* Historical Activities */}
-              <div className="mb-4">
-                <div className="text-xs font-medium text-black mb-2">
-                  历史活动
-                </div>
-                <div className="space-y-2 text-xs text-gray-700">
-                  <div className="flex justify-between">
-                    <span>奖励总价值</span>
-                    <span>
-                      {projectData.campaign.participants}{" "}
-                      {projectData.tokenomics.token_symbol}($
-                      {(projectData.market_data.token_price || 0) *
-                        (projectData.campaign.participants || 0)}
-                      )
-                    </span>
+            {/* 融资信息部分 */}
+            {projectData?.fundraising_info && (
+              <div className="px-4 mb-6 mt-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-1 h-4 bg-orange-500 rounded"></div>
+                  <div className="text-sm font-medium text-black">
+                    Financing Information
                   </div>
-                  <div className="flex justify-between">
-                    <span>参与人数</span>
-                    <span>
+                </div>
+                                <div className="text-xs text-gray-700 leading-relaxed mb-4">
+                   According to public information, {selectedProject?.project_name ||
+                     projectData?.project_info?.name} has received high recognition and support from the capital market in the early stages of the project.
+                   {selectedProject?.project_name ||
+                     projectData?.project_info?.name} has completed {projectData?.fundraising_info?.round_info?.length || 0} rounds of financing, with a total amount exceeding {projectData?.fundraising_info?.total_raised}.
+                   These data fully demonstrate {selectedProject?.project_name ||
+                     projectData?.project_info?.name}'s leading position and great potential in blockchain security and scalability. At the same time, sufficient funding provides strong support for its subsequent development and growth, enabling it to better serve the Bitcoin ecosystem and other protocols.
+                </div>
+                                 <div className="text-xs text-gray-700 mb-4">Investment Institutions:</div>
+                <Card className="bg-gray-100 border border-gray-200 h-36 mb-2">
+                  <CardContent className="p-0 h-full flex items-center justify-center">
+                    <div className="text-xs text-gray-500">投资机构列表</div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
+            {/* 项目数据部分 */}
+            {(projectData?.social_media_stats ||
+              projectData?.on_chain_data) && (
+              <div className="px-4 mb-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-1 h-4 bg-orange-500 rounded"></div>
+                  <div className="text-sm font-medium text-black">Project Data</div>
+                </div>
+                {/* <div className="text-xs text-gray-700 mb-3">社区热度与媒体报道</div>
+                <Card className="bg-gray-100 border border-gray-200 h-36 mb-4">
+                  <CardContent className="p-0 h-full flex items-center justify-center">
+                    <div className="text-xs text-gray-500">投资机构列表</div>
+                  </CardContent>
+                </Card> */}
+                <div className="space-y-2 text-xs mb-4">
+                  {/* {projectData?.social_media_stats?.twitter && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-700">X (Twitter)</span>
+                      <span className="text-black">
+                        {formatNumber(
+                          projectData.social_media_stats.twitter.followers || 0
+                        )}{" "}
+                        <span className="text-green-500">
+                          (
+                          {formatPercentage(
+                            projectData.social_media_stats.twitter
+                              .followers_7d_increment || 0
+                          )}
+                          /7d)
+                        </span>
+                      </span>
+                    </div>
+                  )}
+                  {projectData?.social_media_stats?.telegram && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-700">Telegram</span>
+                      <span className="text-black">
+                        {formatNumber(
+                          projectData.social_media_stats.telegram.members || 0
+                        )}{" "}
+                        <span className="text-green-500">
+                          (
+                          {formatPercentage(
+                            projectData.social_media_stats.telegram
+                              .members_7d_increment || 0
+                          )}
+                          /7d)
+                        </span>
+                      </span>
+                    </div>
+                  )}
+                  {projectData?.social_media_stats?.discord && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-700">Discord</span>
+                      <span className="text-black">
+                        {formatNumber(
+                          projectData.social_media_stats.discord.members || 0
+                        )}{" "}
+                        <span className="text-green-500">
+                          (
+                          {formatPercentage(
+                            projectData.social_media_stats.discord
+                              .members_7d_increase || 0
+                          )}
+                          /7d)
+                        </span>
+                      </span>
+                    </div>
+                  )}
+                  {projectData?.social_media_stats?.twitter && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-700">推特提及量</span>
+                      <span className="text-black">
+                        {formatNumber(
+                          projectData.social_media_stats.twitter.mentions || 0
+                        )}{" "}
+                        <span className="text-green-500">
+                          (
+                          {formatPercentage(
+                            projectData.social_media_stats.twitter
+                              .mentions_7d_increment || 0
+                          )}
+                          /7d)
+                        </span>
+                      </span>
+                    </div>
+                  )} */}
+                  {/* {projectData?.social_media_stats?.twitter?.sentiment && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-700">社区情感</span>
+                      <span className="text-black">
+                        😀 {projectData.social_media_stats.twitter.sentiment[0]}% 😡{" "}
+                        {projectData.social_media_stats.twitter.sentiment[2]}% 😐{" "}
+                        {projectData.social_media_stats.twitter.sentiment[1]}%
+                      </span>
+                    </div>
+                  )} */}
+                  {projectData?.social_media_stats?.media_mentions && (
+                    <div className="space-y-2">
+                                             <div className="text-xs text-gray-700 font-medium">
+                         Media Coverage
+                       </div>
+                      <div className="flex flex-wrap gap-2">
+                        {projectData.social_media_stats.media_mentions.map(
+                          (url: string, index: number) => {
+                            // 从URL中提取域名
+                            const domain = url
+                              .replace(/^https?:\/\//, "")
+                              .replace(/^www\./, "")
+                              .split("/")[0];
+                            const displayName = domain.split(".")[0]; // 取主域名部分
+
+                            return (
+                              <a
+                                key={index}
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded-full hover:bg-blue-200 transition-colors cursor-pointer"
+                                title={url}
+                              >
+                                {displayName}
+                              </a>
+                            );
+                          }
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {/* <div className="grid grid-cols-1 gap-4 mb-2">
+                  <Card className="bg-gray-100 border border-gray-200 h-36">
+                    <CardContent className="p-0 h-full flex items-center justify-center">
+                      <div className="text-xs text-gray-500">
+                        TVL 和 协议交互地址数据折现图
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-gray-100 border border-gray-200 h-36">
+                    <CardContent className="p-0 h-full flex items-center justify-center">
+                      <div className="text-xs text-gray-500">TVL 分布饼图</div>
+                    </CardContent>
+                  </Card>
+                </div>
+                <div className="text-xs text-gray-500 text-right">
+                  update date: {new Date().toLocaleString()}
+                </div> */}
+              </div>
+            )}
+
+            {/* 市场数据部分 */}
+            {projectData?.market_data && (
+              <div className="px-4 mb-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-1 h-4 bg-orange-500 rounded"></div>
+                  <div className="text-sm font-medium text-black">Markets</div>
+                </div>
+                <PriceChart
+                  height={144}
+                  symbol={selectedProject?.token_symbol || "BTC"}
+                  useApi={true}
+                />
+                <div className="space-y-2 text-xs mb-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-700">Trading Volume (24H)</span>
+                    <span className="text-black">
+                      $
                       {formatNumber(
-                        (projectData.campaign.participants || 0) * 10
+                        projectData.market_data.trading_volume_24h || 0
+                      )}{" "}
+                      <span className="text-red-500">
+                        {projectData.market_data.trading_volume_24h_desc}
+                      </span>
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-700">
+                      Circulating Market Cap
+                    </span>
+                    <span className="text-black">
+                      $
+                      {formatNumber(
+                        projectData.market_data.circulating_market_cap || 0
+                      )}{" "}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-700">
+                      Fully Diluted Valuation
+                    </span>
+                    <span className="text-black">
+                      $
+                      {formatNumber(
+                        projectData.market_data.fully_diluted_valuation || 0
                       )}
                     </span>
                   </div>
-
-                  <div className="flex justify-between">
-                    <span>社区攻略</span>
-                    <span>
-                      {projectData.campaign.platforms?.length || 0}篇，点赞最高
-                      1.2K
-                    </span>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-700">Support Exchanges</span>
+                    <div className="flex-1 ml-2 overflow-hidden">
+                      <div className="flex gap-1 overflow-x-auto scrollbar-hide">
+                        <div className="flex gap-1 ml-auto">
+                          {projectData.market_data.support_exchanges?.map(
+                            (exchange: any, index: number) => (
+                              <div
+                                key={index}
+                                className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0"
+                                title={exchange.name}
+                              >
+                                <img
+                                  src={exchange.logo}
+                                  alt={exchange.name}
+                                  className="w-full h-full object-cover rounded-full"
+                                />
+                              </div>
+                            )
+                          ) || (
+                            <div className="w-3 h-3 bg-gray-300 rounded-full flex-shrink-0"></div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
-        {/* Project Links Section */}
-        {projectData.social_media_links && (
-          <div className="px-4 mb-6">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-1 h-4 bg-orange-500 rounded"></div>
-              <div className="text-sm font-medium text-black">项目链接</div>
-            </div>
-            <div className="grid grid-cols-4 gap-3 mb-4">
-              {[
+            )}
+
+            {/* 代币经济学部分 */}
+            {projectData?.tokenomics && (
+              <div className="px-4 mb-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-1 h-4 bg-orange-500 rounded"></div>
+                  <div className="text-sm font-medium text-black">
+                    Tokenomics
+                  </div>
+                </div>
+
+                <div className="space-y-2 text-xs mb-4">
+                  <div className="flex justify-between">
+                    <span className="text-gray-700">Token Symbol</span>
+                    <span className="text-black font-medium">
+                      {selectedProject?.token_symbol ||
+                        projectData?.tokenomics?.token_symbol}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-700">Circulating Supply</span>
+                    <span className="text-black">
+                      {formatNumber(
+                        selectedProject?.circulating_supply ||
+                          projectData?.tokenomics?.circulating_supply ||
+                          0
+                      )}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-700">Total Supply</span>
+                    <span className="text-black">
+                      {formatNumber(
+                        selectedProject?.total_supply ||
+                          projectData?.tokenomics?.total_supply ||
+                          0
+                      )}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-700">Support Chains</span>
+                    <div className="flex-1 ml-2 overflow-hidden">
+                      <div className="flex gap-1 overflow-x-auto scrollbar-hide justify-end">
+                        {projectData?.tokenomics?.support_chains?.map(
+                          (chain: any, index: number) => (
+                            <div key={index} className="flex-shrink-0">
+                              <ChainLogo chain={chain} size={18} />
+                            </div>
+                          )
+                        ) || (
+                          <div className="w-3 h-3 bg-gray-300 rounded-full flex-shrink-0"></div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-700">Referral Docs</span>
+                    <span className="text-blue-600 underline cursor-pointer">
+                      {selectedProject?.token_symbol ||
+                        projectData?.tokenomics?.token_symbol}{" "}
+                      Tokenomics
+                    </span>
+                  </div>
+                </div>
+
+                {/* 检查是否有distribution数据 */}
+                {(() => {
+                  const distributionDetails =
+                    projectData?.tokenomics?.distribution_details;
+                  const hasDistributionData =
+                    distributionDetails &&
+                    (distributionDetails.community_launch?.percentage ||
+                      distributionDetails.ecosystem_growth?.percentage ||
+                      distributionDetails.dao_treasury?.percentage ||
+                      distributionDetails.investors?.percentage ||
+                      distributionDetails.public_sale?.percentage ||
+                      distributionDetails.team?.percentage);
+
+                  if (!hasDistributionData) return null;
+
+                  return (
+                    <>
+                      <div className="text-xs text-gray-700 mb-2">
+                        Distribution Overview
+                      </div>
+                      <div className="bg-white border border-gray-200 rounded-lg p-3 mb-2">
+                        <div className="space-y-2 text-xs mb-4">
+                          <div className="flex justify-between items-center border-b border-gray-200 pb-3">
+                            <span className="text-gray-600">Token Symbol:</span>
+                            <span className="font-semibold text-gray-800">
+                              {selectedProject?.token_symbol ||
+                                projectData?.tokenomics?.token_symbol ||
+                                "-"}
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center  border-b border-gray-200 pb-3">
+                            <span className="text-gray-600">
+                              Token Total Supply:
+                            </span>
+                            <span className="font-semibold text-gray-800">
+                              {selectedProject?.total_supply ||
+                              projectData?.tokenomics?.total_supply
+                                ? formatNumber(
+                                    selectedProject?.total_supply ||
+                                      projectData?.tokenomics?.total_supply ||
+                                      0
+                                  )
+                                : "-"}
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center  border-b border-gray-200 pb-3">
+                            <span className="text-gray-600">
+                              Initial Circulating Supply:
+                            </span>
+                            <span className="font-semibold text-gray-800 text-right">
+                              {selectedProject?.circulating_supply ||
+                              projectData?.tokenomics?.circulating_supply
+                                ? `${formatNumber(
+                                    selectedProject?.circulating_supply ||
+                                      projectData?.tokenomics
+                                        ?.circulating_supply ||
+                                      0
+                                  )} (${(
+                                    ((selectedProject?.circulating_supply ||
+                                      projectData?.tokenomics
+                                        ?.circulating_supply ||
+                                      0) /
+                                      (selectedProject?.total_supply ||
+                                        projectData?.tokenomics?.total_supply ||
+                                        1)) *
+                                    100
+                                  ).toFixed(2)}%)`
+                                : "-"}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <div className="text-xs border-b border-gray-100 pb-2">
+                            <div className="flex justify-between items-start mb-1">
+                              <div className="text-gray-600">
+                                Community & Launch
+                              </div>
+                              <div className="font-semibold text-gray-800">
+                                {projectData?.tokenomics?.distribution_details
+                                  ?.community_launch?.percentage
+                                  ? `${projectData?.tokenomics?.distribution_details.community_launch.percentage}%`
+                                  : "-"}
+                              </div>
+                            </div>
+                            <div className="text-gray-500 text-xs">
+                              {projectData?.tokenomics?.distribution_details
+                                ?.community_launch?.vesting || "-"}
+                            </div>
+                          </div>
+
+                          <div className="text-xs border-b border-gray-100 pb-2">
+                            <div className="flex justify-between items-start mb-1">
+                              <div className="text-gray-600">
+                                Ecosystem Growth
+                              </div>
+                              <div className="font-semibold text-gray-800">
+                                {projectData?.tokenomics?.distribution_details
+                                  ?.ecosystem_growth?.percentage
+                                  ? `${projectData?.tokenomics?.distribution_details.ecosystem_growth.percentage}%`
+                                  : "-"}
+                              </div>
+                            </div>
+                            <div className="text-gray-500 text-xs">
+                              {projectData?.tokenomics?.distribution_details
+                                ?.ecosystem_growth?.vesting || "-"}
+                            </div>
+                          </div>
+
+                          <div className="text-xs border-b border-gray-100 pb-2">
+                            <div className="flex justify-between items-start mb-1">
+                              <div className="text-gray-600">DAO Treasury</div>
+                              <div className="font-semibold text-gray-800">
+                                {projectData?.tokenomics?.distribution_details
+                                  ?.dao_treasury?.percentage
+                                  ? `${projectData?.tokenomics?.distribution_details.dao_treasury.percentage}%`
+                                  : "-"}
+                              </div>
+                            </div>
+                            <div className="text-gray-500 text-xs">
+                              {projectData?.tokenomics?.distribution_details
+                                ?.dao_treasury?.vesting || "-"}
+                            </div>
+                          </div>
+
+                          <div className="text-xs border-b border-gray-100 pb-2">
+                            <div className="flex justify-between items-start mb-1">
+                              <div className="text-gray-600">Investors</div>
+                              <div className="font-semibold text-gray-800">
+                                {projectData?.tokenomics?.distribution_details
+                                  ?.investors?.percentage
+                                  ? `${projectData?.tokenomics?.distribution_details.investors.percentage}%`
+                                  : "-"}
+                              </div>
+                            </div>
+                            <div className="text-gray-500 text-xs">
+                              {projectData?.tokenomics?.distribution_details
+                                ?.investors?.vesting || "-"}
+                            </div>
+                          </div>
+
+                          <div className="text-xs border-b border-gray-100 pb-2">
+                            <div className="flex justify-between items-start mb-1">
+                              <div className="text-gray-600">Public Sale</div>
+                              <div className="font-semibold text-gray-800">
+                                {projectData?.tokenomics?.distribution_details
+                                  ?.public_sale?.percentage
+                                  ? `${projectData?.tokenomics?.distribution_details.public_sale.percentage}%`
+                                  : "-"}
+                              </div>
+                            </div>
+                            <div className="text-gray-500 text-xs">
+                              {projectData?.tokenomics?.distribution_details
+                                ?.public_sale?.vesting || "-"}
+                            </div>
+                          </div>
+
+                          <div className="text-xs pb-2">
+                            <div className="flex justify-between items-start mb-1">
+                              <div className="text-gray-600">Team</div>
+                              <div className="font-semibold text-gray-800">
+                                {projectData?.tokenomics?.distribution_details
+                                  ?.team?.percentage
+                                  ? `${projectData?.tokenomics?.distribution_details.team.percentage}%`
+                                  : "-"}
+                              </div>
+                            </div>
+                            <div className="text-gray-500 text-xs">
+                              {projectData?.tokenomics?.distribution_details
+                                ?.team?.vesting || "-"}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+            )}
+                        {/* 项目链接部分 */}
+            {(() => {
+              const allPlatforms = [
                 {
                   name: "Discord",
-                  url: projectData.social_media_links.discord,
+                  url: selectedProject?.discord_url || projectData?.social_media_links?.discord,
                 },
                 {
                   name: "Telegram",
-                  url: projectData.social_media_links.telegram,
+                  url: selectedProject?.telegram_url || projectData?.social_media_links?.telegram,
                 },
-                { name: "Medium", url: projectData.social_media_links.medium },
-                { name: "Github", url: projectData.social_media_links.github },
-              ].map((platform) => (
-                <Card
-                  key={platform.name}
-                  className={`aspect-square hover:bg-gray-200 transition-colors cursor-pointer ${
-                    platform.url
-                      ? "bg-gray-100 border border-gray-200"
-                      : "bg-gray-50 border border-gray-100"
-                  }`}
-                  onClick={() =>
-                    platform.url && window.open(platform.url, "_blank")
-                  }
-                >
-                  <CardContent className="p-0 h-full flex items-center justify-center">
-                    <div
-                      className={`text-xs text-center font-medium ${
-                        platform.url ? "text-gray-700" : "text-gray-400"
-                      }`}
-                    >
-                      {platform.name}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-            <div className="grid grid-cols-4 gap-3">
-              {[
+                {
+                  name: "Medium",
+                  url: selectedProject?.medium_url || projectData?.social_media_links?.medium,
+                },
+                {
+                  name: "Github",
+                  url: selectedProject?.github_url || projectData?.social_media_links?.github,
+                },
                 {
                   name: "Website",
-                  url: projectData.social_media_links.website,
+                  url: selectedProject?.website_url || projectData?.social_media_links?.website,
                 },
-                { name: "Docs", url: projectData.social_media_links.defliama },
-                { name: "dApp", url: projectData.social_media_links.website },
+                {
+                  name: "Docs",
+                  url: selectedProject?.gitbook_url || projectData?.social_media_links?.defliama,
+                },
+                {
+                  name: "dApp",
+                  url: selectedProject?.website_url || projectData?.social_media_links?.website,
+                },
                 {
                   name: "X(Twitter)",
-                  url: projectData.social_media_links.twitter,
+                  url: selectedProject?.twitter_username
+                    ? `https://twitter.com/${selectedProject.twitter_username}`
+                    : projectData?.social_media_links?.twitter,
                 },
-              ].map((platform) => (
-                <Card
-                  key={platform.name}
-                  className={`aspect-square hover:bg-gray-200 transition-colors cursor-pointer ${
-                    platform.url
-                      ? "bg-gray-100 border border-gray-200"
-                      : "bg-gray-50 border border-gray-100"
-                  }`}
-                  onClick={() =>
-                    platform.url && window.open(platform.url, "_blank")
-                  }
-                >
-                  <CardContent className="p-0 h-full flex items-center justify-center">
-                    <div
-                      className={`text-xs text-center font-medium ${
-                        platform.url ? "text-gray-700" : "text-gray-400"
-                      }`}
-                    >
-                      {platform.name}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
-        {/* Project Summary Section */}
-        <div className="px-4 mb-3 mt-4">
-          <div className="flex items-center gap-2 ">
-            <div className="w-1 h-4 bg-orange-500 rounded"></div>
-            <div className="text-sm font-medium text-black">项目总结</div>
-          </div>
-        </div>
+              ];
+              
+              const availablePlatforms = allPlatforms.filter(platform => platform.url);
+              
+              if (availablePlatforms.length === 0) return null;
+              
+              return (
+                <div className="px-4 mb-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-1 h-4 bg-orange-500 rounded"></div>
+                                         <div className="text-sm font-medium text-black">Project Links</div>
+                  </div>
+                  <div className="grid grid-cols-4 gap-3">
+                    {availablePlatforms.map((platform) => (
+                      <Card
+                        key={platform.name}
+                        className="aspect-square hover:bg-gray-200 transition-colors cursor-pointer bg-gray-100 border border-gray-200"
+                        onClick={() =>
+                          platform.url && window.open(platform.url, "_blank")
+                        }
+                      >
+                        <CardContent className="p-0 h-full flex items-center justify-center">
+                          <div className="text-xs text-center font-medium text-gray-700">
+                            {platform.name}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
 
-        {/* Summary Section */}
-        <div className="px-4 mb-6">
-          <div className="text-xs text-gray-700 leading-relaxed">
-            {projectData.project_info.name} 根据公开信息显示，
-            {projectData.project_info.name}
-            在项目早期就获得了资本市场的高度认可和支持，
-            {projectData.project_info.name}
-            已经完成了{projectData.fundraising_info?.round_info?.length || 0}
-            轮融资，总额超过了{" "}
-            {projectData.fundraising_info?.total_raised || "N/A"}
-            。这些数据充分展示了 {projectData.project_info.name}
-            在区块链安全和可扩展性方面的领先地位和巨大潜力。同时，充足资金也为其后续的开发和发展提供了强有力的保障，让其能够更好地服务于比特币生态和其他协议。
-          </div>
-          <div className="text-sm text-gray-600 mt-2">
-            以上是 Yomo 为您总结生成的关于 {projectData.project_info.name}
-            的项目简报。如果你想要更加完整的报告，可以前往{" "}
-            <span className="text-blue-600 underline cursor-pointer">
-              Web 网站⏭
-            </span>{" "}
-            进行报告生成。
-          </div>
-        </div>
-        {/* Bottom Navigation */}
+            {/* 项目总结标题部分 */}
+            <div className="px-4 mb-3 mt-4">
+              <div className="flex items-center gap-2 ">
+                <div className="w-1 h-4 bg-orange-500 rounded"></div>
+                <div className="text-sm font-medium text-black">Project Summary</div>
+              </div>
+            </div>
+
+            {/* 总结内容部分 */}
+            <div className="px-4 mb-6">
+              <div className="text-xs text-gray-700 leading-relaxed">
+                                 According to public information, {selectedProject?.project_name ||
+                   projectData?.project_info?.name} has received high recognition and support from the capital market in the early stages of the project.
+                 {selectedProject?.project_name ||
+                   projectData?.project_info?.name} has completed {projectData?.fundraising_info?.round_info?.length || 0} rounds of financing, with a total amount exceeding {projectData?.fundraising_info?.total_raised || "N/A"}.
+                 These data fully demonstrate {selectedProject?.project_name ||
+                   projectData?.project_info?.name}'s leading position and great potential in blockchain security and scalability. At the same time, sufficient funding provides strong support for its subsequent development and growth, enabling it to better serve the Bitcoin ecosystem and other protocols.
+              </div>
+              {/* <div className="text-sm text-gray-600 mt-2">
+                以上是 Yomo 为您总结生成的关于{" "}
+                {selectedProject?.project_name ||
+                  projectData?.project_info?.name}
+                的项目简报。如果你想要更加完整的报告，可以前往{" "}
+                <span className="text-blue-600 underline cursor-pointer">
+                  Web 网站⏭
+                </span>{" "}
+                进行报告生成。
+              </div> */}
+            </div>
+          </>
+        )}
+
+                 {/* 警告横幅 */}
         <div className="px-4 pb-8">
-          {/* Warning Banner */}
-          <div className="mb-4">
-            <div className="text-xs text-red-600">
-              报告中的所有数据均来自网络、社区的公开数据源或用户上报的数据！
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" className="w-8 h-8">
-                  <Share2 className="w-4 h-4 text-gray-600" />
-                </Button>
-                <Button variant="ghost" size="icon" className="w-8 h-8">
-                  <Bookmark className="w-4 h-4 text-gray-600" />
-                </Button>
-                <Button variant="ghost" size="icon" className="w-8 h-8">
-                  <MessageCircle className="w-4 h-4 text-gray-600" />
-                </Button>
-                <Button variant="ghost" size="icon" className="w-8 h-8">
-                  <Heart className="w-4 h-4 text-gray-600" />
-                </Button>
-              </div>
-              <div className="text-xs text-orange-600 underline mt-1 cursor-pointer">
-                数据纠错
-              </div>
-            </div>
-          </div>
+                     <div className="mb-4">
+             <div className="text-xs text-red-600 text-center">
+               All data in the report comes from publicly available data sources on the internet, community, or user-submitted data!
+             </div>
+           </div>
         </div>
       </div>
     </div>

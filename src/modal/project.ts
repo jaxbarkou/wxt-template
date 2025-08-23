@@ -234,8 +234,9 @@ export interface ProjectData {
   /** Campaign related information */
   campaign?: Campaign;
 }
+
 export interface QueryProjectData {
-  id: string;
-  ticker: string;
-  domain: string;
+  id?: string;
+  ticker?: string;
+  domain?: string;
 }

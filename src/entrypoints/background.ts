@@ -1,4 +1,4 @@
-import { projectData as getProjectData } from "@/lib/api/project";
+import { API_URL6 } from "@/config";
 
 export default defineBackground(() => {
   chrome.runtime.onInstalled.addListener(() => {
@@ -31,9 +31,22 @@ export default defineBackground(() => {
     }
 
     if (message.type === "FETCH_PROJECTS_DATA") {
-      fetch(message.url)
+      const payload = {
+        id: "",
+        ticker: message.symbol,
+        domain: "",
+      };
+      fetch(`${API_URL6}/api/v1/project/project_data`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
         .then((res) => res.json())
-        .then((data) => sendResponse({ success: true, data }))
+        .then((data) => {
+          sendResponse({ success: true, data });
+        })
         .catch((err) => sendResponse({ success: false, error: err.message }));
 
       // 👇 重要：return true 表示异步响应

@@ -110,13 +110,13 @@ const mockProjectData: ProjectData = {
     protocol_revenue_30d: 2500000,
   },
   market_data: {
-    token_price: 2.5,
+    token_price: `2.5`,
     token_price_desc: "Price increased by 10% in the past week",
-    trading_volume_24h: 12000000,
-    trading_volume_24h_desc: "24h volume up 15%",
-    circulating_market_cap: 250000000,
+    trading_volume_24h: `12000000`,
+    trading_volume_24h_desc: "15%",
+    circulating_market_cap: `250000000`,
     circulating_market_cap_source: "CoinGecko",
-    fully_diluted_valuation: 1000000000,
+    fully_diluted_valuation: `1000000000`,
     fully_diluted_valuation_source: "CoinMarketCap",
     support_exchanges: [
       { name: "Binance", logo: "https://example.com/binance.png" },
@@ -136,36 +136,35 @@ const mockProjectData: ProjectData = {
     distribution_details: {
       community_launch: {
         percentage: 25,
-        vesting: "40% at TGE + 36 months vesting"
+        vesting: "40% at TGE + 36 months vesting",
       },
       ecosystem_growth: {
         percentage: 22,
-        vesting: "9.09% at TGE + 36 months vesting"
+        vesting: "9.09% at TGE + 36 months vesting",
       },
       dao_treasury: {
         percentage: 18.33,
-        vesting: "16.36% at TGE + 36 months vesting"
+        vesting: "16.36% at TGE + 36 months vesting",
       },
       investors: {
         percentage: 16.67,
-        vesting: "20% after 6 months cliff + 80% over 24 months"
+        vesting: "20% after 6 months cliff + 80% over 24 months",
       },
       public_sale: {
         percentage: 3,
-        vesting: "33.33% at TGE + 66.67% over 6 months"
+        vesting: "33.33% at TGE + 66.67% over 6 months",
       },
       team: {
         percentage: 15,
-        vesting: "2% after 6 months cliff + 98% over 30 months"
-      }
-    }
+        vesting: "2% after 6 months cliff + 98% over 30 months",
+      },
+    },
   },
   campaign: {
     campaign_title: "DeFiX Airdrop Campaign",
     participants: 50000,
     platforms: ["Galxe", "QuestN"],
-    community_rewards:
-      "100",
+    community_rewards: "100",
   },
 };
 

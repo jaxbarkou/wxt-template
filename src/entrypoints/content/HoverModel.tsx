@@ -12,6 +12,7 @@ import DisplayHoverCard from "@/shared/components/settings/DisplayHoverCard";
 import mockProjectData from "@/mock/mockProjectData";
 import { ProjectData } from "@/modal/project";
 import PanelTvlChat from "@/components/custom/PanelTvlChat";
+import { numFormat } from "@/lib/utils";
 
 interface AppProps {
   symbol?: string;
@@ -19,6 +20,7 @@ interface AppProps {
 }
 
 const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
+  console.log("symbolsymbolsymbol", symbol);
   const [position, setPosition] = useState({ x: -9999, y: -9999 });
   // const [isLoading, setIsLoading] = useState(false);
   const [projectData, setProjectData] = useState<ProjectData | null>(
@@ -65,13 +67,11 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
       return [
         { label: "XIcon(Twitter)", value: `${followers} (${tinc}/7d)` },
         { label: "推特提及量", value: `${men} (${minc}/7d)` },
-        // { label: "情感", value: "😀 68%  😡 12%  😐 20%" },
+        { label: "情感", value: "😀 --%  😡 --%  😐 --%" },
       ];
     }
     return [];
   }, [projectData]);
-
-  const chartDates = ["07.01", "07.04", "07.07", "07.10", "07.14"];
 
   const fetchBaseData = useCallback(async () => {
     if (!symbol) return;
@@ -209,6 +209,103 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
             </nav>
 
             <div className="grid items-stretch grid-cols-2 gap-4 px-3">
+              {/* 市场数据 MarketData */}
+              {projectData?.market_data && (
+                <Card className="flex py-0 bg-transparent border-0 rounded-2 ">
+                  <CardContent className="p-3">
+                    <h3 className="mb-1 text-sm font-normal">
+                      Token Price ({projectData?.tokenomics?.token_symbol})
+                    </h3>
+                    <h2 className="text-[20px] font-bold text-brand-green">
+                      {projectData?.market_data?.token_price}
+                      <span className="text-sm font-normal text-brand-black">
+                        {" "}
+                        (+{`--`} %)
+                      </span>
+                    </h2>
+                  </CardContent>
+                </Card>
+              )}
+              {/* 市场数据 MarketData */}
+              {projectData?.market_data && (
+                <Card className="flex py-0 bg-transparent border-0 rounded-2 ">
+                  <CardContent className="p-3">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="text-xs font-normal text-gray-600 ">
+                          Trading Volume(24h)
+                        </div>
+                        <div className="text-xs font-normal text-right text-black ">
+                          {numFormat(
+                            projectData?.market_data?.trading_volume_24h || "0",
+                            2
+                          )}{" "}
+                          <span className="text-brand-red">
+                            {projectData?.market_data?.trading_volume_24h_desc}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="text-xs font-normal text-gray-600 ">
+                          Circulating Market Cap
+                        </div>
+                        <div className="text-xs font-normal text-right text-black ">
+                          {numFormat(
+                            projectData?.market_data?.circulating_market_cap ||
+                              "0",
+                            2
+                          )}{" "}
+                          <span className="text-brand-gray1">
+                            #
+                            {
+                              projectData?.market_data
+                                ?.circulating_market_cap_source
+                            }
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="text-xs font-normal text-gray-600 ">
+                          Fully Diluted Valuation
+                        </div>
+                        <div className="text-xs font-normal text-right text-black ">
+                          {numFormat(
+                            projectData?.market_data?.fully_diluted_valuation ||
+                              "0",
+                            2
+                          )}{" "}
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="text-xs font-normal text-gray-600 ">
+                          Support Exchanges
+                        </div>
+                        <div className="text-xs font-normal text-right text-black">
+                          <div className="flex items-center pl-[6px]">
+                            {projectData?.market_data?.support_exchanges &&
+                              projectData?.market_data?.support_exchanges?.map(
+                                (exchange) => (
+                                  <Avatar
+                                    key={exchange.name}
+                                    className="w-5 h-5 bg-[#D9D9D9] ml-[-6px]"
+                                  >
+                                    <AvatarImage
+                                      src={exchange?.logo || ""}
+                                      alt={exchange.name}
+                                    />
+                                    <AvatarFallback className="text-white bg-[#D9D9D9]">
+                                      {exchange?.name?.charAt(0) || "Y"}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                )
+                              )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
               {/* 融资信息 FundraisingInfo */}
               {projectData?.fundraising_info && (
                 <Card className="bg-[#f6f6f8] rounded-2 border-0 py-0 flex ">
@@ -220,13 +317,13 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
                     <h3 className="mt-5 mb-2 text-sm font-normal ">
                       Investors
                     </h3>
-                    <div className="flex items-center">
+                    <div className="flex items-center pl-[6px]">
                       {projectData?.fundraising_info?.investors &&
                         projectData?.fundraising_info?.investors.map(
                           (investor, index) => (
                             <Avatar
                               key={investor.name}
-                              className="w-5 h-5 bg-[#D9D9D9]"
+                              className="w-5 h-5 bg-[#D9D9D9] ml-[-6px]"
                             >
                               <AvatarImage
                                 src={investor?.logo || ""}
@@ -244,7 +341,7 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
               )}
               {/* 社交媒体统计 SocialMedia */}
               {projectData?.social_media_stats && (
-                <Card className=" bg-[#f6f6f8] rounded-lg border-0 py-0 flex ">
+                <Card className=" bg-[#f6f6f8] rounded-lg border-0 py-0 flex">
                   <CardContent className="p-3">
                     <h3 className="mb-4 text-sm font-normal text-black ">
                       社区热度
@@ -286,23 +383,7 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
                   </CardContent>
                 </Card>
               )}
-              {/* 市场数据 MarketData */}
-              {projectData?.market_data && (
-                <Card className="flex py-0 bg-transparent border-0 rounded-2 ">
-                  <CardContent className="p-3">
-                    <h3 className="mb-1 text-sm font-normal">
-                      Token Price ({projectData?.tokenomics?.token_symbol})
-                    </h3>
-                    <h2 className="text-[20px] font-bold text-brand-green">
-                      {projectData?.market_data?.token_price}
-                      <span className="text-sm font-normal text-brand-black">
-                        {" "}
-                        (+{`--`} %)
-                      </span>
-                    </h2>
-                  </CardContent>
-                </Card>
-              )}
+
               {/* Quest Campaigns Card */}
               {projectData?.campaign && (
                 <Card className="bg-[#f6f6f8] rounded-2 border-0 py-0 flex ">

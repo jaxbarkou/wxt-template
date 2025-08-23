@@ -169,9 +169,9 @@ export default function ChangeEmailSection({ onClose }: ChangeEmailSectionProps)
   }
 
   return (
-    <div className="fixed top-0 left-0 w-full h-full bg-black/50 z-50 flex items-center justify-center">
+    <div className="fixed top-0 left-0 z-50 flex items-center justify-center w-full h-full bg-black/50">
       <Card className="bg-white rounded-lg shadow-[0px_0px_2px_#ffffff1a] border-0 w-[90%] h-[auto] py-0">
-        <CardContent className="space-y-4 p-0">
+        <CardContent className="p-0 space-y-4">
           {/* Header with title and close button */}
           <header className="h-[44px] flex items-center justify-between border-b border-[rgba(151, 151, 151, 0.2)] pl-4 pr-4 pt-2 pb-2">
             <h2 className="[font-family:'Arboria-Medium-Medium',Helvetica] font-size-[16px] font-medium text-[#2c2c2c] text-base tracking-[0] leading-[normal]">
@@ -194,8 +194,8 @@ export default function ChangeEmailSection({ onClose }: ChangeEmailSectionProps)
           <div className="p-4">
             {/* 通用错误提示 */}
             {errors.general && (
-              <div className="mb-8 p-3 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-600 text-sm">{errors.general}</p>
+              <div className="p-3 mb-8 border border-red-200 rounded-lg bg-red-50">
+                <p className="text-sm text-red-600">{errors.general}</p>
               </div>
             )}
 
@@ -225,7 +225,7 @@ export default function ChangeEmailSection({ onClose }: ChangeEmailSectionProps)
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="absolute right-3 top-1/2 -translate-y-1/2 h-auto p-0 w-4 h-4 hover:bg-transparent transition-opacity"
+                        className="absolute w-4 h-4 h-auto p-0 transition-opacity -translate-y-1/2 right-3 top-1/2 hover:bg-transparent"
                         onClick={() => handleClearInput(field.id)}
                       >
                         <img
@@ -238,7 +238,7 @@ export default function ChangeEmailSection({ onClose }: ChangeEmailSectionProps)
                   </div>
                   {/* 错误提示 */}
                   {field.error && (
-                    <p className="text-red-500 text-xs mt-1">{field.error}</p>
+                    <p className="mt-1 text-xs text-red-500">{field.error}</p>
                   )}
                 </div>
               ))}

@@ -72,8 +72,7 @@ export interface CreditsHistoryItem {
 export interface CreateOrderParams {
   plan_id: string;
   chain_id: number;
-  currency: string;
-  token_address: string;
+  user_wallet_address: string;
   plan_request_id: string;
 }
 

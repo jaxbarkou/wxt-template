@@ -2,6 +2,7 @@ import request, { base3Api, base4Api, base5Api } from "@/lib/request";
 import { SendEmailCodeType } from "@/modal";
 import {
   AssetsNetworkItem,
+  CreateOrderParams,
   CreditsHistoryItem,
   CreditsInfo,
   CreditsPlanItem,
@@ -132,7 +133,7 @@ export const getCreditsPlans = (currency: string) => {
   });
 };
 
-export const createCreditsOrder = (data: any) => {
+export const createCreditsOrder = (data: CreateOrderParams) => {
   return request<boolean>(base4Api, {
     url: `/credits/orders`,
     method: "POST",
@@ -151,27 +152,30 @@ export const cancelCreditsOrder = (orderId: string) => {
   return request<boolean>(base4Api, {
     url: `/credits/orders/details/${orderId}`,
     method: "DELETE",
+    data: {
+      reason: "",
+    },
   });
 };
 
 // network assets conf
 export const getNetworkAssets = () => {
   return request<NetworkAssetsItem[]>(base5Api, {
-    url: `/network/asset`,
+    url: `/wallet_na/v1/network/asset`,
     method: "GET",
   });
 };
 
 export const getAssetsNetworkList = () => {
   return request<AssetsNetworkItem[]>(base5Api, {
-    url: `/network/network`,
+    url: `/wallet_na/v1/network/network`,
     method: "GET",
   });
 };
 
 export const getDepositAddress = (chain: string) => {
-  return request<DepositAddressType>(base5Api, {
-    url: `/wallet/deposit/address`,
+  return request<DepositAddressType[]>(base5Api, {
+    url: `/wallet_a/v1/wallet/deposit/address`,
     method: "GET",
     params: { chain },
   });

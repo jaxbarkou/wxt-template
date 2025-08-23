@@ -176,7 +176,7 @@ const TopUpDetail = () => {
   }, [curNetworkItem]);
 
   return (
-    <div className="w-full max-w-sm min-h-screen mx-auto bg-white">
+    <div className="w-full  min-h-screen mx-auto bg-white">
       <div className="bg-[#f6f6f8] w-full min-h-screen relative">
         {/* Main Content */}
         <main className="">

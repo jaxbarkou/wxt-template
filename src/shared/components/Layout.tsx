@@ -37,6 +37,8 @@ import { useMode } from "../context/ModeProvider";
 import { useRootStore } from "@/store";
 import { useUserDetail } from "@/hooks/useUserDetail";
 import { useCreditsInfo } from "@/hooks/useCreditsInfo";
+import { useYomoInitToken } from "@/hooks/useYomoInitToken";
+import { useLogout } from "@/hooks/useLogout";
 
 // 顶部操作栏配置
 const topActions = [
@@ -93,6 +95,14 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isUserHovered, setIsUserHovered] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const yomoInitToken = useYomoInitToken();
+  const { logout } = useLogout();
+
+  useEffect(() => {
+    if (yomoInitToken) {
+      logout();
+    }
+  }, [yomoInitToken]);
 
   const shouldFetchUserDetail = useMemo(() => {
     return !!token;

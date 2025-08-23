@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import logo from '@/assets/images/slide-logo.png';
 
 interface FloatingLogoProps {
   onToggleSidePanel: () => void;
@@ -93,8 +94,8 @@ const FloatingLogo: React.FC<FloatingLogoProps> = ({
   return (
     <div 
       style={parentContainerStyle}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      // onMouseEnter={() => setIsHovered(true)}
+      // onMouseLeave={() => setIsHovered(false)}
     >
       {/* 悬停菜单 */}
       {isHovered && (
@@ -206,8 +207,22 @@ const FloatingLogo: React.FC<FloatingLogoProps> = ({
         style={mainButtonStyle}
         title={isSidePanelOpen ? "关闭侧边栏" : "打开侧边栏"}
       >
-        <p style={mainIconStyle} className='text-[12px] text-white font-medium'>
-          {isSidePanelOpen ? '✓' : 'WXT'}
+        <p style={{
+          ...mainIconStyle,
+          fontSize: '12px',
+          color: 'white',
+          fontWeight: '500',
+          margin: '0'
+        }}>
+          <img 
+            src={logo} 
+            alt="logo" 
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover'
+            }}
+          />
         </p>
       </button>
     </div>

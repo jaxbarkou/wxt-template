@@ -34,7 +34,6 @@ const TopUpDetail = () => {
   const [isCopied, setCopied] = useCopyClipboard();
   const id = searchParams.get("id");
   const currency = searchParams.get("currency");
-  const [unpay] = useState(searchParams.get("unpay"));
   const [selectedCurrency, setSelectedCurrency] = useState<
     string | undefined
   >();
@@ -96,8 +95,8 @@ const TopUpDetail = () => {
       curNetworkItem &&
       !isLoading &&
       curPlan &&
-      request_id &&
-      depositAddressData
+      selectedCurrency &&
+      request_id
     ) {
       // Create order logic here
       try {
@@ -105,23 +104,19 @@ const TopUpDetail = () => {
         let params: CreateOrderParams = {
           plan_id: curPlan?.id || "",
           chain_id: curNetworkItem.chainId,
-          user_wallet_address: depositAddressData?.address,
+          currency: selectedCurrency || "",
+          token_address: curNetworkItem?.assetContract,
           plan_request_id: request_id,
         };
         const response = await createCreditsOrder(params);
+        console.log("Order created", response);
       } catch (error) {
         console.error("Create order failed", error);
       } finally {
         setIsLoading(false);
       }
     }
-  }, [
-    curNetworkItem,
-    isLoading,
-    curPlan,
-    depositAddressData,
-    unpay,
-  ]);
+  }, [curNetworkItem, isLoading, curPlan, selectedCurrency]);
 
   useEffect(() => {
     if (currency) {
@@ -149,12 +144,8 @@ const TopUpDetail = () => {
     try {
       if (curNetworkItem?.chain) {
         const response = await getDepositAddress(curNetworkItem.chain);
-        if (response.result && response.result.length > 0) {
-          response.result.forEach((item) => {
-            if (item?.chain === curNetworkItem?.chain) {
-              setDepositAddressData(item);
-            }
-          });
+        if (response.result) {
+          setDepositAddressData(response.result);
         }
       }
     } catch (error) {
@@ -173,15 +164,10 @@ const TopUpDetail = () => {
   }, [selectedCurrency]);
 
   useEffect(() => {
-    if (
-      curNetworkItem &&
-      curPlan &&
-      depositAddressData?.address &&
-      unpay !== "1"
-    ) {
+    if (curNetworkItem && curPlan) {
       toCreateOrder();
     }
-  }, [curNetworkItem, curPlan, depositAddressData, unpay]);
+  }, [curNetworkItem, curPlan]);
 
   useEffect(() => {
     if (curNetworkItem) {
@@ -190,7 +176,7 @@ const TopUpDetail = () => {
   }, [curNetworkItem]);
 
   return (
-    <div className="w-full  min-h-screen mx-auto bg-white">
+    <div className="w-full min-h-screen mx-auto bg-white">
       <div className="bg-[#f6f6f8] w-full min-h-screen relative">
         {/* Main Content */}
         <main className="">
@@ -247,10 +233,10 @@ const TopUpDetail = () => {
             </div>
 
             {/* Promote Code Input */}
-            {/* <div className="flex items-center justify-center gap-2 mt-4">
+            <div className="flex items-center justify-center gap-2 mt-4">
               <span className="text-xs font-normal">Promote Code</span>
               <Input className="w-32 h-6 text-xs" placeholder="" />
-            </div> */}
+            </div>
 
             {/* Network Selector */}
             <div className="flex items-center justify-center gap-2 mt-10">

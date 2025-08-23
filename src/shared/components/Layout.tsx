@@ -65,7 +65,7 @@ const topNavigationItems = [
 const bottomNavigationItems = [
   { id: "home", icon: "home", label: "Home", path: "/" },
   { id: "mobile", icon: "mobile", label: "Mobile", path: "" },
-//   { id: "settings", icon: "settings", label: "Settings", path: "/settings" },
+  { id: "settings", icon: "settings", label: "Settings", path: "/settings" },
   { id: "user", icon: "user", label: "User", path: "/settings" },
 ];
 
@@ -260,7 +260,6 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 } ${
                   isDisabled ? "disabled" : ""
                 } flex items-center justify-center`}
-                onClick={() => !isDisabled && handleNavItemClick(item)}
                 onMouseEnter={() => !isDisabled && setIsUserHovered(true)}
                 onMouseLeave={() => !isDisabled && setIsUserHovered(false)}
               >

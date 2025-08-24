@@ -12,10 +12,11 @@ import DisplayHoverCard from "@/shared/components/settings/DisplayHoverCard";
 // import mockProjectData from "@/mock/mockProjectData";
 import { ProjectData } from "@/modal/project";
 import PanelTvlChat from "@/components/custom/PanelTvlChat";
-import { numFormat } from "@/lib/utils";
+import { numFormat, toMonthDay } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import NoImg from "@/assets/images/model-no-data.png";
 import { ArrowUpRight } from "lucide-react";
+import { number } from "echarts";
 
 interface AppProps {
   symbol?: string;
@@ -69,6 +70,25 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
         { label: "Twitter Mentions", value: `${men} (${minc}/7d)` },
         { label: "Sentiment", value: "😀 --%  😡 --%  😐 --%" },
       ];
+    }
+    return [];
+  }, [projectData]);
+
+  const priceData = useMemo(() => {
+    if (
+      projectData?.market_data?.kline_30d &&
+      projectData?.market_data?.kline_30d.length > 0
+    ) {
+      let list = projectData?.market_data?.kline_30d;
+      let arr: { date: string; value: number }[] = [];
+      list.forEach((item) => {
+        let date = item?.openTime ? toMonthDay(item?.openTime) : "--";
+        arr.push({
+          date,
+          value: Number(item.openPrice) || 0,
+        });
+      });
+      return arr;
     }
     return [];
   }, [projectData]);
@@ -191,6 +211,11 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
     );
   };
 
+  // const getChangeColor = (val: string | undefined) => {
+  //   console.log(val);
+  //   return val?.includes("-") ? "text-brand-red" : "text-brand-green";
+  // };
+
   return (
     <>
       <div
@@ -267,6 +292,11 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
                                   (+{`--`} %)
                                 </span>
                               </h2>
+                              <div className="flex items-center justify-between w-full">
+                                {projectData?.market_data?.kline_30d && (
+                                  <PanelTvlChat data={priceData} />
+                                )}
+                              </div>
                             </CardContent>
                           </Card>
                         )}
@@ -285,11 +315,17 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
                                         ?.trading_volume_24h || "0",
                                       2
                                     )}{" "}
-                                    <span className="text-brand-red">
+                                    <span
+                                    // className={getChangeColor(
+                                    //   projectData?.market_data
+                                    //     ?.trading_volume_change_24h || ""
+                                    // )}
+                                    >
                                       {
                                         projectData?.market_data
-                                          ?.trading_volume_24h_desc
-                                      }
+                                          ?.trading_volume_change_24h
+                                      }{" "}
+                                      %
                                     </span>
                                   </div>
                                 </div>
@@ -303,13 +339,13 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
                                         ?.circulating_market_cap || "0",
                                       2
                                     )}{" "}
-                                    <span className="text-brand-gray1">
+                                    {/* <span className="text-brand-gray1">
                                       #
                                       {
                                         projectData?.market_data
                                           ?.circulating_market_cap_source
                                       }
-                                    </span>
+                                    </span> */}
                                   </div>
                                 </div>
                                 <div className="flex items-center justify-between">
@@ -432,7 +468,7 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
                                 </span>
                               </h2>
                               <div className="flex items-center justify-between w-full">
-                                <PanelTvlChat />
+                                {/* <PanelTvlChat data={[]} /> */}
                               </div>
                             </CardContent>
                           </Card>

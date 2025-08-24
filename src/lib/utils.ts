@@ -1,9 +1,10 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 import BigNumber from "bignumber.js";
+import moment from "moment";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 export function foramtAddress(address: string) {
   return `${address.substring(0, 4)}...${address.substring(
@@ -13,7 +14,7 @@ export function foramtAddress(address: string) {
 }
 
 // numFormat
-export const numFormat = (num: number | string, digits: number=2) => {
+export const numFormat = (num: number | string, digits: number = 2) => {
   if (num !== undefined) {
     num = Number(String(num).replace(/\$\s?|(,*)/g, ""));
     const si = [
@@ -38,4 +39,12 @@ export const numFormat = (num: number | string, digits: number=2) => {
     );
   }
   return "--";
+};
+
+export const toMonthDay = (ts: number | string, tz?: string) => {
+  const n = Number(ts);
+  const ms = n < 1e12 ? n * 1000 : n; // 10位秒 → 毫秒
+  return tz
+    ? require("moment-timezone")(ms).tz(tz).format("MM-DD")
+    : moment(ms).format("MM-DD");
 };

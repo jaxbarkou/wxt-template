@@ -122,12 +122,12 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
   }
 
   return (
-    <div className="fixed top-0 left-0 w-full h-full bg-black/50 z-50 flex items-center justify-center">
+    <div className="fixed top-0 left-0 z-50 flex items-center justify-center w-full h-full bg-black/50">
       <Card className="bg-white rounded-lg shadow-[0px_0px_2px_#ffffff1a] border-0 w-[90%] py-0">
-        <CardContent className="space-y-4 p-0">
+        <CardContent className="p-0 space-y-4">
           {/* 标题栏和关闭按钮 */}
           <header className="h-[44px] flex items-center justify-between border-b border-[rgba(151, 151, 151, 0.2)] pl-4 pr-4 pt-2 pb-2">
-            <h2 className="[font-family:'Arboria-Medium-Medium',Helvetica] font-size-[16px] font-medium text-[#2c2c2c] text-base tracking-[0] leading-[normal]">
+            <h2 className=" font-size-[16px] font-medium text-[#2c2c2c] text-base tracking-[0] leading-[normal]">
               Change Password
             </h2>
             <Button
@@ -147,8 +147,8 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
           <div className="p-4">
             {/* 通用错误提示 */}
             {errors.general && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-600 text-sm">{errors.general}</p>
+              <div className="p-3 mb-4 border border-red-200 rounded-lg bg-red-50">
+                <p className="text-sm text-red-600">{errors.general}</p>
               </div>
             )}
 
@@ -158,7 +158,7 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
               <div className="space-y-2">
                 <Label
                   htmlFor="oldPassword"
-                  className="[font-family:'Arboria-Book-Book',Helvetica] font-normal text-[#979797] text-sm tracking-[0] leading-[normal]"
+                  className=" font-normal text-[#979797] text-sm tracking-[0] leading-[normal]"
                 >
                   Old Password
                 </Label>
@@ -168,13 +168,13 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
                   placeholder="Enter old password"
                   value={formValues.oldPassword}
                   onChange={(e) => handleInputChange("oldPassword", e.target.value)}
-                  className={`h-10 bg-white rounded-lg border border-solid text-sm [font-family:'Arboria-Book-Book',Helvetica] font-normal text-[#000] tracking-[0] leading-[normal] placeholder:text-[#979797] ${
+                  className={`h-10 bg-white rounded-lg border border-solid text-sm  font-normal text-[#000] tracking-[0] leading-[normal] placeholder:text-[#979797] ${
                     errors.oldPassword ? 'border-red-300 focus:border-red-500' : 'border-[#e9e9e9] focus:border-[#F67C00]'
                   }`}
                   disabled={isLoading}
                 />
                 {errors.oldPassword && (
-                  <p className="text-red-500 text-xs mt-1">{errors.oldPassword}</p>
+                  <p className="mt-1 text-xs text-red-500">{errors.oldPassword}</p>
                 )}
               </div>
 
@@ -182,7 +182,7 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
               <div className="space-y-2">
                 <Label
                   htmlFor="newPassword"
-                  className="[font-family:'Arboria-Book-Book',Helvetica] font-normal text-[#979797] text-sm tracking-[0] leading-[normal]"
+                  className=" font-normal text-[#979797] text-sm tracking-[0] leading-[normal]"
                 >
                   New Password
                 </Label>
@@ -192,13 +192,13 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
                   placeholder="Enter new password"
                   value={formValues.newPassword}
                   onChange={(e) => handleInputChange("newPassword", e.target.value)}
-                  className={`h-10 bg-white rounded-lg border border-solid text-sm [font-family:'Arboria-Book-Book',Helvetica] font-normal text-[#000] tracking-[0] leading-[normal] placeholder:text-[#979797] ${
+                  className={`h-10 bg-white rounded-lg border border-solid text-sm  font-normal text-[#000] tracking-[0] leading-[normal] placeholder:text-[#979797] ${
                     errors.newPassword ? 'border-red-300 focus:border-red-500' : 'border-[#e9e9e9] focus:border-[#F67C00]'
                   }`}
                   disabled={isLoading}
                 />
                 {errors.newPassword && (
-                  <p className="text-red-500 text-xs mt-1">{errors.newPassword}</p>
+                  <p className="mt-1 text-xs text-red-500">{errors.newPassword}</p>
                 )}
               </div>
 
@@ -206,7 +206,7 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
               <div className="space-y-2">
                 <Label
                   htmlFor="confirmPassword"
-                  className="[font-family:'Arboria-Book-Book',Helvetica] font-normal text-[#979797] text-sm tracking-[0] leading-[normal]"
+                  className=" font-normal text-[#979797] text-sm tracking-[0] leading-[normal]"
                 >
                   Confirm Password
                 </Label>
@@ -216,13 +216,13 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
                   placeholder="Confirm new password"
                   value={formValues.confirmPassword}
                   onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
-                  className={`h-10 bg-white rounded-lg border border-solid text-sm [font-family:'Arboria-Book-Book',Helvetica] font-normal text-[#000] tracking-[0] leading-[normal] placeholder:text-[#979797] ${
+                  className={`h-10 bg-white rounded-lg border border-solid text-sm  font-normal text-[#000] tracking-[0] leading-[normal] placeholder:text-[#979797] ${
                     errors.confirmPassword ? 'border-red-300 focus:border-red-500' : 'border-[#e9e9e9] focus:border-[#F67C00]'
                   }`}
                   disabled={isLoading}
                 />
                 {errors.confirmPassword && (
-                  <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>
+                  <p className="mt-1 text-xs text-red-500">{errors.confirmPassword}</p>
                 )}
               </div>
 
@@ -230,7 +230,7 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
               <div className="space-y-2">
                 <Label
                   htmlFor="gaCode"
-                  className="[font-family:'Arboria-Book-Book',Helvetica] font-normal text-[#979797] text-sm tracking-[0] leading-[normal]"
+                  className=" font-normal text-[#979797] text-sm tracking-[0] leading-[normal]"
                 >
                   Ga
                 </Label>
@@ -239,13 +239,13 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
                   placeholder="Enter Ga"
                   value={formValues.gaCode}
                   onChange={(e) => handleInputChange("gaCode", e.target.value)}
-                  className={`h-10 bg-white rounded-lg border border-solid text-sm [font-family:'Arboria-Book-Book',Helvetica] font-normal text-[#000] tracking-[0] leading-[normal] placeholder:text-[#979797] ${
+                  className={`h-10 bg-white rounded-lg border border-solid text-sm  font-normal text-[#000] tracking-[0] leading-[normal] placeholder:text-[#979797] ${
                     errors.gaCode ? 'border-red-300 focus:border-red-500' : 'border-[#e9e9e9] focus:border-[#F67C00]'
                   }`}
                   disabled={isLoading}
                 />
                 {errors.gaCode && (
-                  <p className="text-red-500 text-xs mt-1">{errors.gaCode}</p>
+                  <p className="mt-1 text-xs text-red-500">{errors.gaCode}</p>
                 )}
               </div>
             </div>
@@ -254,14 +254,14 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
             <div className="flex gap-3 pt-2 translate-y-[-1rem] animate-fade-in [--animation-delay:400ms] mt-4">
               <Button
                 variant="outline"
-                className="flex-1 h-auto rounded-[40px] border border-solid border-[#f67c00] bg-transparent hover:bg-[#f67c00]/10 [font-family:'Arboria-Medium-Medium',Helvetica] font-medium text-[#f67c00] text-sm text-center tracking-[0] leading-[normal] py-2.5"
+                className="flex-1 h-auto rounded-[40px] border border-solid border-[#f67c00] bg-transparent hover:bg-[#f67c00]/10  font-medium text-[#f67c00] text-sm text-center tracking-[0] leading-[normal] py-2.5"
                 onClick={handleCancel}
                 disabled={isLoading}
               >
                 Cancel
               </Button>
               <Button 
-                className="flex-1 h-auto bg-[#f67c00] hover:bg-[#f67c00]/90 rounded-[40px] [font-family:'Arboria-Medium-Medium',Helvetica] font-medium text-white text-sm text-center tracking-[0] leading-[normal] py-2.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 h-auto bg-[#f67c00] hover:bg-[#f67c00]/90 rounded-[40px]  font-medium text-white text-sm text-center tracking-[0] leading-[normal] py-2.5 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={handleSave}
                 disabled={isLoading}
               >

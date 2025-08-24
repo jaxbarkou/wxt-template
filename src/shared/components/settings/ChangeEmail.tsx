@@ -174,7 +174,7 @@ export default function ChangeEmailSection({ onClose }: ChangeEmailSectionProps)
         <CardContent className="p-0 space-y-4">
           {/* 标题栏和关闭按钮 */}
           <header className="h-[44px] flex items-center justify-between border-b border-[rgba(151, 151, 151, 0.2)] pl-4 pr-4 pt-2 pb-2">
-            <h2 className="[font-family:'Arboria-Medium-Medium',Helvetica] font-size-[16px] font-medium text-[#2c2c2c] text-base tracking-[0] leading-[normal]">
+            <h2 className=" font-size-[16px] font-medium text-[#2c2c2c] text-base tracking-[0] leading-[normal]">
               Change Email
             </h2>
             <Button
@@ -205,7 +205,7 @@ export default function ChangeEmailSection({ onClose }: ChangeEmailSectionProps)
                 <div key={field.id} className="space-y-2">
                   <Label
                     htmlFor={field.id}
-                    className="[font-family:'Arboria-Book-Book',Helvetica] font-normal text-[#979797] text-sm tracking-[0] leading-[normal]"
+                    className=" font-normal text-[#979797] text-sm tracking-[0] leading-[normal]"
                   >
                     {field.label}
                   </Label>
@@ -215,7 +215,7 @@ export default function ChangeEmailSection({ onClose }: ChangeEmailSectionProps)
                       placeholder={field.placeholder}
                       value={field.value}
                       onChange={(e) => handleInputChange(field.id, e.target.value)}
-                      className={`h-10 bg-white rounded-lg border border-solid pr-10 [font-family:'Arboria-Book-Book',Helvetica] font-normal text-[#000] text-sm tracking-[0] leading-[normal] placeholder:text-[#979797] ${
+                      className={`h-10 bg-white rounded-lg border border-solid pr-10 font-normal text-[#000] text-sm tracking-[0] leading-[normal] placeholder:text-[#979797] ${
                         field.error ? 'border-red-300 focus:border-red-500' : 'border-[#e9e9e9] focus:border-[#F67C00]'
                       }`}
                       disabled={isLoading}
@@ -248,14 +248,14 @@ export default function ChangeEmailSection({ onClose }: ChangeEmailSectionProps)
             <div className="flex gap-3 pt-2 translate-y-[-1rem] animate-fade-in [--animation-delay:400ms] mt-4">
               <Button
                 variant="outline"
-                className="flex-1 h-auto rounded-[40px] border border-solid border-[#f67c00] bg-transparent hover:bg-[#f67c00]/10 [font-family:'Arboria-Medium-Medium',Helvetica] font-medium text-[#f67c00] text-sm text-center tracking-[0] leading-[normal] py-2.5"
+                className="flex-1 h-auto rounded-[40px] border border-solid border-[#f67c00] bg-transparent hover:bg-[#f67c00]/10 font-medium text-[#f67c00] text-sm text-center tracking-[0] leading-[normal] py-2.5"
                 onClick={handleCancel}
                 disabled={isLoading}
               >
                 Cancel
               </Button>
               <Button 
-                className="flex-1 h-auto bg-[#f67c00] hover:bg-[#f67c00]/90 rounded-[40px] [font-family:'Arboria-Medium-Medium',Helvetica] font-medium text-white text-sm text-center tracking-[0] leading-[normal] py-2.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 h-auto bg-[#f67c00] hover:bg-[#f67c00]/90 rounded-[40px] font-medium text-white text-sm text-center tracking-[0] leading-[normal] py-2.5 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={handleSave}
                 disabled={isLoading}
               >

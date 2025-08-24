@@ -10,7 +10,9 @@ module.exports = {
         primaryForeground: "var(--primary-foreground)",
       },
       fontFamily: {
-        sans: ['Arboria-Medium'], // 默认字体
+        sans: ["montserrat-regular"], // 默认字体
+        "brand-medium": ["montserrat-medium"],
+        "brand-regular": ["montserrat-regular"],
         // serif: ['Merriweather', 'ui-serif', 'Georgia'],
         // mono: ['Fira Code', 'ui-monospace', 'SFMono-Regular'],
       },

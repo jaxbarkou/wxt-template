@@ -136,8 +136,18 @@
 
 body {
   @apply font-sans;
+  font-family: 'montserrat-regular';
 }
 
+@font-face {
+  font-family: 'montserrat-medium';
+  src: url('/fonts/montserrat-medium.otf')  format("otf");
+}
+
+@font-face {
+  font-family: 'montserrat-regular';
+  src: url('/fonts/montserrat-regular.otf') format("otf");
+}
 
 /* loading  */
 

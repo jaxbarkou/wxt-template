@@ -7,11 +7,11 @@ const Settings: React.FC = () => {
   const tabItems = [
     { value: "account", label: "Account" },
     { value: "credits", label: "Credits" },
-    { value: "stake", label: "Stake" },
-    { value: "earns", label: "Earns" },
+    { value: "stake", label: "Stake", isDis: true },
+    { value: "earns", label: "Earns", isDis: true },
   ];
   return (
-    <div className="w-full h-full mx-auto bg-[#F6F6F8]">
+    <div className="w-full h-full overflow-auto mx-auto bg-[#F6F6F8]">
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center gap-3">
           <h1 className="text-base font-normal text-brand-black">Settings</h1>
@@ -24,6 +24,7 @@ const Settings: React.FC = () => {
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
+                disabled={tab.isDis}
                 className={cn(
                   "relative px-2 py-2 text-sm font-medium text-zinc-400 data-[state=active]:shadow-none data-[state=active]:bg-transparent rounded-0",
                   "data-[state=active]:text-brand-primary",

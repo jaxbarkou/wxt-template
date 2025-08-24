@@ -6,65 +6,36 @@ import { Separator } from "@/components/ui/separator";
 import { useCreditsInfo } from "@/hooks/useCreditsInfo";
 import NoImg from "@/assets/images/model-no-data.png";
 import { useNavigate } from "react-router-dom";
-
-const historyData = [
-  {
-    type: "Bonus for new users",
-    amount: "+1,000",
-    date: "2025-09-18 20:08",
-    isPositive: true,
-  },
-  {
-    type: "Daily bonus",
-    amount: "+150",
-    date: "2025-09-18 20:08",
-    isPositive: true,
-  },
-  {
-    type: "Bonus for referral",
-    amount: "+500",
-    date: "2025-09-18 20:08",
-    isPositive: true,
-  },
-  {
-    type: "Research spend",
-    amount: "-800",
-    date: "2025-09-18 20:08",
-    isPositive: false,
-  },
-  {
-    type: "Research spend",
-    amount: "-350",
-    date: "2025-09-18 20:08",
-    isPositive: false,
-  },
-  {
-    type: "Subscribe Alpha Alert",
-    amount: "-1,000",
-    date: "2025-09-18 20:08",
-    isPositive: false,
-  },
-  {
-    type: "Top up",
-    amount: "+1,000",
-    date: "2025-09-18 20:08",
-    isPositive: true,
-  },
-];
+import { CreditsHistoryItem } from "@/modal/user";
+import { getCreditsHistory } from "@/lib/api/user";
 
 const Credits = () => {
   const { fetchCreditsInfo, creditsInfo } = useCreditsInfo();
   const navigate = useNavigate();
+  const [history, setHistory] = useState<CreditsHistoryItem[]>([]);
+
+  const fetchHistory = async () => {
+    try {
+      // Fetch credits history
+      let response = await getCreditsHistory();
+      if (response.result) {
+        setHistory(response.result.histories);
+      }
+    } catch (error) {
+      console.error("Error fetching credits history:", error);
+    }
+  };
 
   useEffect(() => {
     fetchCreditsInfo();
-  }, [fetchCreditsInfo]);
+    fetchHistory();
+  }, []);
   const goTopUp = () => {
     navigate("/top-up");
   };
   return (
-    <div className="">
-      <div className="mt-0">
+    <div className="h-full">
+      <div className="flex flex-col h-full pb-4 mt-0">
         <Card className="py-0 mb-4 bg-white rounded-lg">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-4">
@@ -114,8 +85,7 @@ const Credits = () => {
             </div>
           </CardContent>
         </Card>
-
-        <Card className="py-0 bg-white rounded-lg">
+        <Card className="flex-1 py-0 overflow-scroll bg-white rounded-lg">
           <CardContent className="p-4 pb-0">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-base font-normal ">History</h3>
@@ -125,30 +95,35 @@ const Credits = () => {
             </div>
 
             <div className="space-y-0">
-              {/* {historyData.map((item, index) => (
-                <div key={index}>
-                  <div className="flex items-center justify-between py-2">
-                    <div className="flex-1">
-                      <div className="text-sm font-normal ">{item.type}</div>
-                      <div className="font-normal text-[11px] mt-1 text-brand-gray1">
-                        {item.date}
+              {history.length > 0 &&
+                history.map((item, index) => (
+                  <div key={index}>
+                    <div className="flex items-center justify-between py-2">
+                      <div className="flex-1">
+                        <div className="text-sm font-normal ">
+                          {item.biz_title}
+                        </div>
+                        <div className="font-normal text-[11px] mt-1 text-brand-gray1">
+                          {item.created_at}
+                        </div>
+                      </div>
+                      <div className="text-sm font-normal text-right text-brand-green">
+                        + {item.balance_change}
                       </div>
                     </div>
-                    <div className="text-sm font-normal text-right text-brand-green">
-                      {item.amount}
-                    </div>
+                    {index < history.length - 1 && (
+                      <Separator className="bg-brand-gray1/20" />
+                    )}
                   </div>
-                  {index < historyData.length - 1 && (
-                    <Separator className="bg-brand-gray1/20" />
-                  )}
+                ))}
+              {history.length <= 0 && (
+                <div className="flex flex-col items-center justify-center h-[330px]">
+                  <img className="w-[145px] h-[109px]" src={NoImg} alt="" />
+                  <p className="mt-4 text-sm font-normal text-center text-brand-gray1">
+                    No data yet
+                  </p>
                 </div>
-              ))} */}
-              <div className="flex flex-col items-center justify-center h-[330px]">
-                <img className="w-[145px] h-[109px]" src={NoImg} alt="" />
-                <p className="mt-4 text-sm font-normal text-center text-brand-gray1">
-                  No data yet
-                </p>
-              </div>
+              )}
             </div>
           </CardContent>
         </Card>

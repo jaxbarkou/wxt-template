@@ -2,29 +2,29 @@
 import React from "react";
 import ReactECharts from "echarts-for-react";
 import * as echarts from "echarts";
+import { numFormat } from "@/lib/utils";
 
 type Point = { date: string; value: number };
 
-const defaultData: Point[] = [
-  { date: "07.01", value: 12 },
-  { date: "07.02", value: 28 },
-  { date: "07.03", value: 5 },
-  { date: "07.04", value: 45 },
-  { date: "07.05", value: 33 },
-  { date: "07.06", value: 50 },
-  { date: "07.07", value: 40 },
-  { date: "07.08", value: 44 },
-];
-
 const ORANGE = "#F67C00";
 
+const PADDING_RATIO = 0.1;
+
 export default function PanelTvlChat({
-  data = defaultData,
+  data,
 }: {
-  data?: Point[];
+  data: { date: string; value: number }[];
 }) {
   const x = data.map((d) => d.date);
   const y = data.map((d) => d.value);
+
+  const formatYNun = (num: number) => {
+    if (num > 1) {
+      return numFormat(num, 0);
+    } else {
+      return `${num}`;
+    }
+  };
 
   const option: echarts.EChartsOption = {
     grid: { left: 38, right: 8, top: 6, bottom: 22, containLabel: false },
@@ -40,14 +40,27 @@ export default function PanelTvlChat({
     },
     yAxis: {
       type: "value",
-      min: 0,
-      max: 100,
+      min: (val: { min: number; max: number }) => {
+        if (val.min === val.max) return val.min - 1; // 单值时给点空间
+        const pad = (val.max - val.min) * PADDING_RATIO;
+        return Math.floor((val.min - pad) * 100) / 100; // 可按需保留小数
+      },
+      max: (val: { min: number; max: number }) => {
+        if (val.min === val.max) return val.max + 1;
+        const pad = (val.max - val.min) * PADDING_RATIO;
+        return Math.ceil((val.max + pad) * 100) / 100;
+      },
       // name: "($)",
       splitNumber: 3,
       nameTextStyle: { color: "#6B7280", padding: [0, 0, 0, -6] }, // gray-500
       axisLine: { show: false },
       axisTick: { show: false },
-      axisLabel: { color: "#9CA3AF" },
+      axisLabel: {
+        color: "#9CA3AF",
+        formatter: (value) => {
+          return formatYNun(value);
+        },
+      },
       splitLine: { show: true, lineStyle: { color: "#F3F4F6" } }, // light grid line
     },
     series: [

@@ -6,6 +6,7 @@ import { useRootStore } from "@/store";
 
 import { LoginState } from "./LoginBase";
 import { LoginType } from "@/modal";
+import { useCustomToast } from "@/hooks/useCustomToast";
 /**
  * Register
  * - 还原截图：返回/关闭、头像占位、Welcome 标题
@@ -26,6 +27,7 @@ export default function Register({
   const [verifyPwd, setVerifyPwd] = useState<string>("");
   const { updateToken, setLoginModalOpen, updateLoginType } = useRootStore();
   const [code, setCode] = useState<string>("");
+  const { notify } = useCustomToast();
 
   const handleSendCode = async () => {
     if (!email || sending || countdown > 0) return;
@@ -68,7 +70,7 @@ export default function Register({
         verifyPwd: pwd,
       };
       const response = await emailRegister(par);
-      if (response && response?.result) {
+      if (response.code === 1 && response?.result) {
         updateToken(response.result.token);
         setLoginModalOpen(false);
         updateLoginType(LoginType.Email);
@@ -76,6 +78,8 @@ export default function Register({
           "Email registration successful, token:",
           response.result.token
         );
+      } else {
+        notify({ type: "error", message: response.message || "Login failed" });
       }
     } catch (error) {
       console.error("Error during email registration:", error);

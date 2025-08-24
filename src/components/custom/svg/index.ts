@@ -1,12 +1,12 @@
-export { default as SvgWrapper } from './SvgWrapper';
+export { default as SvgWrapper } from "./SvgWrapper";
 
 // Icons
 export { default as UserIcon } from "./icons/UserIcon";
-export { default as LoveIcon } from './icons/LoveIcon';
-export { default as GiftIcon } from './icons/GiftIcon';
-export { default as PromptIcon } from './icons/PromptIcon';
-export { default as PromptBorIcon } from './icons/PromptBorIcon';
-export { default as TabIcon } from './icons/TabIcon';
+export { default as LoveIcon } from "./icons/LoveIcon";
+export { default as GiftIcon } from "./icons/GiftIcon";
+export { default as PromptIcon } from "./icons/PromptIcon";
+export { default as PromptBorIcon } from "./icons/PromptBorIcon";
+export { default as TabIcon } from "./icons/TabIcon";
 export { default as EarnIcon } from "./icons/EarnIcon";
 export { default as EmaiIcon } from "./icons/EmaiIcon";
 export { default as FoldIcon } from "./icons/FoldIcon";

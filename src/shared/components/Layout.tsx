@@ -39,6 +39,7 @@ import { useUserDetail } from "@/hooks/useUserDetail";
 import { useCreditsInfo } from "@/hooks/useCreditsInfo";
 import { useYomoInitToken } from "@/hooks/useYomoInitToken";
 import { useLogout } from "@/hooks/useLogout";
+import { Toaster } from "@/components/ui/sonner";
 
 // 顶部操作栏配置
 const topActions = [
@@ -97,7 +98,6 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const navigate = useNavigate();
   const yomoInitToken = useYomoInitToken();
   const { logout } = useLogout();
-
   useEffect(() => {
     if (yomoInitToken) {
       logout();
@@ -560,6 +560,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       </div>
       {/* 登录组件 */}
       <LoginBase />
+      <Toaster />
     </TooltipProvider>
   );
 };

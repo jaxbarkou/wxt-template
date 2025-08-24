@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { emailLogin } from "@/lib/api/login";
 import { useRootStore } from "@/store";
+import { Avatar,AvatarImage } from "@/components/ui/avatar";
 
 import { LoginState } from "./LoginBase";
 import { LoginType } from "@/modal";
@@ -54,7 +55,9 @@ export default function EmailLogin({
     <div className="">
       {/* 头像 + 标题 */}
       <div className="px-6 pt-1 pb-4 text-center">
-        <div className="w-20 h-20 mx-auto rounded-full bg-neutral-200 dark:bg-neutral-800" />
+        <Avatar className="w-24 h-24 mx-auto rounded-full bg-neutral-200 dark:bg-neutral-800">
+          <AvatarImage src="https://c.animaapp.com/tsXhjynw/img/image-9@2x.png" />
+        </Avatar>
         <h2 className="mt-5 text-3xl font-semibold tracking-tight">Welcome</h2>
       </div>
 

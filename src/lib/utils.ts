@@ -13,7 +13,7 @@ export function foramtAddress(address: string) {
 }
 
 // numFormat
-export const numFormat = (num: number | string, digits: number) => {
+export const numFormat = (num: number | string, digits: number=2) => {
   if (num !== undefined) {
     num = Number(String(num).replace(/\$\s?|(,*)/g, ""));
     const si = [

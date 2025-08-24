@@ -11,6 +11,7 @@ import {
 import { ProjectItem } from "@/modal/searchResult";
 import ChartContainer from "@/components/charts/ChartContainer";
 import PriceChart from "@/components/charts/PriceChart";
+import { numFormat } from "@/lib/utils";
 
 const Search: React.FC = () => {
   const [searchValue, setSearchValue] = useState("");
@@ -61,17 +62,6 @@ const Search: React.FC = () => {
       return [];
     }
   };
-
-  // 格式化数字
-  const formatNumber = (num: number) => {
-    if (num >= 1000000) {
-      return (num / 1000000).toFixed(1) + "M";
-    } else if (num >= 1000) {
-      return (num / 1000).toFixed(1) + "K";
-    }
-    return num.toString();
-  };
-
   // 格式化百分比
   const formatPercentage = (num: number) => {
     return num > 0 ? `+${num.toFixed(2)}%` : `${num.toFixed(2)}%`;
@@ -222,7 +212,7 @@ const Search: React.FC = () => {
                     <div className="flex justify-between">
                       <span className="text-gray-700">X (Twitter)</span>
                       <span className="text-black">
-                        {formatNumber(
+                        {numFormat(
                           projectData.social_media_stats.twitter.followers || 0
                         )}{" "}
                         <span className="text-green-500">
@@ -240,7 +230,7 @@ const Search: React.FC = () => {
                     <div className="flex justify-between">
                       <span className="text-gray-700">Telegram</span>
                       <span className="text-black">
-                        {formatNumber(
+                        {numFormat(
                           projectData.social_media_stats.telegram.members || 0
                         )}{" "}
                         <span className="text-green-500">
@@ -258,7 +248,7 @@ const Search: React.FC = () => {
                     <div className="flex justify-between">
                       <span className="text-gray-700">Discord</span>
                       <span className="text-black">
-                        {formatNumber(
+                        {numFormat(
                           projectData.social_media_stats.discord.members || 0
                         )}{" "}
                         <span className="text-green-500">
@@ -276,7 +266,7 @@ const Search: React.FC = () => {
                     <div className="flex justify-between">
                       <span className="text-gray-700">推特提及量</span>
                       <span className="text-black">
-                        {formatNumber(
+                        {numFormat(
                           projectData.social_media_stats.twitter.mentions || 0
                         )}{" "}
                         <span className="text-green-500">
@@ -359,12 +349,13 @@ const Search: React.FC = () => {
                   <div className="w-1 h-4 bg-orange-500 rounded"></div>
                   <div className="text-sm font-medium text-black">Markets</div>
                 </div>
-                <div className="px-4 mb-6">
+                <div className="pt-2 pb-2 mb-6">
                   <ChartContainer title="30 days price trend">
                     <PriceChart
                       height={144}
                       symbol={selectedProject?.token_symbol || "BTC"}
-                      useApi={true}
+                      useApi={false}
+                      klineData={projectData?.market_data?.kline_30d || []}
                     />
                   </ChartContainer>
                 </div>
@@ -373,11 +364,16 @@ const Search: React.FC = () => {
                     <span className="text-gray-700">Trading Volume (24H)</span>
                     <span className="text-black">
                       $
-                      {formatNumber(
+                      {numFormat(
                         projectData.market_data.trading_volume_24h || 0
                       )}{" "}
-                      <span className="text-red-500">
-                        {projectData.market_data.trading_volume_24h_desc}
+                      <span className={`${
+                        (projectData.market_data.trading_volume_change_24h || 0) >= 0 
+                          ? 'text-green-500' 
+                          : 'text-red-500'
+                      }`}>
+                        {(projectData.market_data.trading_volume_change_24h || 0) >= 0 ? '+' : ''}
+                        {(projectData.market_data.trading_volume_change_24h || 0).toFixed(2)}%
                       </span>
                     </span>
                   </div>
@@ -387,7 +383,7 @@ const Search: React.FC = () => {
                     </span>
                     <span className="text-black">
                       $
-                      {formatNumber(
+                      {numFormat(
                         projectData.market_data.circulating_market_cap || 0
                       )}{" "}
                     </span>
@@ -398,7 +394,7 @@ const Search: React.FC = () => {
                     </span>
                     <span className="text-black">
                       $
-                      {formatNumber(
+                      {numFormat(
                         projectData.market_data.fully_diluted_valuation || 0
                       )}
                     </span>
@@ -454,7 +450,7 @@ const Search: React.FC = () => {
                   <div className="flex justify-between">
                     <span className="text-gray-700">Circulating Supply</span>
                     <span className="text-black">
-                      {formatNumber(
+                      {numFormat(
                         selectedProject?.circulating_supply ||
                           projectData?.tokenomics?.circulating_supply ||
                           0
@@ -464,29 +460,29 @@ const Search: React.FC = () => {
                   <div className="flex justify-between">
                     <span className="text-gray-700">Total Supply</span>
                     <span className="text-black">
-                      {formatNumber(
+                      {numFormat(
                         selectedProject?.total_supply ||
                           projectData?.tokenomics?.total_supply ||
                           0
                       )}
                     </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-700">Support Chains</span>
-                    <div className="flex-1 ml-2 overflow-hidden">
-                      <div className="flex gap-1 overflow-x-auto scrollbar-hide justify-end">
-                        {projectData?.tokenomics?.support_chains?.map(
-                          (chain: any, index: number) => (
-                            <div key={index} className="flex-shrink-0">
-                              <ChainLogo chain={chain} size={18} />
-                            </div>
-                          )
-                        ) || (
-                          <div className="w-3 h-3 bg-gray-300 rounded-full flex-shrink-0"></div>
-                        )}
+                  {projectData?.tokenomics?.support_chains && projectData.tokenomics.support_chains.length > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-700">Support Chains</span>
+                      <div className="flex-1 ml-2 overflow-hidden">
+                        <div className="flex gap-1 overflow-x-auto scrollbar-hide justify-end">
+                          {projectData.tokenomics.support_chains.map(
+                            (chain: any, index: number) => (
+                              <div key={index} className="flex-shrink-0">
+                                <ChainLogo chain={chain} size={18} />
+                              </div>
+                            )
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
                   <div className="flex justify-between">
                     <span className="text-gray-700">Referral Docs</span>
                     <span className="text-blue-600 underline cursor-pointer">
@@ -534,7 +530,7 @@ const Search: React.FC = () => {
                             <span className="font-semibold text-gray-800">
                               {selectedProject?.total_supply ||
                               projectData?.tokenomics?.total_supply
-                                ? formatNumber(
+                                ? numFormat(
                                     selectedProject?.total_supply ||
                                       projectData?.tokenomics?.total_supply ||
                                       0
@@ -549,7 +545,7 @@ const Search: React.FC = () => {
                             <span className="font-semibold text-gray-800 text-right">
                               {selectedProject?.circulating_supply ||
                               projectData?.tokenomics?.circulating_supply
-                                ? `${formatNumber(
+                                ? `${numFormat(
                                     selectedProject?.circulating_supply ||
                                       projectData?.tokenomics
                                         ?.circulating_supply ||

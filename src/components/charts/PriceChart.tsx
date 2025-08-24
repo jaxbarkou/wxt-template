@@ -4,8 +4,23 @@ import * as echarts from 'echarts';
 import { usePriceData, PriceDataPoint } from '@/hooks/usePriceData';
 import ChartContainer from './ChartContainer';
 
+interface KlineDataPoint {
+  openTime: number;
+  openPrice: string;
+  highPrice: string;
+  lowPrice: string;
+  closePrice: string;
+  volume: string;
+  closeTime: number;
+  quoteVolume: string;
+  trades: number;
+  takerBuyVolume: string;
+  takerBuyQuoteVolume: string;
+}
+
 interface PriceChartProps {
   data?: PriceDataPoint[];
+  klineData?: KlineDataPoint[];
   loading?: boolean;
   height?: string | number;
   symbol?: string;
@@ -15,6 +30,7 @@ interface PriceChartProps {
 
 const PriceChart: React.FC<PriceChartProps> = ({ 
   data = [], 
+  klineData = [],
   loading: externalLoading = false, 
   height = 144,
   symbol = 'BTC',
@@ -29,7 +45,22 @@ const PriceChart: React.FC<PriceChartProps> = ({
   });
 
   const isLoading = externalLoading || apiLoading;
-  const chartData = useApi ? apiData : (data.length > 0 ? data : generateMockData());
+  
+  // 优先使用K线数据，然后是API数据，最后是传入的数据或模拟数据
+  let chartData: PriceDataPoint[] = [];
+  
+  if (klineData.length > 0) {
+    chartData = klineData.map(item => ({
+      date: new Date(item.openTime).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' }).replace('/', '.'),
+      price: parseFloat(item.closePrice)
+    }));
+  } else if (useApi && apiData) {
+    chartData = apiData;
+  } else if (data.length > 0) {
+    chartData = data;
+  } else {
+    chartData = generateMockData();
+  }
 
   const option = {
     grid: { 

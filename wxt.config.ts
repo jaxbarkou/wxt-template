@@ -7,9 +7,26 @@ export default defineConfig({
   srcDir: "src",
   modules: ["@wxt-dev/module-react"],
   manifest: {
-     // 同时配置popup、sidepanel和options
-     action: {
-      default_popup: "popup.html",
+    name: "Yomo",
+    description: "AI-powered project research and analysis tool",
+    version: "1.0.0",
+    icons: {
+      "16": "icon/16x16.png",
+      "32": "icon/32x32.png",
+      "48": "icon/48x48.png",
+      "96": "icon/96x96.png",
+      "128": "icon/128x128.png",
+    },
+    // 同时配置popup、sidepanel和options
+    action: {
+      default_popup: "sidepanel.html",
+      default_icon: {
+        "16": "icon/16x16.png",
+        "32": "icon/32x32.png",
+        "48": "icon/48x48.png",
+        "96": "icon/96x96.png",
+        "128": "icon/128x128.png",
+      },
     },
     side_panel: {
       default_path: "sidepanel.html", // Points to your side panel HTML
@@ -29,7 +46,7 @@ export default defineConfig({
       "<all_urls>",
       "https://*/*", // 允许访问HTTPS网站
       "http://localhost:*", // 允许访问localhost
-    ]
+    ],
   },
   vite: () => ({
     plugins: [tailwindcss()],

@@ -15,12 +15,14 @@ import Google2FaBind from "./Google2FaBind";
 import ChangePasswordSection from "./ChangePassword"; // 添加导入
 import DisplayHoverCard from "./DisplayHoverCard";
 import { useNavigate } from "react-router-dom";
+import { useCustomToast } from "@/hooks/useCustomToast";
 
 const Account: React.FC = () => {
   const { userDetail } = useRootStore();
   const { fetchUserDetail } = useUserDetail();
   const { logout } = useLogout();
   const navigate = useNavigate();
+  const { notify } = useCustomToast();
   const [nickName, setNickName] = useState(userDetail?.nickName || "");
   const [editNickNameModalOpen, setEditNickNameModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -106,6 +108,19 @@ const Account: React.FC = () => {
 
   // 处理各种操作
   const handleAction = (item: any) => {
+    // 检查是否需要谷歌验证器绑定
+    const needsGoogleAuth = (item.label === "E-Mail" || item.label === "Password") && 
+                           !userDetail?.authenticatorStatus;
+    
+    if (needsGoogleAuth) {
+      notify({
+        message: "Please bind Google Authenticator first before proceeding with this operation.",
+        type: "warning",
+        duration: 4000
+      });
+      return;
+    }
+
     if (item.label === "E-Mail") {
       setShowEmailModal(true);
     }
@@ -147,7 +162,7 @@ const Account: React.FC = () => {
                   <span className="text-sm font-normal text-variable-collection">
                     {userDetail?.nickName
                       ? userDetail?.nickName
-                      : `Username - `}
+                      : `Nickname`}
                   </span>
                   <img
                     className="w-2.5 h-2.5"
@@ -162,7 +177,7 @@ const Account: React.FC = () => {
                 <div className="flex items-center w-[140px] h-[24px] border border-[#F67C00] rounded-[4px] ">
                   <input
                     className="w-full h-full text-sm focus:outline-none pl-2"
-                    placeholder="Username"
+                    placeholder="Nickname"
                     value={nickName}
                     onChange={(e) => setNickName(e.target.value)}
                     disabled={isSaving}

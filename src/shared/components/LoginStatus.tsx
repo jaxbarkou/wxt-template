@@ -68,7 +68,7 @@ const LoginStatus: React.FC = () => {
           </Avatar>
           <div className="user-info-text text-[#2C2C2C] ml-1">
             <p className="text-[14px] font-bold">
-              Username - {userDetail?.nickName||'-'}
+               {userDetail?.nickName || 'Nickname'}
             </p>
             <p className="text-[12px]">{userDetail?.email||'-'}</p>
           </div>

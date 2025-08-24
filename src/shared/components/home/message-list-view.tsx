@@ -481,7 +481,7 @@ function PlanCard({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
         >
-          <Card className="w-full">
+          <Card className="w-full border-0 bg-[#F6F6F8] ">
             <CardHeader>
               <CardTitle>
                 <Markdown animated={message.isStreaming}>

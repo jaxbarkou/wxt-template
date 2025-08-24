@@ -34,6 +34,7 @@ export const useStore = create<{
   closeResearch: () => void;
   clearMessages: () => void;
   setOngoingResearch: (researchId: string | null) => void;
+  setThreadId: (threadId: string | undefined) => void;
 }>((set) => ({
   responding: false,
   threadId: THREAD_ID,
@@ -66,6 +67,7 @@ export const useStore = create<{
   },
   clearMessages() {
     set((state) => ({
+      threadId: nanoid(),
       messageIds: [],
       messages: new Map<string, Message>(),
       researchIds: [],
@@ -85,6 +87,9 @@ export const useStore = create<{
   setOngoingResearch(researchId: string | null) {
     set({ ongoingResearchId: researchId });
   },
+  setThreadId(threadId: string | undefined) {
+    set({ threadId });
+  }
 }));
 
 export async function sendMessage(
@@ -101,7 +106,7 @@ export async function sendMessage(
   if (content != null) {
     appendMessage({
       id: nanoid(),
-      threadId: THREAD_ID,
+      threadId: useStore.getState().threadId!,
       role: "user",
       content: content,
       contentChunks: [content],
@@ -113,7 +118,7 @@ export async function sendMessage(
   const stream = chatStream(
     content ?? "[REPLAY]",
     {
-      thread_id: THREAD_ID,
+      thread_id: useStore.getState().threadId!,
       interrupt_feedback: interruptFeedback,
       resources,
       auto_accepted_plan: settings.autoAcceptedPlan,
@@ -298,7 +303,7 @@ export async function listenToPodcast(researchId: string) {
     if (reportMessage?.content) {
       appendMessage({
         id: nanoid(),
-        threadId: THREAD_ID,
+        threadId: useStore.getState().threadId!,
         role: "user",
         content: "Please generate a podcast for the above research.",
         contentChunks: [],
@@ -307,7 +312,7 @@ export async function listenToPodcast(researchId: string) {
       const podcastObject = { title, researchId };
       const podcastMessage: Message = {
         id: podCastMessageId,
-        threadId: THREAD_ID,
+        threadId: useStore.getState().threadId!,
         role: "assistant",
         agent: "podcast",
         content: JSON.stringify(podcastObject),

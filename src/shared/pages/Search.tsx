@@ -180,14 +180,14 @@ const Search: React.FC = () => {
                   enabling it to better serve the Bitcoin ecosystem and other
                   protocols.
                 </div>
-                <div className="text-xs text-gray-700 mb-4">
+                {/* <div className="text-xs text-gray-700 mb-4">
                   Investment Institutions:
                 </div>
                 <Card className="bg-gray-100 border border-gray-200 h-36 mb-2">
                   <CardContent className="p-0 h-full flex items-center justify-center">
                     <div className="text-xs text-gray-500">投资机构列表</div>
                   </CardContent>
-                </Card>
+                </Card> */}
               </div>
             )}
 
@@ -208,21 +208,24 @@ const Search: React.FC = () => {
                   </CardContent>
                 </Card> */}
                 <div className="space-y-2 text-xs mb-4">
-                  {/* {projectData?.social_media_stats?.twitter && (
+                  {projectData?.social_media_stats?.twitter && (
                     <div className="flex justify-between">
                       <span className="text-gray-700">X (Twitter)</span>
                       <span className="text-black">
                         {numFormat(
                           projectData.social_media_stats.twitter.followers || 0
                         )}{" "}
-                        <span className="text-green-500">
-                          (
-                          {formatPercentage(
-                            projectData.social_media_stats.twitter
-                              .followers_7d_increment || 0
-                          )}
-                          /7d)
-                        </span>
+                        {projectData.social_media_stats.twitter
+                          ?.followers_7d_increment && (
+                          <span className="text-green-500">
+                            (
+                            {formatPercentage(
+                              projectData.social_media_stats.twitter
+                                .followers_7d_increment || 0
+                            )}
+                            /7d)
+                          </span>
+                        )}
                       </span>
                     </div>
                   )}
@@ -262,24 +265,27 @@ const Search: React.FC = () => {
                       </span>
                     </div>
                   )}
-                  {projectData?.social_media_stats?.twitter && (
+                  {projectData?.social_media_stats?.twitter?.mentions && (
                     <div className="flex justify-between">
-                      <span className="text-gray-700">推特提及量</span>
+                      <span className="text-gray-700">Twitter mentions</span>
                       <span className="text-black">
                         {numFormat(
                           projectData.social_media_stats.twitter.mentions || 0
                         )}{" "}
-                        <span className="text-green-500">
-                          (
-                          {formatPercentage(
-                            projectData.social_media_stats.twitter
-                              .mentions_7d_increment || 0
-                          )}
-                          /7d)
-                        </span>
+                        {projectData.social_media_stats.twitter
+                          .mentions_7d_increment && (
+                          <span className="text-green-500">
+                            (
+                            {formatPercentage(
+                              projectData.social_media_stats.twitter
+                                .mentions_7d_increment || 0
+                            )}
+                            /7d)
+                          </span>
+                        )}
                       </span>
                     </div>
-                  )} */}
+                  )}
                   {/* {projectData?.social_media_stats?.twitter?.sentiment && (
                     <div className="flex justify-between">
                       <span className="text-gray-700">社区情感</span>
@@ -290,38 +296,43 @@ const Search: React.FC = () => {
                       </span>
                     </div>
                   )} */}
-                  {projectData?.social_media_stats?.media_mentions && (
-                    <div className="space-y-2">
-                      <div className="text-xs text-gray-700 font-medium">
-                        Media Coverage
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {projectData.social_media_stats.media_mentions.map(
-                          (url: string, index: number) => {
-                            // 从URL中提取域名
-                            const domain = url
-                              .replace(/^https?:\/\//, "")
-                              .replace(/^www\./, "")
-                              .split("/")[0];
-                            const displayName = domain.split(".")[0]; // 取主域名部分
+                  {projectData?.social_media_stats?.media_mentions &&
+                    Array.isArray(
+                      projectData.social_media_stats.media_mentions
+                    ) &&
+                    projectData.social_media_stats.media_mentions.length >
+                      0 && (
+                      <div className="space-y-2">
+                        <div className="text-xs text-gray-700 font-medium">
+                          Media Coverage
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {projectData.social_media_stats.media_mentions.map(
+                            (url: string, index: number) => {
+                              // 从URL中提取域名
+                              const domain = url
+                                .replace(/^https?:\/\//, "")
+                                .replace(/^www\./, "")
+                                .split("/")[0];
+                              const displayName = domain.split(".")[0]; // 取主域名部分
 
-                            return (
-                              <a
-                                key={index}
-                                href={url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded-full hover:bg-blue-200 transition-colors cursor-pointer"
-                                title={url}
-                              >
-                                {displayName}
-                              </a>
-                            );
-                          }
-                        )}
+                              return (
+                                <a
+                                  key={index}
+                                  href={url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded-full hover:bg-blue-200 transition-colors cursor-pointer"
+                                  title={url}
+                                >
+                                  {displayName}
+                                </a>
+                              );
+                            }
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                 </div>
                 {/* <div className="grid grid-cols-1 gap-4 mb-2">
                   <Card className="bg-gray-100 border border-gray-200 h-36">
@@ -349,16 +360,19 @@ const Search: React.FC = () => {
                   <div className="w-1 h-4 bg-orange-500 rounded"></div>
                   <div className="text-sm font-medium text-black">Markets</div>
                 </div>
-                <div className="pt-2 pb-2 mb-6">
-                  <ChartContainer title="30 days price trend">
-                    <PriceChart
-                      height={144}
-                      symbol={selectedProject?.token_symbol || "BTC"}
-                      useApi={false}
-                      klineData={projectData?.market_data?.kline_30d || []}
-                    />
-                  </ChartContainer>
-                </div>
+                {projectData?.market_data?.kline_30d &&
+                  projectData.market_data.kline_30d.length > 0 && (
+                    <div className="pt-2 pb-2 mb-6">
+                      <ChartContainer title="30 days price trend">
+                        <PriceChart
+                          height={144}
+                          symbol={selectedProject?.token_symbol || "BTC"}
+                          useApi={false}
+                          klineData={projectData.market_data.kline_30d}
+                        />
+                      </ChartContainer>
+                    </div>
+                  )}
                 <div className="space-y-2 text-xs mb-4">
                   <div className="flex items-center justify-between">
                     <span className="text-gray-700">Trading Volume (24H)</span>
@@ -367,13 +381,22 @@ const Search: React.FC = () => {
                       {numFormat(
                         projectData.market_data.trading_volume_24h || 0
                       )}{" "}
-                      <span className={`${
-                        (projectData.market_data.trading_volume_change_24h || 0) >= 0 
-                          ? 'text-green-500' 
-                          : 'text-red-500'
-                      }`}>
-                        {(projectData.market_data.trading_volume_change_24h || 0) >= 0 ? '+' : ''}
-                        {(projectData.market_data.trading_volume_change_24h || 0).toFixed(2)}%
+                      <span
+                        className={`${
+                          (projectData.market_data.trading_volume_change_24h ||
+                            0) >= 0
+                            ? "text-green-500"
+                            : "text-red-500"
+                        }`}
+                      >
+                        {(projectData.market_data.trading_volume_change_24h ||
+                          0) >= 0
+                          ? "+"
+                          : ""}
+                        {(
+                          projectData.market_data.trading_volume_change_24h || 0
+                        ).toFixed(2)}
+                        %
                       </span>
                     </span>
                   </div>
@@ -467,22 +490,23 @@ const Search: React.FC = () => {
                       )}
                     </span>
                   </div>
-                  {projectData?.tokenomics?.support_chains && projectData.tokenomics.support_chains.length > 0 && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-700">Support Chains</span>
-                      <div className="flex-1 ml-2 overflow-hidden">
-                        <div className="flex gap-1 overflow-x-auto scrollbar-hide justify-end">
-                          {projectData.tokenomics.support_chains.map(
-                            (chain: any, index: number) => (
-                              <div key={index} className="flex-shrink-0">
-                                <ChainLogo chain={chain} size={18} />
-                              </div>
-                            )
-                          )}
+                  {projectData?.tokenomics?.support_chains &&
+                    projectData.tokenomics.support_chains.length > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-700">Support Chains</span>
+                        <div className="flex-1 ml-2 overflow-hidden">
+                          <div className="flex gap-1 overflow-x-auto scrollbar-hide justify-end">
+                            {projectData.tokenomics.support_chains.map(
+                              (chain: any, index: number) => (
+                                <div key={index} className="flex-shrink-0">
+                                  <ChainLogo chain={chain} size={18} />
+                                </div>
+                              )
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                   <div className="flex justify-between">
                     <span className="text-gray-700">Referral Docs</span>
                     <span className="text-blue-600 underline cursor-pointer">

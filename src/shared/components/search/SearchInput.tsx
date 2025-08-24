@@ -39,6 +39,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
       setProjects([]);
       setOpen(false);
       setActiveIndex(-1);
+      setIsSearching(false); // 清空时立即停止加载状态
       return;
     }
 
@@ -117,14 +118,27 @@ export const SearchInput: React.FC<SearchInputProps> = ({
         ref={inputRef}
         value={value}
         onChange={(e) => {
-          onChange(e.target.value);
+          const newValue = e.target.value;
+          onChange(newValue);
+          
           // 清除之前的定时器
           if (searchTimeoutRef.current) {
             clearTimeout(searchTimeoutRef.current);
           }
+          
+          // 如果输入框为空，立即停止搜索
+          if (!newValue.trim()) {
+            setSuggestions([]);
+            setProjects([]);
+            setOpen(false);
+            setActiveIndex(-1);
+            setIsSearching(false);
+            return;
+          }
+          
           // 设置新的定时器，500ms后执行搜索
           searchTimeoutRef.current = setTimeout(() => {
-            handleSearch(e.target.value);
+            handleSearch(newValue);
           }, 500);
         }}
         onKeyDown={handleKeyDown}

@@ -3,7 +3,7 @@
 
 "use client";
 
-import { useMemo,useState } from "react";
+import { useMemo } from "react";
 import {
   Dialog,
   DialogContent2,
@@ -24,10 +24,10 @@ export default function Home() {
     () => openResearchId !== null,
     [openResearchId],
   );
-  const [open, setOpen] = useState();
-  const t = useTranslations("settings.reportStyle");
-  console.log("doubleColumnMode", doubleColumnMode);
-  console.log("openResearchId", openResearchId);
+  
+  const handleAddNewChat = () => {
+    useStore.getState().clearMessages();
+  };
   return (
     <div
       className={cn(
@@ -35,7 +35,7 @@ export default function Home() {
       )}
     >
       <div className="flex fill-destructive w-full gap-4 cursor-pointer">
-        <AddChat/>
+        <div onClick={() => handleAddNewChat()}><AddChat/></div> 
         <ChatHistoryDialog/>
       </div>
       <MessagesBlock className={cn("calc((100vw-538px) transition-all duration-300 ease-out")} />
@@ -56,7 +56,6 @@ export default function Home() {
           />
         </DialogContent2>
       </Dialog>
-      {/* <ChatHistory open={open} onOpenChange={() => setOpen(false)} /> */}
     </div>
   );
 }   

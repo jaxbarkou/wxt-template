@@ -32,6 +32,7 @@ export const useStore = create<{
   updateMessages: (messages: Message[]) => void;
   openResearch: (researchId: string | null) => void;
   closeResearch: () => void;
+  clearMessages: () => void;
   setOngoingResearch: (researchId: string | null) => void;
 }>((set) => ({
   responding: false,
@@ -62,6 +63,18 @@ export const useStore = create<{
       messages.forEach((m) => newMessages.set(m.id, m));
       return { messages: newMessages };
     });
+  },
+  clearMessages() {
+    set((state) => ({
+      messageIds: [],
+      messages: new Map<string, Message>(),
+      researchIds: [],
+      researchPlanIds: new Map<string, string>(),
+      researchReportIds: new Map<string, string>(),
+      researchActivityIds: new Map<string, string[]>(),
+      ongoingResearchId: null,
+      openResearchId: null,
+    }));
   },
   openResearch(researchId: string | null) {
     set({ openResearchId: researchId });
@@ -97,7 +110,6 @@ export async function sendMessage(
   }
 
   const settings = getChatStreamSettings();
-  console.log("content", content)
   const stream = chatStream(
     content ?? "[REPLAY]",
     {
@@ -187,7 +199,7 @@ function findMessageByToolCallId(toolCallId: string) {
     });
 }
 
-function appendMessage(message: Message) {
+export function appendMessage(message: Message) {
   if (
     message.agent === "coder" ||
     message.agent === "reporter" ||

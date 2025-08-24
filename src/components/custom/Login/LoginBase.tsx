@@ -11,8 +11,7 @@ import _ from "lodash";
 import { WalletButtonCustom } from "./WalletButtonCustom";
 import Register from "./Register";
 import EmailLogin from "./EmailLogin";
-import { useUserDetail } from "@/hooks/useUserDetail";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
 export enum LoginState {
   Base = "Base",

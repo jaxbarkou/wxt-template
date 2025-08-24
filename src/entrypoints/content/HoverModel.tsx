@@ -9,7 +9,7 @@ import { X } from "lucide-react";
 import MoreIcon from "@/assets/images/more.png";
 // import ShareIcon from "@/assets/images/shared.png";
 import DisplayHoverCard from "@/shared/components/settings/DisplayHoverCard";
-import mockProjectData from "@/mock/mockProjectData";
+// import mockProjectData from "@/mock/mockProjectData";
 import { ProjectData } from "@/modal/project";
 import PanelTvlChat from "@/components/custom/PanelTvlChat";
 import { numFormat } from "@/lib/utils";

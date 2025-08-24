@@ -6,6 +6,8 @@ import { useRootStore } from "@/store";
 
 import { LoginState } from "./LoginBase";
 import { LoginType } from "@/modal";
+import { useCustomToast } from "@/hooks/useCustomToast";
+
 /**
  * Register
  * - 还原截图：返回/关闭、头像占位、Welcome 标题
@@ -22,7 +24,7 @@ export default function EmailLogin({
   const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState<string>("");
   const { updateToken, setLoginModalOpen, updateLoginType } = useRootStore();
-
+  const { notify } = useCustomToast();
   const toEmailLogin = useCallback(async () => {
     try {
       if (!email || !pwd) {
@@ -34,10 +36,12 @@ export default function EmailLogin({
         pwd: pwd,
       };
       const response = await emailLogin(par);
-      if (response && response?.result) {
+      if (response.code === 1 && response?.result) {
         updateToken(response.result.token);
         setLoginModalOpen(false);
         updateLoginType(LoginType.Email);
+      } else {
+        notify({ type: "error", message: response.message || "Login failed" });
       }
     } catch (error) {
       console.error("Error during email registration:", error);

@@ -1,3 +1,17 @@
+/** Team member information */
+export interface TeamMember {
+  /** Team member name */
+  name: string;
+  /** Position/Role */
+  position?: string;
+  /** Profile image URL */
+  head_img?: string;
+  /** X (Twitter) profile URL */
+  x?: string;
+  /** People ID reference */
+  people_id?: number;
+}
+
 // 项目信息
 export interface ProjectInfo {
   /** Project name */
@@ -9,7 +23,7 @@ export interface ProjectInfo {
   /** Detailed project description */
   description?: string;
   /** Information about the project team */
-  team_info?: string;
+  team_info?: TeamMember[];
   /** Sector analysis */
   sector_analysis?: string;
 }
@@ -133,14 +147,14 @@ export interface OnChainData {
   tvl?: number;
   tvl_7d_increment?: number;
   tvl_peak?: number;
-  tvl_trend: TimeSeriesEvent[];
-  tvl_distribution: TVLDistribution[];
+  tvl_trend?: TimeSeriesEvent[];
+  tvl_distribution?: TVLDistribution[];
   active_addresses_7d?: number;
   active_addresses_7d_change?: number;
   contract_interactions_7d?: number;
   contract_interactions_7d_change?: number;
   contract_interactions_30d?: number;
-  contract_interactions_trend: TimeSeriesEvent[];
+  contract_interactions_trend?: TimeSeriesEvent[];
   txns_30d?: number;
   protocol_revenue_30d?: number;
 }
@@ -153,17 +167,66 @@ export interface ExchangeInfo {
   logo?: string;
 }
 
+/** K线数据 */
+export interface KlineData {
+  /** 开盘时间 */
+  openTime: number;
+  /** 开盘价 */
+  openPrice: string;
+  /** 最高价 */
+  highPrice: string;
+  /** 最低价 */
+  lowPrice: string;
+  /** 收盘价(当前K线未结束的即为最新价) */
+  closePrice: string;
+  /** 成交量 */
+  volume: string;
+  /** 收盘时间 */
+  closeTime: number;
+  /** 成交额 */
+  quoteVolume: string;
+  /** 成交笔数 */
+  trades: number;
+  /** 主动买入成交量 */
+  takerBuyVolume: string;
+  /** 主动买入成交额 */
+  takerBuyQuoteVolume: string;
+}
+
 // 市场数据
 export interface MarketData {
-  token_price?: string;
+  /** Token price */
+  token_price?: number;
+  /** Description of token price */
   token_price_desc?: string;
-  trading_volume_24h?: string;
+  /** 24-hour price change percentage */
+  token_price_change_24h?: number;
+  /** 24-hour trading volume */
+  trading_volume_24h?: number;
+  /** Description of 24-hour trading volume */
   trading_volume_24h_desc?: string;
-  circulating_market_cap?: string;
+  /** 24-hour volume change percentage */
+  trading_volume_change_24h?: number;
+  /** 30-day kline data */
+  kline_30d?: KlineData[];
+  /** Circulating market capitalization */
+  circulating_market_cap?: number;
+  /** Source of circulating market cap data */
   circulating_market_cap_source?: string;
-  fully_diluted_valuation?: string;
+  /** Fully Diluted Valuation (FDV) */
+  fully_diluted_valuation?: number;
+  /** Source of FDV data */
   fully_diluted_valuation_source?: string;
-  support_exchanges: ExchangeInfo[];
+  /** Supported exchanges, each contains name and logo */
+  support_exchanges?: ExchangeInfo[];
+}
+
+/** Blockchain support information */
+export interface ChainInfo {
+  /** Blockchain platform name */
+  contract_platform?: string;
+  /** Contract address on the chain */
+  contract_address?: string;
 }
 
 // Tokenomics
@@ -172,36 +235,10 @@ export interface Tokenomics {
   circulating_supply?: number;
   total_supply?: number;
   /** Supported chains (names, logos, addresses, etc.) */
-  support_chains?: string[];
+  support_chains?: ChainInfo[];
   support_chains_source?: string;
   referral_docs?: string[];
   distribution_overview?: string;
-  distribution_details?: {
-    community_launch?: {
-      percentage: number;
-      vesting: string;
-    };
-    ecosystem_growth?: {
-      percentage: number;
-      vesting: string;
-    };
-    dao_treasury?: {
-      percentage: number;
-      vesting: string;
-    };
-    investors?: {
-      percentage: number;
-      vesting: string;
-    };
-    public_sale?: {
-      percentage: number;
-      vesting: string;
-    };
-    team?: {
-      percentage: number;
-      vesting: string;
-    };
-  };
 }
 
 // 活动信息

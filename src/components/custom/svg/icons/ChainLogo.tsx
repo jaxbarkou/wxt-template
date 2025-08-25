@@ -9,7 +9,7 @@ interface ChainLogoProps {
 const ChainLogo: React.FC<ChainLogoProps> = ({ chain, size = 12, className = '' }) => {
   // 链logo的SVG图标
   const chainIcons: Record<string, React.ReactNode> = {
-    'Ethereum': (
+    'ethereum': (
       <svg viewBox="0 0 32 32" className="w-full h-full">
         <g fill="none" fillRule="evenodd">
           <circle cx="16" cy="16" r="16" fill="#627EEA"/>
@@ -24,7 +24,7 @@ const ChainLogo: React.FC<ChainLogoProps> = ({ chain, size = 12, className = '' 
         </g>
       </svg>
     ),
-    'BNB Chain': (
+    'binance-smart-chain': (
       <svg viewBox="0 0 32 32" className="w-full h-full">
         <g fill="none" fillRule="evenodd">
           <circle cx="16" cy="16" r="16" fill="#F3BA2F"/>

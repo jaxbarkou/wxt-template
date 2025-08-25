@@ -142,12 +142,28 @@ const Search: React.FC = () => {
                 {selectedProject?.description ||
                   projectData?.project_info?.description}
               </div>
-              <div className="text-xs text-gray-700 leading-relaxed">
-                {projectData?.project_info?.team_info}
-              </div>
-              <div className="text-xs text-gray-700">
-                {projectData?.project_info?.sector_analysis}
-              </div>
+              {projectData?.project_info?.team_info && Array.isArray(projectData.project_info.team_info) && projectData.project_info.team_info.length > 0 && (
+                <div className="text-xs text-gray-700 leading-relaxed">
+                  <div className="mb-2 font-medium">Team Members:</div>
+                  <div className="space-y-1">
+                    {projectData.project_info.team_info.map((member: any, index: number) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <span className="font-medium">{member.name}</span>
+                        <span className="text-gray-500">-</span>
+                        <span>{member.position}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {projectData?.project_info?.sector_analysis && (
+                <div className="text-xs text-gray-700">
+                  {typeof projectData.project_info.sector_analysis === 'string' 
+                    ? projectData.project_info.sector_analysis 
+                    : 'Sector analysis available'
+                  }
+                </div>
+              )}
             </div>
 
             {/* 融资信息部分 */}
@@ -308,26 +324,49 @@ const Search: React.FC = () => {
                         </div>
                         <div className="flex flex-wrap gap-2">
                           {projectData.social_media_stats.media_mentions.map(
-                            (url: string, index: number) => {
-                              // 从URL中提取域名
-                              const domain = url
-                                .replace(/^https?:\/\//, "")
-                                .replace(/^www\./, "")
-                                .split("/")[0];
-                              const displayName = domain.split(".")[0]; // 取主域名部分
+                            (item: any, index: number) => {
+                              // 安全检查：确保item是字符串或对象
+                              if (typeof item === 'string') {
+                                // 处理字符串URL
+                                const domain = item
+                                  .replace(/^https?:\/\//, "")
+                                  .replace(/^www\./, "")
+                                  .split("/")[0];
+                                const displayName = domain.split(".")[0]; // 取主域名部分
 
-                              return (
-                                <a
-                                  key={index}
-                                  href={url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded-full hover:bg-blue-200 transition-colors cursor-pointer"
-                                  title={url}
-                                >
-                                  {displayName}
-                                </a>
-                              );
+                                return (
+                                  <a
+                                    key={index}
+                                    href={item}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded-full hover:bg-blue-200 transition-colors cursor-pointer"
+                                    title={item}
+                                  >
+                                    {displayName}
+                                  </a>
+                                );
+                              } else if (typeof item === 'object' && item !== null) {
+                                // 处理对象，提取name或title属性
+                                const displayName = item.name || item.title || item.displayName || 'Unknown';
+                                const url = item.url || item.link || '#';
+                                
+                                return (
+                                  <a
+                                    key={index}
+                                    href={url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded-full hover:bg-blue-200 transition-colors cursor-pointer"
+                                    title={displayName}
+                                  >
+                                    {displayName}
+                                  </a>
+                                );
+                              }
+                              
+                              // 如果既不是字符串也不是对象，跳过渲染
+                              return null;
                             }
                           )}
                         </div>
@@ -428,19 +467,29 @@ const Search: React.FC = () => {
                       <div className="flex gap-1 overflow-x-auto scrollbar-hide">
                         <div className="flex gap-1 ml-auto">
                           {projectData.market_data.support_exchanges?.map(
-                            (exchange: any, index: number) => (
-                              <div
-                                key={index}
-                                className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0"
-                                title={exchange.name}
-                              >
-                                <img
-                                  src={exchange.logo}
-                                  alt={exchange.name}
-                                  className="w-full h-full object-cover rounded-full"
-                                />
-                              </div>
-                            )
+                            (exchange: any, index: number) => {
+                              // 安全检查：确保exchange是对象且包含必要属性
+                              if (typeof exchange === 'object' && exchange !== null && exchange.name) {
+                                return (
+                                  <div
+                                    key={index}
+                                    className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0"
+                                    title={exchange.name}
+                                  >
+                                    <img
+                                      src={exchange.logo || ''}
+                                      alt={exchange.name}
+                                      className="w-full h-full object-cover rounded-full"
+                                      onError={(e) => {
+                                        // 如果图片加载失败，隐藏图片元素
+                                        e.currentTarget.style.display = 'none';
+                                      }}
+                                    />
+                                  </div>
+                                );
+                              }
+                              return null;
+                            }
                           ) || (
                             <div className="w-3 h-3 bg-gray-300 rounded-full flex-shrink-0"></div>
                           )}
@@ -497,11 +546,17 @@ const Search: React.FC = () => {
                         <div className="flex-1 ml-2 overflow-hidden">
                           <div className="flex gap-1 overflow-x-auto scrollbar-hide justify-end">
                             {projectData.tokenomics.support_chains.map(
-                              (chain: any, index: number) => (
-                                <div key={index} className="flex-shrink-0">
-                                  <ChainLogo chain={chain} size={18} />
-                                </div>
-                              )
+                              (chain: any, index: number) => {
+                                // 安全检查：确保chain是有效的字符串或对象
+                                if (chain && (typeof chain === 'string' || typeof chain === 'object')) {
+                                  return (
+                                    <div key={index} className="flex-shrink-0">
+                                      <ChainLogo chain={chain.contract_platform} size={18} />
+                                    </div>
+                                  );
+                                }
+                                return null;
+                              }
                             )}
                           </div>
                         </div>

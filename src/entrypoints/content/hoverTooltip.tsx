@@ -20,7 +20,30 @@ const hoverTooltip = async (ctx: any) => {
     style.textContent = `
       .wxt-hover-word{
         pointer-events:auto !important;
-    }`;
+      }
+      
+      /* OKX弹窗隐藏样式 */
+      #okx-dapp-injector-react-root,
+      [id*="okx"],
+      [class*="okx"],
+      [data-testid*="okx"] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        z-index: -9999 !important;
+        position: absolute !important;
+        left: -9999px !important;
+        top: -9999px !important;
+      }
+      
+      /* 防止OKX弹窗覆盖我们的插件 */
+      .wxt-hover-word,
+      [class*="wxt"] {
+        z-index: 2147483647 !important;
+        position: relative !important;
+      }
+    `;
     document.head.appendChild(style);
   };
 
@@ -354,5 +377,84 @@ const hoverTooltip = async (ctx: any) => {
       console.error("启动DOM观察器时出错:", error);
     }
   }, 1000);
+
+  // OKX弹窗处理函数
+  const OKX_SELECTORS = [
+    '#okx-dapp-injector-react-root',
+    '[id*="okx"]',
+    '[class*="okx"]',
+    '[data-testid*="okx"]',
+    '[data-okx]'
+  ];
+
+  const hideOkxElements = () => {
+    OKX_SELECTORS.forEach(selector => {
+      try {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(el => {
+          if (el instanceof HTMLElement) {
+            el.style.setProperty('display', 'none', 'important');
+            el.style.setProperty('visibility', 'hidden', 'important');
+            el.style.setProperty('opacity', '0', 'important');
+            el.style.setProperty('pointer-events', 'none', 'important');
+            el.style.setProperty('z-index', '-9999', 'important');
+            el.style.setProperty('position', 'absolute', 'important');
+            el.style.setProperty('left', '-9999px', 'important');
+            el.style.setProperty('top', '-9999px', 'important');
+          }
+        });
+      } catch (error) {
+        // 忽略选择器错误
+      }
+    });
+  };
+
+  // 立即隐藏现有的OKX元素
+  hideOkxElements();
+
+  // 创建OKX监控器，持续隐藏新出现的OKX元素
+  const okxObserver = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      mutation.addedNodes.forEach((node) => {
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          const element = node as Element;
+          // 检查新添加的元素是否是OKX相关
+          if (element.id?.includes('okx') || 
+              element.className?.includes('okx') ||
+              element.getAttribute('data-testid')?.includes('okx')) {
+            hideOkxElements();
+          }
+          // 检查子元素
+          if (element.querySelector) {
+            const okxChild = element.querySelector('[id*="okx"], [class*="okx"], [data-testid*="okx"]');
+            if (okxChild) {
+              hideOkxElements();
+            }
+          }
+        }
+      });
+    });
+  });
+
+  // 启动OKX监控器
+  setTimeout(() => {
+    try {
+      okxObserver.observe(document.body, {
+        childList: true,
+        subtree: true,
+      });
+    } catch (error) {
+      console.error("启动OKX监控器时出错:", error);
+    }
+  }, 500);
+
+  // 定期检查并隐藏OKX元素（备用方案）
+  // setInterval(() => {
+  //   try {
+  //     hideOkxElements();
+  //   } catch (error) {
+  //     // 忽略错误
+  //   }
+  // }, 2000);
 };
 export default hoverTooltip;

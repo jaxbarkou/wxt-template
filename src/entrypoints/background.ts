@@ -1,4 +1,4 @@
-import { API_URL6 } from "@/config";
+import { API_URL } from "@/config";
 
 export default defineBackground(() => {
   chrome.runtime.onInstalled.addListener(() => {
@@ -36,7 +36,7 @@ export default defineBackground(() => {
         ticker: message.symbol,
         domain: "",
       };
-      fetch(`${API_URL6}/api/v1/project/project_data`, {
+      fetch(`${API_URL}/api/v1/project/project_data`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

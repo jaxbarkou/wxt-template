@@ -76,7 +76,7 @@
   },
   "chat": {
     "welcome": {
-      "greeting": "👋 Hi, I'm Yomo!",
+      "greeting": "Hi, I'm Yomo!",
       "description": "What do you feel like exploring today?"
     },
     "conversationStartersTitle": [

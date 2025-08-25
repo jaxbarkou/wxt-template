@@ -110,7 +110,7 @@ export function ResearchBlock({
         <div className="right-4 flex h-9 items-center justify-end">
           {hasReport && !reportStreaming && (
             <>
-              <Tooltip title={t("generatePodcast")}>
+              {/* <Tooltip title={t("generatePodcast")}>
                 <Button
                   className="text-gray-400"
                   size="icon"
@@ -120,7 +120,7 @@ export function ResearchBlock({
                 >
                   <Headphones />
                 </Button>
-              </Tooltip>
+              </Tooltip> */}
               <Tooltip title={t("edit")}>
                 <Button
                   className="text-gray-400"
@@ -187,7 +187,7 @@ export function ResearchBlock({
             </TabsList>
           </div>
           <TabsContent
-            className="h-full min-h-0 flex-grow px-8"
+            className="h-full min-h-0 flex-grow px-4"
             value="report"
             forceMount
             hidden={activeTab !== "report"}

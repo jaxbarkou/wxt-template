@@ -43,11 +43,10 @@ export function useCustomToast() {
     type?: ToastType;
     duration?: number;
   }) {
-    console.log("Toast notification:", { message, type, duration }, toast);
     toast.custom(
       (t: any) => (
         <div
-          className={`relative flex items-start w-[300px] p-3 bg-[#F6F6F8] text-white rounded-[8px] shadow-lg`}
+          className={`relative flex items-start w-[300px] mx-auto p-3 bg-[#F6F6F8] text-white rounded-[8px] shadow-lg`}
         >
           <div className="flex items-center">
             {iconMap[type]}
@@ -69,7 +68,7 @@ export function useCustomToast() {
       ),
       {
         duration,
-        position: "top-right",
+        position: "top-center",
       }
     );
   }

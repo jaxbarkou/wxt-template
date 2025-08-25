@@ -16,7 +16,7 @@ import { numFormat, toMonthDay } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import NoImg from "@/assets/images/model-no-data.png";
 import { ArrowUpRight } from "lucide-react";
-import { number } from "echarts";
+import logo from "@/assets/images/slide-logo.png";
 
 interface AppProps {
   symbol?: string;
@@ -187,6 +187,7 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
       <footer className="flex items-center justify-between p-3 mt-auto">
         <div className="flex items-center gap-3">
           <Avatar className="w-[26px] h-[26px] bg-[#d9d9d9]">
+            <AvatarImage src={logo} alt="Yomo" />
             <AvatarFallback className="bg-[#d9d9d9]"></AvatarFallback>
           </Avatar>
           <div className="flex items-center gap-2">
@@ -197,11 +198,14 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
               src="https://c.animaapp.com/ow4Izvy8/img/line-16.svg"
             />
             <div className=" font-normal text-gray-600 text-[13px]">
-              your web3 navigator
+              Your Web3 Navigator
             </div>
           </div>
         </div>
-        <Button className="h-auto bg-brand-primary rounded-[22px] px-3 py-1.5 hover:opacity-90">
+        <Button
+          disabled
+          className="h-auto bg-brand-primary rounded-[22px] px-3 py-1.5 hover:opacity-90"
+        >
           <span className=" font-normal text-white text-[13px] mr-2">
             View more
           </span>
@@ -211,10 +215,9 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
     );
   };
 
-  // const getChangeColor = (val: string | undefined) => {
-  //   console.log(val);
-  //   return val?.includes("-") ? "text-brand-red" : "text-brand-green";
-  // };
+  const getChangeColor = (val: string | undefined) => {
+    return `${val}`.includes("-") ? "text-brand-red" : "text-brand-green";
+  };
 
   return (
     <>
@@ -287,10 +290,10 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
                               </h3>
                               <h2 className="text-[20px] font-bold text-brand-green">
                                 {projectData?.market_data?.token_price}
-                                <span className="text-sm font-normal text-brand-black">
+                                {/* <span className="text-sm font-normal text-brand-black">
                                   {" "}
                                   (+{`--`} %)
-                                </span>
+                                </span> */}
                               </h2>
                               <div className="flex items-center justify-between w-full">
                                 {projectData?.market_data?.kline_30d && (
@@ -316,15 +319,15 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
                                       2
                                     )}{" "}
                                     <span
-                                    // className={getChangeColor(
-                                    //   projectData?.market_data
-                                    //     ?.trading_volume_change_24h || ""
-                                    // )}
-                                    >
-                                      {
+                                      className={getChangeColor(
                                         projectData?.market_data
-                                          ?.trading_volume_change_24h
-                                      }{" "}
+                                          ?.trading_volume_change_24h || ""
+                                      )}
+                                    >
+                                      {Number(
+                                        projectData?.market_data
+                                          ?.trading_volume_change_24h || "0"
+                                      ).toFixed(2)}{" "}
                                       %
                                     </span>
                                   </div>

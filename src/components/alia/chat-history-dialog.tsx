@@ -115,9 +115,12 @@ export function ChatHistoryDialog() {
                 });
             }
             // console.log("messages:", messages);
-            messages.forEach((m) => {
-                appendMessage(m)
-            })
+            if (messages.length) {
+                messages.forEach((m) => {
+                    appendMessage(m)
+                })
+                useStore.getState().setThreadId(thread.thread_id);
+            }
             setOpen(false)
         } catch (error) {
             console.error("Error fetching history metadata:", error);

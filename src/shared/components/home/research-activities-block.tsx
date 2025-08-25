@@ -157,12 +157,14 @@ function WebSearchToolCall({ toolCall }: { toolCall: ToolCallRuntime }) {
     <section className="mt-4 pl-4">
       <div className="font-medium italic">
         <RainbowText
-          className="flex items-center"
+          className="flex flex-col"
           animated={searchResults === undefined}
         >
-          <Search size={16} className={"mr-2"} />
-          <span>{t("searchingFor")}&nbsp;</span>
-          <span className="max-w-[500px] overflow-hidden text-ellipsis whitespace-nowrap">
+          <div className="flex items-center">
+            <Search size={16} className={"mr-2"} />
+            <span>{t("searchingFor")}&nbsp;</span>
+          </div> 
+          <span className="max-w-[500px] overflow-hidden text-ellipsis">
             {(toolCall.args as { query: string }).query}
           </span>
         </RainbowText>
@@ -171,10 +173,10 @@ function WebSearchToolCall({ toolCall }: { toolCall: ToolCallRuntime }) {
         {pageResults && (
           <ul className="mt-2 flex flex-wrap gap-4">
             {searching &&
-              [...Array(6)].map((_, i) => (
+              [...Array(2)].map((_, i) => (
                 <li
                   key={`search-result-${i}`}
-                  className="flex h-40 w-40 gap-2 rounded-md text-sm"
+                  className="flex h-20 w-full gap-2 rounded-md text-sm"
                 >
                   <Skeleton
                     className="to-accent h-full w-full rounded-md bg-gradient-to-tl from-slate-400"

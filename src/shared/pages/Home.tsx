@@ -45,7 +45,7 @@ export default function Home() {
           closeResearch();
         }}
       >
-        <DialogContent2 className="h-[calc(100vh-50px)]">
+        <DialogContent2 className="h-[calc(100vh-50px)] p-1">
           <ResearchBlock
             className={cn(
               "pb-4 transition-all duration-300 ease-out",

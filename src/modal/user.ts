@@ -59,16 +59,6 @@ export interface CreditsInfo {
   daily_credits: string;
 }
 
-export interface CreditsHistoryItem {
-  id: string;
-  uid: number;
-  balance_before: string;
-  balance_change: string;
-  biz_type: string;
-  biz_title: string;
-  created_at: string; // 创建时间
-}
-
 export interface CreateOrderParams {
   plan_id: string;
   chain_id: number;
@@ -90,6 +80,17 @@ export interface CreditsOrderItem {
   cancelled_at: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface CreditsHistoryItem {
+  id: string;
+  uid: number;
+  balance_before: string;
+  balance_change: string;
+  balance_after: string;
+  biz_type: string;
+  biz_title: string;
+  created_at: string;
 }
 
 export interface CreditsPlanItem {

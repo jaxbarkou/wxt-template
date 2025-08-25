@@ -40,7 +40,7 @@ export function ConversationStarter({
             }}
           >
             <div
-              className="bg-card text-muted-foreground h-full w-full cursor-pointer rounded-[8px] border px-4 py-4 opacity-75 transition-all duration-300 hover:opacity-100 hover:shadow-md"
+              className="bg-[#FAFAFA] border-[#E9E9E9] text-muted-foreground h-full w-full cursor-pointer rounded-[8px] border px-4 py-4 opacity-75 transition-all duration-300 hover:opacity-100 hover:shadow-md"
               onClick={() => {
                 onSend?.(question);
               }}

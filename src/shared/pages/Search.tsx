@@ -196,14 +196,41 @@ const Search: React.FC = () => {
                   enabling it to better serve the Bitcoin ecosystem and other
                   protocols.
                 </div>
-                {/* <div className="text-xs text-gray-700 mb-4">
-                  Investment Institutions:
-                </div>
-                <Card className="bg-gray-100 border border-gray-200 h-36 mb-2">
-                  <CardContent className="p-0 h-full flex items-center justify-center">
-                    <div className="text-xs text-gray-500">投资机构列表</div>
-                  </CardContent>
-                </Card> */}
+                {projectData?.fundraising_info?.investors && 
+                 Array.isArray(projectData.fundraising_info.investors) && 
+                 projectData.fundraising_info.investors.length > 0 && (
+                  <>
+                    <div className="text-xs text-gray-700 mb-4">
+                      Investment Institutions:
+                    </div>
+                    <div className="max-h-24 overflow-y-auto">
+                      <div className="flex flex-wrap gap-2">
+                        {projectData.fundraising_info.investors.map((investor: any, index: number) => (
+                          <div
+                            key={index}
+                            className="flex items-center gap-2 px-3 py-2 bg-gray-100 rounded-lg border border-gray-200"
+                            title={investor.name}
+                          >
+                            {investor.logo && (
+                              <img
+                                src={investor.logo}
+                                alt={investor.name}
+                                className="w-5 h-5 rounded-full object-cover"
+                                onError={(e) => {
+                                  // 如果图片加载失败，隐藏图片元素
+                                  e.currentTarget.style.display = 'none';
+                                }}
+                              />
+                            )}
+                            <span className="text-xs font-medium text-gray-700">
+                              {investor.name}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             )}
 
@@ -373,6 +400,86 @@ const Search: React.FC = () => {
                       </div>
                     )}
                 </div>
+
+                {/* 链上数据部分 */}
+                {projectData?.on_chain_data && (
+                  <div className="space-y-2 text-xs mb-4">
+                    <div className="text-xs text-gray-700 font-medium mb-2">
+                      On-Chain Data
+                    </div>
+                    {projectData.on_chain_data.tvl && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-700">Total Value Locked (TVL)</span>
+                        <span className="text-black font-medium">
+                          ${numFormat(projectData.on_chain_data.tvl)}
+                          {projectData.on_chain_data.tvl_7d_increment && (
+                            <span className="text-green-500 ml-1">
+                              (+{projectData.on_chain_data.tvl_7d_increment}%/7d)
+                            </span>
+                          )}
+                        </span>
+                      </div>
+                    )}
+                    {projectData.on_chain_data.tvl_peak && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-700">TVL Peak</span>
+                        <span className="text-black">
+                          ${numFormat(projectData.on_chain_data.tvl_peak)}
+                        </span>
+                      </div>
+                    )}
+                    {projectData.on_chain_data.active_addresses_7d && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-700">Active Addresses (7D)</span>
+                        <span className="text-black">
+                          {numFormat(projectData.on_chain_data.active_addresses_7d)}
+                          {projectData.on_chain_data.active_addresses_7d_change && (
+                            <span className="text-green-500 ml-1">
+                              ({projectData.on_chain_data.active_addresses_7d_change > 0 ? '+' : ''}{projectData.on_chain_data.active_addresses_7d_change}%)
+                            </span>
+                          )}
+                        </span>
+                      </div>
+                    )}
+                    {projectData.on_chain_data.contract_interactions_7d && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-700">Contract Interactions (7D)</span>
+                        <span className="text-black">
+                          {numFormat(projectData.on_chain_data.contract_interactions_7d)}
+                          {projectData.on_chain_data.contract_interactions_7d_change && (
+                            <span className="text-green-500 ml-1">
+                              ({projectData.on_chain_data.contract_interactions_7d_change > 0 ? '+' : ''}{projectData.on_chain_data.contract_interactions_7d_change}%)
+                            </span>
+                          )}
+                        </span>
+                      </div>
+                    )}
+                    {projectData.on_chain_data.contract_interactions_30d && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-700">Contract Interactions (30D)</span>
+                        <span className="text-black">
+                          {numFormat(projectData.on_chain_data.contract_interactions_30d)}
+                        </span>
+                      </div>
+                    )}
+                    {projectData.on_chain_data.txns_30d && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-700">Transactions (30D)</span>
+                        <span className="text-black">
+                          {numFormat(projectData.on_chain_data.txns_30d)}
+                        </span>
+                      </div>
+                    )}
+                    {projectData.on_chain_data.protocol_revenue_30d && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-700">Protocol Revenue (30D)</span>
+                        <span className="text-black">
+                          ${numFormat(projectData.on_chain_data.protocol_revenue_30d)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
                 {/* <div className="grid grid-cols-1 gap-4 mb-2">
                   <Card className="bg-gray-100 border border-gray-200 h-36">
                     <CardContent className="p-0 h-full flex items-center justify-center">

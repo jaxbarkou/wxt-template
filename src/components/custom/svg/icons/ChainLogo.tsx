@@ -7,6 +7,17 @@ interface ChainLogoProps {
 }
 
 const ChainLogo: React.FC<ChainLogoProps> = ({ chain, size = 12, className = '' }) => {
+  // 链名称映射，支持多种格式
+  const chainNameMap: Record<string, string> = {
+    'binance-smart-chain': 'BNB Chain',
+    'bsc': 'BNB Chain',
+    'ethereum': 'Ethereum',
+    'eth': 'Ethereum',
+  };
+
+  // 获取标准化的链名称
+  const normalizedChain = chainNameMap[chain.toLowerCase()] || chain;
+
   // 链logo的SVG图标
   const chainIcons: Record<string, React.ReactNode> = {
     'ethereum': (
@@ -178,7 +189,7 @@ const ChainLogo: React.FC<ChainLogoProps> = ({ chain, size = 12, className = '' 
     ),
   };
 
-  const icon = chainIcons[chain];
+  const icon = chainIcons[normalizedChain];
   
   if (!icon) {
     // 如果没有找到对应的图标，显示默认的圆形背景
@@ -188,7 +199,7 @@ const ChainLogo: React.FC<ChainLogoProps> = ({ chain, size = 12, className = '' 
         style={{ width: size, height: size }}
       >
         <span className="text-xs text-gray-600 font-medium">
-          {chain.charAt(0).toUpperCase()}
+          {normalizedChain.charAt(0).toUpperCase()}
         </span>
       </div>
     );

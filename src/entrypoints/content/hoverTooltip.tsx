@@ -5,6 +5,41 @@ const hoverTooltip = async (ctx: any) => {
   // 改进的关键词替换功能
   const processedNodes = new WeakSet(); // 用于跟踪已处理的节点
 
+  const hardEnablePointerEvents = (el: HTMLElement) => {
+    el.style.setProperty("pointer-events", "auto", "important"); // [修改-v1]
+    // el.style.setProperty("cursor", "pointer", "important"); // [修改-v1]
+    // el.style.setProperty("display", "inline-block", "important"); // [修改-v1]
+    // el.style.setProperty("position", "relative", "important"); // [修改-v1]
+    // el.style.setProperty("z-index", "2147483647", "important"); // [修改-v1]
+  };
+
+  const ensurePointerEventsStyleOnce = () => {
+    if (document.getElementById("wxt-pe-fix")) return;
+    const style = document.createElement("style");
+    style.id = "wxt-pe-fix";
+    style.textContent = `
+      .wxt-hover-word{
+        pointer-events:auto !important;
+    }`;
+    document.head.appendChild(style);
+  };
+
+  ensurePointerEventsStyleOnce();
+
+  // 重置OKX弹窗
+  // const OKX_ROOT_ID = "okx-dapp-injector-react-root";
+  // const replaceOkxInjectorWithEmpty = () => {
+  //   const oldEl = document.getElementById(OKX_ROOT_ID);
+  //   if (oldEl && oldEl.parentNode) {
+  //     const tag = oldEl.tagName.toLowerCase() || "div";
+  //     const empty = document.createElement(tag);
+  //     empty.id = OKX_ROOT_ID; // 保留相同 id
+  //     // 可选：也可清理样式/属性，这里只保留 id，确保“空元素”
+  //     oldEl.replaceWith(empty);
+  //   }
+  // };
+  // replaceOkxInjectorWithEmpty();
+
   // =========================
   // [修改] —— 全局单例标记与存储
   // 只要页面里有这个对象，就说明已经有一个 tooltip 在管理中
@@ -69,6 +104,10 @@ const hoverTooltip = async (ctx: any) => {
 
         parent.replaceChild(temp, node);
         processedNodes.add(temp);
+
+        temp.querySelectorAll(".wxt-hover-word").forEach((el) => {
+          hardEnablePointerEvents(el as HTMLElement); // [修改-v1]
+        });
       }
     } else if (node.nodeType === Node.ELEMENT_NODE) {
       for (const child of Array.from(node.childNodes)) {
@@ -171,6 +210,8 @@ const hoverTooltip = async (ctx: any) => {
     ) {
       element.setAttribute("data-wxt-listener-added", "true");
 
+      hardEnablePointerEvents(element as HTMLElement);
+
       element.addEventListener("mouseenter", (e) => {
         const target = e.currentTarget as HTMLElement;
         const rect = target.getBoundingClientRect();
@@ -226,7 +267,7 @@ const hoverTooltip = async (ctx: any) => {
       if (position) {
         const x = position.x;
         const y = position.y;
-        wrapper.classList.add("fixed", "w-[200px]", "h-[200px]", "z-[999999]");
+        // wrapper.classList.add("fixed", "w-[200px]", "h-[200px]", "z-[999999]");
         wrapper.style.left = `${x}px`;
         wrapper.style.top = `${y}px`;
 
@@ -285,6 +326,16 @@ const hoverTooltip = async (ctx: any) => {
           } else if (node.nodeType === Node.TEXT_NODE) {
             walkAndReplaceTextNodes(node);
           }
+          // clean OKX
+          // if (node.nodeType === Node.ELEMENT_NODE) {
+          //   const el = node as Element;
+          //   if (el.id === OKX_ROOT_ID) {
+          //     replaceOkxInjectorWithEmpty(); // [修改-v2]
+          //   } else if (el.querySelector) {
+          //     const found = el.querySelector(`#${OKX_ROOT_ID}`);
+          //     if (found) replaceOkxInjectorWithEmpty(); // [修改-v2]
+          //   }
+          // }
         });
       });
     } catch (error) {

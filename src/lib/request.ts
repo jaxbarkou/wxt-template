@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig } from "axios";
 import _ from "lodash";
-import { API_URL, API_URL2, API_URL3, API_URL4, API_URL5,API_URL6 } from "@/config";
+import { API_URL } from "@/config";
 
 interface MyResponseType<T> {
   code: number;
@@ -10,48 +10,38 @@ interface MyResponseType<T> {
   error?: string;
 }
 
-// const instance = axios.create({
-//   baseURL: `${API_URL}/api/v1/`,
-//   timeout: 60000,
-// });
-
-export const baseApi = axios.create({
-  baseURL: `${API_URL}/api/v1/`,
-  timeout: 60000,
-});
-
 export const base2Api = axios.create({
-  baseURL: `${API_URL2}/v1/`,
+  baseURL: `${API_URL}/user_na/v1/`,
   timeout: 60000,
 });
 
 export const base3Api = axios.create({
-  baseURL: `${API_URL3}/v1/`,
+  baseURL: `${API_URL}/user_a/v1/`,
   timeout: 60000,
 });
 
 export const base4Api = axios.create({
-  baseURL: `${API_URL4}/api/v1/`,
+  baseURL: `${API_URL}/auth/jilia/api/v1/`,
   timeout: 60000,
 });
 
 export const base5Api = axios.create({
-  baseURL: `${API_URL5}`,
+  baseURL: `${API_URL}`,
   timeout: 60000,
 });
+
 export const base6Api = axios.create({
-  baseURL: `${API_URL6}`,
+  baseURL: `${API_URL}`,
   timeout: 60000,
 });
 
 const request = async <T = any>(
   instance:
-    | typeof baseApi
     | typeof base2Api
     | typeof base3Api
     | typeof base4Api
     | typeof base5Api
-    | typeof base6Api = baseApi,
+    | typeof base6Api,
   config: AxiosRequestConfig
 ): Promise<MyResponseType<T>> => {
   try {

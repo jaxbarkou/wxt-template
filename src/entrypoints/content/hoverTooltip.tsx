@@ -7,10 +7,6 @@ const hoverTooltip = async (ctx: any) => {
 
   const hardEnablePointerEvents = (el: HTMLElement) => {
     el.style.setProperty("pointer-events", "auto", "important"); // [修改-v1]
-    // el.style.setProperty("cursor", "pointer", "important"); // [修改-v1]
-    // el.style.setProperty("display", "inline-block", "important"); // [修改-v1]
-    // el.style.setProperty("position", "relative", "important"); // [修改-v1]
-    // el.style.setProperty("z-index", "2147483647", "important"); // [修改-v1]
   };
 
   const ensurePointerEventsStyleOnce = () => {
@@ -48,20 +44,6 @@ const hoverTooltip = async (ctx: any) => {
   };
 
   ensurePointerEventsStyleOnce();
-
-  // 重置OKX弹窗
-  // const OKX_ROOT_ID = "okx-dapp-injector-react-root";
-  // const replaceOkxInjectorWithEmpty = () => {
-  //   const oldEl = document.getElementById(OKX_ROOT_ID);
-  //   if (oldEl && oldEl.parentNode) {
-  //     const tag = oldEl.tagName.toLowerCase() || "div";
-  //     const empty = document.createElement(tag);
-  //     empty.id = OKX_ROOT_ID; // 保留相同 id
-  //     // 可选：也可清理样式/属性，这里只保留 id，确保“空元素”
-  //     oldEl.replaceWith(empty);
-  //   }
-  // };
-  // replaceOkxInjectorWithEmpty();
 
   // =========================
   // [修改] —— 全局单例标记与存储
@@ -349,16 +331,6 @@ const hoverTooltip = async (ctx: any) => {
           } else if (node.nodeType === Node.TEXT_NODE) {
             walkAndReplaceTextNodes(node);
           }
-          // clean OKX
-          // if (node.nodeType === Node.ELEMENT_NODE) {
-          //   const el = node as Element;
-          //   if (el.id === OKX_ROOT_ID) {
-          //     replaceOkxInjectorWithEmpty(); // [修改-v2]
-          //   } else if (el.querySelector) {
-          //     const found = el.querySelector(`#${OKX_ROOT_ID}`);
-          //     if (found) replaceOkxInjectorWithEmpty(); // [修改-v2]
-          //   }
-          // }
         });
       });
     } catch (error) {
@@ -380,27 +352,27 @@ const hoverTooltip = async (ctx: any) => {
 
   // OKX弹窗处理函数
   const OKX_SELECTORS = [
-    '#okx-dapp-injector-react-root',
+    "#okx-dapp-injector-react-root",
     '[id*="okx"]',
     '[class*="okx"]',
     '[data-testid*="okx"]',
-    '[data-okx]'
+    "[data-okx]",
   ];
 
   const hideOkxElements = () => {
-    OKX_SELECTORS.forEach(selector => {
+    OKX_SELECTORS.forEach((selector) => {
       try {
         const elements = document.querySelectorAll(selector);
-        elements.forEach(el => {
+        elements.forEach((el) => {
           if (el instanceof HTMLElement) {
-            el.style.setProperty('display', 'none', 'important');
-            el.style.setProperty('visibility', 'hidden', 'important');
-            el.style.setProperty('opacity', '0', 'important');
-            el.style.setProperty('pointer-events', 'none', 'important');
-            el.style.setProperty('z-index', '-9999', 'important');
-            el.style.setProperty('position', 'absolute', 'important');
-            el.style.setProperty('left', '-9999px', 'important');
-            el.style.setProperty('top', '-9999px', 'important');
+            el.style.setProperty("display", "none", "important");
+            el.style.setProperty("visibility", "hidden", "important");
+            el.style.setProperty("opacity", "0", "important");
+            el.style.setProperty("pointer-events", "none", "important");
+            el.style.setProperty("z-index", "-9999", "important");
+            el.style.setProperty("position", "absolute", "important");
+            el.style.setProperty("left", "-9999px", "important");
+            el.style.setProperty("top", "-9999px", "important");
           }
         });
       } catch (error) {
@@ -419,14 +391,18 @@ const hoverTooltip = async (ctx: any) => {
         if (node.nodeType === Node.ELEMENT_NODE) {
           const element = node as Element;
           // 检查新添加的元素是否是OKX相关
-          if (element.id?.includes('okx') || 
-              element.className?.includes('okx') ||
-              element.getAttribute('data-testid')?.includes('okx')) {
+          if (
+            element.id?.includes("okx") ||
+            element.className?.includes("okx") ||
+            element.getAttribute("data-testid")?.includes("okx")
+          ) {
             hideOkxElements();
           }
           // 检查子元素
           if (element.querySelector) {
-            const okxChild = element.querySelector('[id*="okx"], [class*="okx"], [data-testid*="okx"]');
+            const okxChild = element.querySelector(
+              '[id*="okx"], [class*="okx"], [data-testid*="okx"]'
+            );
             if (okxChild) {
               hideOkxElements();
             }
@@ -447,14 +423,5 @@ const hoverTooltip = async (ctx: any) => {
       console.error("启动OKX监控器时出错:", error);
     }
   }, 500);
-
-  // 定期检查并隐藏OKX元素（备用方案）
-  // setInterval(() => {
-  //   try {
-  //     hideOkxElements();
-  //   } catch (error) {
-  //     // 忽略错误
-  //   }
-  // }, 2000);
 };
 export default hoverTooltip;

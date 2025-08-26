@@ -9,8 +9,8 @@ export enum ProjectsQueryType {
 export enum LoginType {
   Email,
   Wallet,
+  Google,
 }
-
 
 export interface ProjectsParams {
   type: ProjectsQueryType;

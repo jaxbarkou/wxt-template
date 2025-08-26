@@ -1,7 +1,7 @@
 import { StateCreator } from "zustand";
 import { RootState } from "./index";
 import { BloomFilterData, LoginType } from "@/modal";
-import { CreditsInfo } from "@/modal/user";
+import { CreditsInfo, GoogleProfile } from "@/modal/user";
 
 // 用户详情类型定义
 export interface UserDetail {
@@ -37,6 +37,8 @@ export interface UserSlice {
   loginModalOpen: boolean;
   loginType: LoginType;
   settings: Record<string, boolean>;
+  googleProfile: GoogleProfile | null;
+  updateGoogleProfile: (profile: GoogleProfile | null) => void;
   updateLoginType: (loginType: LoginType) => void;
   setLoginModalOpen: (open: boolean) => void;
   updateToken: (token: string) => void;
@@ -71,6 +73,10 @@ export const createUserSlice: StateCreator<
     loginModalOpen: false,
     loginType: LoginType.Email,
     settings: {},
+    googleProfile: null,
+    updateGoogleProfile: (profile: GoogleProfile | null) => {
+      set({ googleProfile: profile });
+    },
     updateLoginType: (loginType: LoginType) => {
       set({ loginType });
     },

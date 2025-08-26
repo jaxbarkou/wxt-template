@@ -45,7 +45,20 @@ export default defineConfig({
       "<all_urls>",
       "https://*/*", // 允许访问HTTPS网站
       "http://localhost:*", // 允许访问localhost
+      "https://www.googleapis.com/*",
+      "https://oauth2.googleapis.com/*",
+      "https://accounts.google.com/*",
+      "https://*.googleusercontent.com/*",
     ],
+    oauth2: {
+      client_id:
+        "1021555181956-gu9qogddnf9184lvtsklivqr4d2is93t.apps.googleusercontent.com",
+      // scopes: ["openid", "email", "profile"],
+      scopes: [
+        "https://www.googleapis.com/auth/userinfo.email",
+        "https://www.googleapis.com/auth/userinfo.profile",
+      ],
+    },
   },
   vite: () => ({
     plugins: [tailwindcss()],

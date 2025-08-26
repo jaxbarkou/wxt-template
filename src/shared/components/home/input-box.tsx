@@ -25,7 +25,7 @@ import {
   useSettingsStore,
 } from "@/core/store";
 import { cn } from "@/lib/utils";
-
+import { useRootStore } from "@/store";
 export function InputBox({
   className,
   responding,
@@ -56,7 +56,8 @@ export function InputBox({
   const backgroundInvestigation = useSettingsStore(
     (state) => state.general.enableBackgroundInvestigation,
   );
-  const { config, loading } = useConfig();
+  const { token, setLoginModalOpen } = useRootStore();
+  const { config, loading } = useConfig(token || '');
   const reportStyle = useSettingsStore((state) => state.general.reportStyle);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<MessageInputRef>(null);
@@ -75,6 +76,10 @@ export function InputBox({
         if (message.trim() === "") {
           return;
         }
+        if (!token) {
+          setLoginModalOpen(true);
+          return;
+        }
         if (onSend) {
           onSend(message, {
             interruptFeedback: feedback?.option.value,
@@ -86,7 +91,7 @@ export function InputBox({
         }
       }
     },
-    [responding, onCancel, onSend, feedback, onRemoveFeedback],
+    [responding, onCancel, onSend, feedback, onRemoveFeedback, token],
   );
 
   const handleEnhancePrompt = useCallback(async () => {

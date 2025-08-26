@@ -45,7 +45,13 @@ export async function* chatStream(
     return yield* chatReplayStream(userMessage, params, options);
   
   try{
+    const { state } = JSON.parse(localStorage.getItem('yomo') || '{}');
+    if (!state.token) return;
     const stream = fetchStream(resolveServiceURL("chat/stream"), {
+      headers: {
+        "Content-Type": "application/json",
+        "X-Auth-Token": state.token,
+      },
       body: JSON.stringify({
         messages: [{ role: "user", content: userMessage }],
         ...params,

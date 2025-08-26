@@ -10,3 +10,11 @@ export function resolveServiceURL(path: string) {
   }
   return new URL(path, BASE_URL).toString();
 }
+
+export function resolveServiceNoAuthURL(path: string) {
+  let BASE_URL = env.NEXT_PUBLIC_API_URL_NO_AUTH ?? "http://localhost:8000/api";
+  if (!BASE_URL.endsWith("/")) {
+    BASE_URL += "/";
+  }
+  return new URL(path, BASE_URL).toString();
+}

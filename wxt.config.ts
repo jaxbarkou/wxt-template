@@ -41,6 +41,15 @@ export default defineConfig({
       "contextMenus", // 添加右键菜单权限
       "identity", // 可能需要用于身份验证
     ],
+    oauth2: {
+      client_id:
+        "285275651394-jmr8p69l1bv5f47bllnm9m5v5pgng1r0.apps.googleusercontent.com", // 替换为新的 Client ID
+      scopes: [
+        "openid",
+        "email",
+        "profile"
+      ],
+    },
     host_permissions: [
       "<all_urls>",
       "https://*/*", // 允许访问HTTPS网站
@@ -50,15 +59,6 @@ export default defineConfig({
       "https://accounts.google.com/*",
       "https://*.googleusercontent.com/*",
     ],
-    oauth2: {
-      client_id:
-        "1021555181956-gu9qogddnf9184lvtsklivqr4d2is93t.apps.googleusercontent.com",
-      // scopes: ["openid", "email", "profile"],
-      scopes: [
-        "https://www.googleapis.com/auth/userinfo.email",
-        "https://www.googleapis.com/auth/userinfo.profile",
-      ],
-    },
   },
   vite: () => ({
     plugins: [tailwindcss()],

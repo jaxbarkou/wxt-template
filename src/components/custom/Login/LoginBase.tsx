@@ -88,8 +88,8 @@ const LoginBase: React.FC = () => {
                 <div className="px-6 pb-6 mt-2 space-y-4">
                   <Button
                     variant="outline"
-                    className="justify-center w-full h-12 gap-3 bg-white text-brand-black rounded-2 border-neutral-200"
-                    onClick={loginWithIdToken}
+                    className="justify-center w-full h-12 gap-3 bg-white text-brand-black rounded-2 border-neutral-2"
+                    onClick={googleLogin}
                     disabled={googleLoading}
                   >
                     <span className="inline-flex items-center justify-center w-6 h-6">

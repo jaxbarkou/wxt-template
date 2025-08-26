@@ -38,15 +38,37 @@ export const useGoogleLogin = () => {
   const googleLogin = async () => {
     setGoogleLoading(true);
     try {
+      // 获取 manifest 信息进行调试
+      const manifest = chrome.runtime.getManifest();
+      console.log("Extension Manifest:", manifest);
+      console.log("OAuth2 Config:", manifest.oauth2);
+      
+      // 使用 chrome.identity.getAuthToken 进行 OAuth2 认证
       const accessToken = await new Promise<string>((resolve, reject) => {
-        chrome.identity.getAuthToken({ interactive: true }, (result) => {
+        chrome.identity.getAuthToken({ 
+          interactive: true,
+          scopes: [
+            "openid",
+            "email", 
+            "profile"
+          ]
+        }, (result) => {
           const token = typeof result === "string" ? result : result?.token;
-          console.log("Chrome Identity Identity Identity Result:", result);
+          console.log("Chrome Identity Result:", result);
           if (chrome.runtime.lastError || !token) {
+            console.error("Chrome Identity Error:", chrome.runtime.lastError);
+            console.error("Full Error Details:", {
+              lastError: chrome.runtime.lastError,
+              result: result,
+              manifest: manifest
+            });
             reject(new Error(chrome.runtime.lastError?.message || "No token"));
-          } else resolve(token);
+          } else {
+            resolve(token);
+          }
         });
       });
+      
       console.log("Google Access Token:", accessToken);
       if (accessToken) {
         updateToken(accessToken);
@@ -58,7 +80,11 @@ export const useGoogleLogin = () => {
         }
       }
     } catch (e: any) {
-      console.error(`登录失败：${e?.message ?? e}`);
+      console.error(`Google 登录失败：${e?.message ?? e}`);
+      // 显示更详细的错误信息
+      if (e?.message?.includes('redirect_uri_mismatch')) {
+        console.error("重定向 URI 不匹配，请检查 Google Cloud Console 配置");
+      }
     } finally {
       setGoogleLoading(false);
     }

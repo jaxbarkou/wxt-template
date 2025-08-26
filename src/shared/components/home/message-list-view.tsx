@@ -9,6 +9,8 @@ import {
   ChevronDown,
   ChevronRight,
   Lightbulb,
+  CheckIcon,
+  CopyIcon,
 } from "lucide-react";
 import { useTranslations } from "@/hooks/useTranslations";
 import React, { useCallback, useMemo, useRef, useState } from "react";
@@ -48,6 +50,7 @@ import {
 } from "@/core/store";
 import { parseJSON } from "@/core/utils";
 import { cn } from "@/lib/utils";
+// import { Copy } from "@/components/alia/icons/copy";
 
 export function MessageListView({
   className,
@@ -140,7 +143,7 @@ function MessageListItem({
   const startOfResearch = useMemo(() => {
     return researchIds.includes(messageId);
   }, [researchIds, messageId]);
-  console.log("message:", message);
+    const [isCopied, setCopied] = useCopyClipboard();
   if (message) {
     if (
       message.role === "user" ||
@@ -215,6 +218,24 @@ function MessageListItem({
             }}
           >
             {content}
+            {message.role !== "user" &&
+              <div className="w-full px-4 mt-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-6 h-6 p-0 hover:bg-gray-100"
+                  onClick={() => {
+                    setCopied(JSON.stringify({id: message.id, threadId: message.threadId}));
+                  }}
+                >
+                  {isCopied ? (
+                    <CheckIcon className="w-4 h-4 text-gray-400" />
+                  ) : (
+                    <CopyIcon className="w-4 h-4 text-gray-400" />
+                  )}
+                </Button>
+              </div>
+            }
           </motion.li>
         );
       }

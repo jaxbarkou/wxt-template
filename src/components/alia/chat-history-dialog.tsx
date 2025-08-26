@@ -14,7 +14,7 @@ import {
     DialogTrigger,
 } from "@/components/base/dialog";
 
-import { cn } from "@/lib/utils";
+import { cn, getStateValue } from "@/lib/utils";
 
 import { Tooltip } from "./tooltip";
 // import { DeleteAll } from "./icons/delete-all";
@@ -26,10 +26,13 @@ import { Thread, ThreadMessage } from "@/core/history";
 import dayjs from "dayjs";
 import type { Message, MessageRole } from "@/core/messages";
 import { appendMessage, useStore } from "@/core/store";
+import { useRootStore } from "@/store";
+import { get } from "lodash";
 
 export function ChatHistoryDialog() {
     const t = useTranslations("chat.history");
     const [open, setOpen] = useState(false);
+    const { token } = useRootStore();
     // const { userDetail } = useRootStore();
     const [threads, setThreads] = useState<Record<string, Thread[]>>({})
 
@@ -44,8 +47,9 @@ export function ChatHistoryDialog() {
             return acc;
         }, {} as Record<string, Thread[]>);
     }
-    const fetchHistoryMetadata = async (user_id: string) => {
+    const fetchHistoryMetadata = async () => {
         try {
+            const user_id = getStateValue("state.userDetail.uid") || '__default__';
             const data = await queryHistoryMetadata(user_id)
             if (data && Array.isArray(data)) {
                 console.log("history metadata:", data);
@@ -129,11 +133,11 @@ export function ChatHistoryDialog() {
 
 
     useEffect(() => {
-        fetchHistoryMetadata('__default__');
-        // if(userDetail) {
-            // fetchHistoryMetadata();
-        // }
-    }, []);
+        if (token) {
+            fetchHistoryMetadata();
+        }
+   
+    }, [token]);
 
 
     return (
@@ -172,7 +176,7 @@ export function ChatHistoryDialog() {
                                     className="w-full rounded-md border border-gray-300 pl-8 pr-2 py-1 text-sm focus:outline-none focus:ring-2 focus:#F67C00"
                                 />
                             </div>
-                            <button onClick={() => fetchHistoryMetadata('__default__')} className="p-2 rounded-md hover:text-red-500">
+                            <button onClick={() => {}} className="p-2 rounded-md hover:text-red-500">
                                 <Trash2 className="h-5 w-5" />
                             </button>
                         </div>

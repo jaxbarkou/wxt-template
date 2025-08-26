@@ -48,3 +48,15 @@ export const toMonthDay = (ts: number | string, tz?: string) => {
     ? require("moment-timezone")(ms).tz(tz).format("MM-DD")
     : moment(ms).format("MM-DD");
 };
+
+export function getStateValue(path: string): any {
+  const obj = JSON.parse(localStorage.getItem("yomo") || "{}");
+  if (!obj || !obj.state) return undefined;
+  
+  return path.split('.').reduce((acc, key) => {
+    if (acc && acc.hasOwnProperty(key)) {
+      return acc[key];
+    }
+    return undefined;
+  }, obj);
+}

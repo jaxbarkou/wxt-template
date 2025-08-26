@@ -3,6 +3,7 @@ import "./floating.css";
 import { createRoot } from "react-dom/client";
 import FloatingContainer from "./FloatingContainer";
 import hoverTooltip from "./hoverTooltip";
+import floatingSelection from "./floatingSelection";
 
 export default defineContentScript({
   matches: ["*://*/*"],
@@ -11,6 +12,8 @@ export default defineContentScript({
     hoverTooltip(ctx);
     // 添加浮窗功能
     addFloatingLogo();
+    // 添加文本选择浮动按钮功能
+    floatingSelection(ctx);
   },
 });
 

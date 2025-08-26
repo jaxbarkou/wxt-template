@@ -81,6 +81,36 @@ export default defineBackground(() => {
       return true;
     }
 
+    // 处理选中文本分析请求
+    if (message.type === "ANALYZE_SELECTED_TEXT") {
+      if (sender.tab?.id) {
+        // 打开侧边栏
+        chrome.sidePanel.setOptions({
+          enabled: true,
+        });
+        
+        const openOptions: any = { tabId: sender.tab.id };
+        if (sender.tab.windowId) {
+          openOptions.windowId = sender.tab.windowId;
+        }
+        
+        chrome.sidePanel.open(openOptions);
+        
+        // 通知侧边栏有新的分析请求
+        chrome.runtime.sendMessage({
+          type: "NEW_ANALYSIS_REQUEST",
+          text: message.text
+        }).catch(() => {
+          // 如果侧边栏还没有加载，忽略错误
+        });
+        
+        sendResponse({ success: true, message: "分析请求已处理" });
+      } else {
+        sendResponse({ success: false, message: "无法获取标签页信息" });
+      }
+      return true;
+    }
+
     // 默认响应
     sendResponse({ success: true, received: message.type });
   });

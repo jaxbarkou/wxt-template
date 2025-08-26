@@ -7,27 +7,23 @@ export default defineBackground(() => {
     console.log("插件已安装，侧边栏行为已设置");
   });
 
-  // 监听插件图标点击事件 - 强制处理点击事件
-  chrome.action.onClicked.addListener(async (tab) => {
+  // 监听插件图标点击事件
+  chrome.action.onClicked.addListener((tab) => {
+    console.log('插件logo被点击了', tab);
     if (tab.id) {
-      try {
-        // 确保侧边栏启用
-        await chrome.sidePanel.setOptions({
-          enabled: true,
-        });
-        
-        // 打开侧边栏
-        await chrome.sidePanel.open({ tabId: tab.id });
-        
-        // 通知content script更新状态
-        chrome.tabs.sendMessage(tab.id, { type: "SIDEPANEL_OPENED" }).catch(() => {
-          // 如果content script不存在，忽略错误
-        });
-        
-        console.log("侧边栏已通过插件点击打开");
-      } catch (error) {
-        console.error("打开侧边栏失败:", error);
+      // 直接在这里处理，不使用异步操作
+      chrome.sidePanel.setOptions({
+        enabled: true,
+      });
+      
+      // 使用 windowId 如果可用
+      const openOptions: any = { tabId: tab.id };
+      if (tab.windowId) {
+        openOptions.windowId = tab.windowId;
       }
+      
+      chrome.sidePanel.open(openOptions);
+      console.log("尝试打开侧边栏");
     }
   });
 

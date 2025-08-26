@@ -13,6 +13,16 @@ import ChartContainer from "@/components/charts/ChartContainer";
 import PriceChart from "@/components/charts/PriceChart";
 import { numFormat } from "@/lib/utils";
 
+// 导入图标
+import DiscordIcon from "@/assets/images/search/Discord_icon.png";
+import TelegramIcon from "@/assets/images/search/Telegram_icon.png";
+import MediumIcon from "@/assets/images/search/Medium_icon.png";
+import GithubIcon from "@/assets/images/search/Github_icon.png";
+import WebsiteIcon from "@/assets/images/search/Website_icon.png";
+import DocsIcon from "@/assets/images/search/Docs_icon.png";
+import DAppIcon from "@/assets/images/search/DApp_icon.png";
+import XIcon from "@/assets/images/search/X_icon.png";
+
 const Search: React.FC = () => {
   const [searchValue, setSearchValue] = useState("");
   const [searchResult, setSearchResult] = useState<string | null>(null);
@@ -142,26 +152,29 @@ const Search: React.FC = () => {
                 {selectedProject?.description ||
                   projectData?.project_info?.description}
               </div>
-              {projectData?.project_info?.team_info && Array.isArray(projectData.project_info.team_info) && projectData.project_info.team_info.length > 0 && (
-                <div className="text-xs text-gray-700 leading-relaxed">
-                  <div className="mb-2 font-medium">Team Members:</div>
-                  <div className="space-y-1">
-                    {projectData.project_info.team_info.map((member: any, index: number) => (
-                      <div key={index} className="flex items-center gap-2">
-                        <span className="font-medium">{member.name}</span>
-                        <span className="text-gray-500">-</span>
-                        <span>{member.position}</span>
-                      </div>
-                    ))}
+              {projectData?.project_info?.team_info &&
+                Array.isArray(projectData.project_info.team_info) &&
+                projectData.project_info.team_info.length > 0 && (
+                  <div className="text-xs text-gray-700 leading-relaxed">
+                    <div className="mb-2 font-medium">Team Members:</div>
+                    <div className="space-y-1">
+                      {projectData.project_info.team_info.map(
+                        (member: any, index: number) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <span className="font-medium">{member.name}</span>
+                            <span className="text-gray-500">-</span>
+                            <span>{member.position}</span>
+                          </div>
+                        )
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
               {projectData?.project_info?.sector_analysis && (
                 <div className="text-xs text-gray-700">
-                  {typeof projectData.project_info.sector_analysis === 'string' 
-                    ? projectData.project_info.sector_analysis 
-                    : 'Sector analysis available'
-                  }
+                  {typeof projectData.project_info.sector_analysis === "string"
+                    ? projectData.project_info.sector_analysis
+                    : "Sector analysis available"}
                 </div>
               )}
             </div>
@@ -187,10 +200,14 @@ const Search: React.FC = () => {
                   {projectData?.fundraising_info?.round_info?.length || 0}{" "}
                   rounds of financing
                   {projectData?.fundraising_info?.total_raised && (
-                    <>, with a total amount exceeding{" "}
-                    ${numFormat(parseFloat(projectData?.fundraising_info?.total_raised))}</>
-                  )}. These data
-                  fully demonstrate{" "}
+                    <>
+                      , with a total amount exceeding $
+                      {numFormat(
+                        parseFloat(projectData?.fundraising_info?.total_raised)
+                      )}
+                    </>
+                  )}
+                  . These data fully demonstrate{" "}
                   {selectedProject?.project_name ||
                     projectData?.project_info?.name}
                   's leading position and great potential in blockchain security
@@ -199,41 +216,43 @@ const Search: React.FC = () => {
                   enabling it to better serve the Bitcoin ecosystem and other
                   protocols.
                 </div>
-                {projectData?.fundraising_info?.investors && 
-                 Array.isArray(projectData.fundraising_info.investors) && 
-                 projectData.fundraising_info.investors.length > 0 && (
-                  <>
-                    <div className="text-xs text-gray-700 mb-4">
-                      Investment Institutions:
-                    </div>
-                    <div className="max-h-24 overflow-y-auto">
-                      <div className="flex flex-wrap gap-2">
-                        {projectData.fundraising_info.investors.map((investor: any, index: number) => (
-                          <div
-                            key={index}
-                            className="flex items-center gap-2 px-3 py-2 bg-gray-100 rounded-lg border border-gray-200"
-                            title={investor.name}
-                          >
-                            {investor.logo && (
-                              <img
-                                src={investor.logo}
-                                alt={investor.name}
-                                className="w-5 h-5 rounded-full object-cover"
-                                onError={(e) => {
-                                  // 如果图片加载失败，隐藏图片元素
-                                  e.currentTarget.style.display = 'none';
-                                }}
-                              />
-                            )}
-                            <span className="text-xs font-medium text-gray-700">
-                              {investor.name}
-                            </span>
-                          </div>
-                        ))}
+                {projectData?.fundraising_info?.investors &&
+                  Array.isArray(projectData.fundraising_info.investors) &&
+                  projectData.fundraising_info.investors.length > 0 && (
+                    <>
+                      <div className="text-xs text-gray-700 mb-4">
+                        Investment Institutions:
                       </div>
-                    </div>
-                  </>
-                )}
+                      <div className="max-h-24 overflow-y-auto">
+                        <div className="flex flex-wrap gap-2">
+                          {projectData.fundraising_info.investors.map(
+                            (investor: any, index: number) => (
+                              <div
+                                key={index}
+                                className="flex items-center gap-2 px-3 py-2 bg-gray-100 rounded-lg border border-gray-200"
+                                title={investor.name}
+                              >
+                                {investor.logo && (
+                                  <img
+                                    src={investor.logo}
+                                    alt={investor.name}
+                                    className="w-5 h-5 rounded-full object-cover"
+                                    onError={(e) => {
+                                      // 如果图片加载失败，隐藏图片元素
+                                      e.currentTarget.style.display = "none";
+                                    }}
+                                  />
+                                )}
+                                <span className="text-xs font-medium text-gray-700">
+                                  {investor.name}
+                                </span>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  )}
               </div>
             )}
 
@@ -356,7 +375,7 @@ const Search: React.FC = () => {
                           {projectData.social_media_stats.media_mentions.map(
                             (item: any, index: number) => {
                               // 安全检查：确保item是字符串或对象
-                              if (typeof item === 'string') {
+                              if (typeof item === "string") {
                                 // 处理字符串URL
                                 const domain = item
                                   .replace(/^https?:\/\//, "")
@@ -376,11 +395,18 @@ const Search: React.FC = () => {
                                     {displayName}
                                   </a>
                                 );
-                              } else if (typeof item === 'object' && item !== null) {
+                              } else if (
+                                typeof item === "object" &&
+                                item !== null
+                              ) {
                                 // 处理对象，提取name或title属性
-                                const displayName = item.name || item.title || item.displayName || 'Unknown';
-                                const url = item.url || item.link || '#';
-                                
+                                const displayName =
+                                  item.name ||
+                                  item.title ||
+                                  item.displayName ||
+                                  "Unknown";
+                                const url = item.url || item.link || "#";
+
                                 return (
                                   <a
                                     key={index}
@@ -394,7 +420,7 @@ const Search: React.FC = () => {
                                   </a>
                                 );
                               }
-                              
+
                               // 如果既不是字符串也不是对象，跳过渲染
                               return null;
                             }
@@ -412,12 +438,15 @@ const Search: React.FC = () => {
                     </div>
                     {projectData.on_chain_data.tvl && (
                       <div className="flex justify-between">
-                        <span className="text-gray-700">Total Value Locked (TVL)</span>
+                        <span className="text-gray-700">
+                          Total Value Locked (TVL)
+                        </span>
                         <span className="text-black font-medium">
                           ${numFormat(projectData.on_chain_data.tvl)}
                           {projectData.on_chain_data.tvl_7d_increment && (
                             <span className="text-green-500 ml-1">
-                              (+{projectData.on_chain_data.tvl_7d_increment}%/7d)
+                              (+{projectData.on_chain_data.tvl_7d_increment}
+                              %/7d)
                             </span>
                           )}
                         </span>
@@ -433,12 +462,26 @@ const Search: React.FC = () => {
                     )}
                     {projectData.on_chain_data.active_addresses_7d && (
                       <div className="flex justify-between">
-                        <span className="text-gray-700">Active Addresses (7D)</span>
+                        <span className="text-gray-700">
+                          Active Addresses (7D)
+                        </span>
                         <span className="text-black">
-                          {numFormat(projectData.on_chain_data.active_addresses_7d)}
-                          {projectData.on_chain_data.active_addresses_7d_change && (
+                          {numFormat(
+                            projectData.on_chain_data.active_addresses_7d
+                          )}
+                          {projectData.on_chain_data
+                            .active_addresses_7d_change && (
                             <span className="text-green-500 ml-1">
-                              ({projectData.on_chain_data.active_addresses_7d_change > 0 ? '+' : ''}{projectData.on_chain_data.active_addresses_7d_change}%)
+                              (
+                              {projectData.on_chain_data
+                                .active_addresses_7d_change > 0
+                                ? "+"
+                                : ""}
+                              {
+                                projectData.on_chain_data
+                                  .active_addresses_7d_change
+                              }
+                              %)
                             </span>
                           )}
                         </span>
@@ -446,12 +489,26 @@ const Search: React.FC = () => {
                     )}
                     {projectData.on_chain_data.contract_interactions_7d && (
                       <div className="flex justify-between">
-                        <span className="text-gray-700">Contract Interactions (7D)</span>
+                        <span className="text-gray-700">
+                          Contract Interactions (7D)
+                        </span>
                         <span className="text-black">
-                          {numFormat(projectData.on_chain_data.contract_interactions_7d)}
-                          {projectData.on_chain_data.contract_interactions_7d_change && (
+                          {numFormat(
+                            projectData.on_chain_data.contract_interactions_7d
+                          )}
+                          {projectData.on_chain_data
+                            .contract_interactions_7d_change && (
                             <span className="text-green-500 ml-1">
-                              ({projectData.on_chain_data.contract_interactions_7d_change > 0 ? '+' : ''}{projectData.on_chain_data.contract_interactions_7d_change}%)
+                              (
+                              {projectData.on_chain_data
+                                .contract_interactions_7d_change > 0
+                                ? "+"
+                                : ""}
+                              {
+                                projectData.on_chain_data
+                                  .contract_interactions_7d_change
+                              }
+                              %)
                             </span>
                           )}
                         </span>
@@ -459,15 +516,21 @@ const Search: React.FC = () => {
                     )}
                     {projectData.on_chain_data.contract_interactions_30d && (
                       <div className="flex justify-between">
-                        <span className="text-gray-700">Contract Interactions (30D)</span>
+                        <span className="text-gray-700">
+                          Contract Interactions (30D)
+                        </span>
                         <span className="text-black">
-                          {numFormat(projectData.on_chain_data.contract_interactions_30d)}
+                          {numFormat(
+                            projectData.on_chain_data.contract_interactions_30d
+                          )}
                         </span>
                       </div>
                     )}
                     {projectData.on_chain_data.txns_30d && (
                       <div className="flex justify-between">
-                        <span className="text-gray-700">Transactions (30D)</span>
+                        <span className="text-gray-700">
+                          Transactions (30D)
+                        </span>
                         <span className="text-black">
                           {numFormat(projectData.on_chain_data.txns_30d)}
                         </span>
@@ -475,9 +538,14 @@ const Search: React.FC = () => {
                     )}
                     {projectData.on_chain_data.protocol_revenue_30d && (
                       <div className="flex justify-between">
-                        <span className="text-gray-700">Protocol Revenue (30D)</span>
+                        <span className="text-gray-700">
+                          Protocol Revenue (30D)
+                        </span>
                         <span className="text-black">
-                          ${numFormat(projectData.on_chain_data.protocol_revenue_30d)}
+                          $
+                          {numFormat(
+                            projectData.on_chain_data.protocol_revenue_30d
+                          )}
                         </span>
                       </div>
                     )}
@@ -579,7 +647,11 @@ const Search: React.FC = () => {
                           {projectData.market_data.support_exchanges?.map(
                             (exchange: any, index: number) => {
                               // 安全检查：确保exchange是对象且包含必要属性
-                              if (typeof exchange === 'object' && exchange !== null && exchange.name) {
+                              if (
+                                typeof exchange === "object" &&
+                                exchange !== null &&
+                                exchange.name
+                              ) {
                                 return (
                                   <div
                                     key={index}
@@ -587,12 +659,12 @@ const Search: React.FC = () => {
                                     title={exchange.name}
                                   >
                                     <img
-                                      src={exchange.logo || ''}
+                                      src={exchange.logo || ""}
                                       alt={exchange.name}
                                       className="w-full h-full object-cover rounded-full"
                                       onError={(e) => {
                                         // 如果图片加载失败，隐藏图片元素
-                                        e.currentTarget.style.display = 'none';
+                                        e.currentTarget.style.display = "none";
                                       }}
                                     />
                                   </div>
@@ -658,10 +730,17 @@ const Search: React.FC = () => {
                             {projectData.tokenomics.support_chains.map(
                               (chain: any, index: number) => {
                                 // 安全检查：确保chain是有效的字符串或对象
-                                if (chain && (typeof chain === 'string' || typeof chain === 'object')) {
+                                if (
+                                  chain &&
+                                  (typeof chain === "string" ||
+                                    typeof chain === "object")
+                                ) {
                                   return (
                                     <div key={index} className="flex-shrink-0">
-                                      <ChainLogo chain={chain.contract_platform} size={18} />
+                                      <ChainLogo
+                                        chain={chain.contract_platform}
+                                        size={18}
+                                      />
                                     </div>
                                   );
                                 }
@@ -869,48 +948,56 @@ const Search: React.FC = () => {
                   url:
                     selectedProject?.discord_url ||
                     projectData?.social_media_links?.discord,
+                  icon: DiscordIcon,
                 },
                 {
                   name: "Telegram",
                   url:
                     selectedProject?.telegram_url ||
                     projectData?.social_media_links?.telegram,
+                  icon: TelegramIcon,
                 },
                 {
                   name: "Medium",
                   url:
                     selectedProject?.medium_url ||
                     projectData?.social_media_links?.medium,
+                  icon: MediumIcon,
                 },
                 {
                   name: "Github",
                   url:
                     selectedProject?.github_url ||
                     projectData?.social_media_links?.github,
+                  icon: GithubIcon,
                 },
                 {
                   name: "Website",
                   url:
                     selectedProject?.website_url ||
                     projectData?.social_media_links?.website,
+                  icon: WebsiteIcon,
                 },
                 {
                   name: "Docs",
                   url:
                     selectedProject?.gitbook_url ||
                     projectData?.social_media_links?.defliama,
+                  icon: DocsIcon,
                 },
                 {
                   name: "dApp",
                   url:
                     selectedProject?.website_url ||
                     projectData?.social_media_links?.website,
+                  icon: DAppIcon,
                 },
                 {
                   name: "X(Twitter)",
                   url: selectedProject?.twitter_username
                     ? `https://twitter.com/${selectedProject.twitter_username}`
                     : projectData?.social_media_links?.twitter,
+                  icon: XIcon,
                 },
               ];
 
@@ -932,12 +1019,13 @@ const Search: React.FC = () => {
                     {availablePlatforms.map((platform) => (
                       <Card
                         key={platform.name}
-                        className="aspect-square hover:bg-gray-200 transition-colors cursor-pointer bg-gray-100 border border-gray-200"
+                        className="aspect-square hover:bg-gray-200 transition-colors cursor-pointer bg-white border border-gray-200"
                         onClick={() =>
                           platform.url && window.open(platform.url, "_blank")
                         }
                       >
-                        <CardContent className="p-0 h-full flex items-center justify-center">
+                        <CardContent className="p-0 h-full flex flex-col items-center justify-center gap-1">
+                          <img src={platform.icon} alt={platform.name} className="w-6 h-6 object-contain" />
                           <div className="text-xs text-center font-medium text-gray-700">
                             {platform.name}
                           </div>
@@ -973,10 +1061,14 @@ const Search: React.FC = () => {
                 {projectData?.fundraising_info?.round_info?.length || 0} rounds
                 of financing
                 {projectData?.fundraising_info?.total_raised && (
-                  <>, with a total amount exceeding{" "}
-                  ${numFormat(parseFloat(projectData?.fundraising_info?.total_raised))}</>
-                )}. These
-                data fully demonstrate{" "}
+                  <>
+                    , with a total amount exceeding $
+                    {numFormat(
+                      parseFloat(projectData?.fundraising_info?.total_raised)
+                    )}
+                  </>
+                )}
+                . These data fully demonstrate{" "}
                 {selectedProject?.project_name ||
                   projectData?.project_info?.name}
                 's leading position and great potential in blockchain security

@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
+import logo from '@/assets/images/logo.png'
+import search from '@/assets/images/search.png'
+import close from '@/assets/images/close.png'
 
 interface FloatingButtonProps {
   text: string;
   position: { x: number; y: number };
+  onClose?: () => void;
 }
 
-const FloatingButton: React.FC<FloatingButtonProps> = ({ text, position }) => {
+const FloatingButton: React.FC<FloatingButtonProps> = ({ text, position, onClose }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [showTooltip, setShowTooltip] = useState<string | null>(null);
 
   const handleAnalyze = () => {
     // 发送消息给background script，打开侧边栏并传递选中的文本
@@ -34,89 +39,151 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({ text, position }) => {
     });
   };
 
-  const buttonStyle: React.CSSProperties = {
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    }
+  };
+
+  const containerStyle: React.CSSProperties = {
     position: 'fixed',
     left: `${position.x}px`,
     top: `${position.y}px`,
     zIndex: 999999,
     display: 'flex',
-    gap: '8px',
-    padding: '8px 12px',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '8px 16px',
     backgroundColor: 'white',
     border: '1px solid #e5e7eb',
-    borderRadius: '8px',
+    borderRadius: '20px',
     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
     fontSize: '14px',
     fontFamily: 'system-ui, -apple-system, sans-serif',
     transition: 'all 0.2s ease',
-    transform: isHovered ? 'scale(1.05)' : 'scale(1)',
+    transform: isHovered ? 'scale(1.02)' : 'scale(1)',
   };
-
-  const buttonBaseStyle: React.CSSProperties = {
-    padding: '6px 12px',
-    border: 'none',
-    borderRadius: '6px',
+  const logoStyle: React.CSSProperties = {
+    width: '24px',
+    height: '24px',
     cursor: 'pointer',
-    fontSize: '12px',
-    fontWeight: '500',
     transition: 'all 0.2s ease',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '4px',
+    position: 'relative',
+    opacity: 0.8,
   };
 
-  const analyzeButtonStyle: React.CSSProperties = {
-    ...buttonBaseStyle,
-    backgroundColor: '#3b82f6',
+  const iconStyle: React.CSSProperties = {
+    width: '12px',
+    height: '12px',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    position: 'relative',
+  };
+
+  const separatorStyle: React.CSSProperties = {
+    width: '1px',
+    height: '20px',
+    backgroundColor: '#e5e7eb',
+  };
+
+  const tooltipStyle: React.CSSProperties = {
+    position: 'absolute',
+    bottom: '100%',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    backgroundColor: '#374151',
     color: 'white',
-  };
-
-  const copyButtonStyle: React.CSSProperties = {
-    ...buttonBaseStyle,
-    backgroundColor: '#f3f4f6',
-    color: '#374151',
+    padding: '4px 8px',
+    borderRadius: '4px',
+    fontSize: '12px',
+    whiteSpace: 'nowrap',
+    zIndex: 1000000,
+    marginBottom: '4px',
   };
 
   return (
     <div 
-      style={buttonStyle}
+      style={containerStyle}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <button
-        style={analyzeButtonStyle}
-        onClick={handleAnalyze}
+      {/* 应用图标 */}
+      <div 
+        style={{ position: 'relative' }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = '#2563eb';
+          setShowTooltip('应用');
+          e.currentTarget.querySelector('img')!.style.opacity = '1';
+          e.currentTarget.querySelector('img')!.style.transform = 'scale(1.1)';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = '#3b82f6';
+          setShowTooltip(null);
+          e.currentTarget.querySelector('img')!.style.opacity = '0.8';
+          e.currentTarget.querySelector('img')!.style.transform = 'scale(1)';
         }}
-        title="分析选中的文本"
       >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/>
-        </svg>
-        分析
-      </button>
-      
-      <button
-        style={copyButtonStyle}
-        onClick={handleCopy}
+        <img 
+          src={logo} 
+          alt="应用" 
+          style={logoStyle}
+          onClick={handleAnalyze}
+        />
+        {showTooltip === '应用' && (
+          <div style={tooltipStyle}>分析选中文本</div>
+        )}
+      </div>
+
+      {/* 搜索图标 */}
+      <div 
+        style={{ position: 'relative' }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = '#e5e7eb';
+          setShowTooltip('搜索');
+          e.currentTarget.querySelector('img')!.style.opacity = '1';
+          e.currentTarget.querySelector('img')!.style.transform = 'scale(1.1)';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = '#f3f4f6';
+          setShowTooltip(null);
+          e.currentTarget.querySelector('img')!.style.opacity = '0.8';
+          e.currentTarget.querySelector('img')!.style.transform = 'scale(1)';
         }}
-        title="复制选中的文本"
       >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-        </svg>
-        复制
-      </button>
+        <img 
+          src={search} 
+          alt="搜索" 
+          style={iconStyle}
+          onClick={handleCopy}
+        />
+        {showTooltip === '搜索' && (
+          <div style={tooltipStyle}>复制选中文本</div>
+        )}
+      </div>
+
+      {/* 分隔线 */}
+      <div style={separatorStyle}></div>
+
+      {/* 关闭按钮 */}
+      <div 
+        style={{ position: 'relative' }}
+        onMouseEnter={(e) => {
+          setShowTooltip('关闭');
+          e.currentTarget.querySelector('img')!.style.opacity = '1';
+          e.currentTarget.querySelector('img')!.style.transform = 'scale(1.1)';
+        }}
+        onMouseLeave={(e) => {
+          setShowTooltip(null);
+          e.currentTarget.querySelector('img')!.style.opacity = '0.8';
+          e.currentTarget.querySelector('img')!.style.transform = 'scale(1)';
+        }}
+      >
+        <img 
+          src={close} 
+          alt="关闭" 
+          style={iconStyle}
+          onClick={handleClose}
+        />
+        {showTooltip === '关闭' && (
+          <div style={tooltipStyle}>关闭面板</div>
+        )}
+      </div>
     </div>
   );
 };

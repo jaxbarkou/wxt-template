@@ -43,7 +43,7 @@ const floatingSelection = async (ctx: any) => {
       currentRoot = root;
       
       if (text && rect) {
-        root.render(<FloatingButton text={text} position={{ x, y }} />);
+        root.render(<FloatingButton text={text} position={{ x, y }} onClose={() => remove()} />);
       }
       
       return { root, wrapper };
@@ -80,7 +80,7 @@ const floatingSelection = async (ctx: any) => {
       currentWrapper.style.left = `${x}px`;
       currentWrapper.style.top = `${y}px`;
       currentWrapper.style.pointerEvents = "auto";
-      currentRoot.render(<FloatingButton text={text} position={{ x, y }} />);
+      currentRoot.render(<FloatingButton text={text} position={{ x, y }} onClose={() => remove()} />);
     } else {
       // 创建 Shadow UI
       mount();

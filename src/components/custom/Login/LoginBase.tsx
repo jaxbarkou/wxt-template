@@ -24,7 +24,7 @@ const LoginBase: React.FC = () => {
   const { loginModalOpen, setLoginModalOpen, token } = useRootStore();
   const { isConnected } = useAccount();
   const { handleLogin } = useLogin("");
-  const { googleLogin, googleLogout, googleLoading, loginWithIdToken } =
+  const { googleLogin, googleLogout, googleLoading, fetchGoogleUserinfo } =
     useGoogleLogin();
   const [curState, setCurState] = useState<LoginState>(LoginState.Base);
   const handleStateChange = (state: LoginState) => {

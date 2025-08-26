@@ -43,7 +43,7 @@ export default defineConfig({
     ],
     oauth2: {
       client_id:
-        "285275651394-jmr8p69l1bv5f47bllnm9m5v5pgng1r0.apps.googleusercontent.com", // 替换为新的 Client ID
+        "285275651394-e4tvnda8i9l9p4ua1ojfruh8b5o8a4as.apps.googleusercontent.com", // 替换为新的 Client ID
       scopes: [
         "openid",
         "email",

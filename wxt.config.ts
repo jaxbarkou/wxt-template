@@ -17,9 +17,8 @@ export default defineConfig({
       "96": "icon/96x96.png",
       "128": "icon/128x128.png",
     },
-    // 同时配置popup、sidepanel和options
+    // 配置插件图标，不设置popup，让点击时打开侧边栏
     action: {
-      default_popup: "sidepanel.html",
       default_icon: {
         "16": "icon/16x16.png",
         "32": "icon/32x32.png",

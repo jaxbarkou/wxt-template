@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import logo from '@/assets/images/slide-logo.png';
 
 interface FloatingLogoProps {
@@ -19,13 +19,23 @@ const FloatingLogo: React.FC<FloatingLogoProps> = ({
   isSidePanelOpen,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [bottom, setBottom] = useState(24);
+  const [right, setRight] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const dragStartY = useRef<number>(0);
+  const initialBottom = useRef<number>(24);
+  const dragThreshold = 5; // 拖拽阈值，避免轻微移动就触发拖拽
+  const hasDragged = useRef<boolean>(false); // 标记是否已经拖拽过
 
   // 内联样式
   const parentContainerStyle: React.CSSProperties = {
     position: 'fixed',
-    bottom: '24px',
-    right: '0px',
+    bottom: `${bottom}px`,
+    right: `${right}px`,
     zIndex: 999999,
+    userSelect: 'none',
+    transition: isDragging ? 'none' : 'right 0.2s ease',
   };
 
   const menuStyle: React.CSSProperties = {
@@ -63,17 +73,17 @@ const FloatingLogo: React.FC<FloatingLogoProps> = ({
   };
 
   const mainButtonStyle: React.CSSProperties = {
-    width: '40px',
-    height: '36px',
+    width: isDragging ? '40px' : '40px',
+    height: isDragging ? '40px' : '36px',
     background: '#FFF',
-    borderRadius: '40px 0 0 40px',
+    borderRadius: isDragging ? '50%' : '40px 0 0 40px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     color: 'white',
-    cursor: 'pointer',
+    cursor: isDragging ? 'grabbing' : 'pointer',
     boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)',
-    transition: 'all 0.3s ease',
+    transition: isDragging ? 'none' : 'all 0.3s ease',
     fontSize: '0',
   };
 
@@ -91,8 +101,63 @@ const FloatingLogo: React.FC<FloatingLogoProps> = ({
     transition: 'background-color 0.3s ease'
   };
 
+  // 拖拽事件处理
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+    hasDragged.current = false; // 重置拖拽标记
+    setRight(10); // 拖拽开始时距离右边10px
+    dragStartY.current = e.clientY;
+    initialBottom.current = bottom;
+  };
+
+  const handleClick = (e: React.MouseEvent) => {
+    // 只有在没有拖拽的情况下才触发点击事件
+    if (!isDragging && !hasDragged.current) {
+      onToggleSidePanel();
+    }
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!isDragging) return;
+    
+    const deltaY = dragStartY.current - e.clientY;
+    const absDeltaY = Math.abs(deltaY);
+    
+    // 只有当移动距离超过阈值时才更新位置
+    if (absDeltaY > dragThreshold) {
+      hasDragged.current = true; // 标记已经拖拽过
+      const newBottom = Math.max(24, Math.min(window.innerHeight - 100, initialBottom.current + deltaY));
+      setBottom(newBottom);
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    setRight(0); // 拖拽结束时恢复为0
+    
+    // 延迟重置拖拽标记，避免拖拽结束后立即触发点击
+    setTimeout(() => {
+      hasDragged.current = false;
+    }, 100);
+  };
+
+  // 添加全局鼠标事件监听
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [isDragging]);
+
   return (
     <div 
+      ref={containerRef}
       style={parentContainerStyle}
       // onMouseEnter={() => setIsHovered(true)}
       // onMouseLeave={() => setIsHovered(false)}
@@ -195,14 +260,19 @@ const FloatingLogo: React.FC<FloatingLogoProps> = ({
 
       {/* 主Logo按钮 */}
       <button
-        onClick={onToggleSidePanel}
+        onClick={handleClick}
+        onMouseDown={handleMouseDown}
         onMouseEnter={(e) => {
-          e.currentTarget.style.transform = 'scale(1.1)';
-          e.currentTarget.style.background = '#fff';
+          if (!isDragging) {
+            e.currentTarget.style.transform = 'scale(1.1)';
+            e.currentTarget.style.background = '#fff';
+          }
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.transform = 'scale(1)';
-          e.currentTarget.style.background = '#fff';
+          if (!isDragging) {
+            e.currentTarget.style.transform = 'scale(1)';
+            e.currentTarget.style.background = '#fff';
+          }
         }}
         style={mainButtonStyle}
         title={isSidePanelOpen ? "关闭侧边栏" : "打开侧边栏"}

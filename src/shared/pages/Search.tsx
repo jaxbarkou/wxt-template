@@ -185,8 +185,11 @@ const Search: React.FC = () => {
                     projectData?.project_info?.name}{" "}
                   has completed{" "}
                   {projectData?.fundraising_info?.round_info?.length || 0}{" "}
-                  rounds of financing, with a total amount exceeding{" "}
-                  {projectData?.fundraising_info?.total_raised}. These data
+                  rounds of financing
+                  {projectData?.fundraising_info?.total_raised && (
+                    <>, with a total amount exceeding{" "}
+                    ${numFormat(parseFloat(projectData?.fundraising_info?.total_raised))}</>
+                  )}. These data
                   fully demonstrate{" "}
                   {selectedProject?.project_name ||
                     projectData?.project_info?.name}
@@ -968,8 +971,11 @@ const Search: React.FC = () => {
                   projectData?.project_info?.name}{" "}
                 has completed{" "}
                 {projectData?.fundraising_info?.round_info?.length || 0} rounds
-                of financing, with a total amount exceeding{" "}
-                {projectData?.fundraising_info?.total_raised || "N/A"}. These
+                of financing
+                {projectData?.fundraising_info?.total_raised && (
+                  <>, with a total amount exceeding{" "}
+                  ${numFormat(parseFloat(projectData?.fundraising_info?.total_raised))}</>
+                )}. These
                 data fully demonstrate{" "}
                 {selectedProject?.project_name ||
                   projectData?.project_info?.name}

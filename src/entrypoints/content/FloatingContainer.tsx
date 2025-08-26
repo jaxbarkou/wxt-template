@@ -4,7 +4,16 @@ import FloatingLogo from './FloatingLogo';
 const FloatingContainer: React.FC = () => {
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
 
-  // 切换侧边栏状态
+  // 监听来自background的消息
+  chrome.runtime.onMessage.addListener((message: any) => {
+    if (message.type === "SIDEPANEL_OPENED") {
+      setIsSidePanelOpen(true);
+    } else if (message.type === "SIDEPANEL_CLOSED") {
+      setIsSidePanelOpen(false);
+    }
+  });
+
+  // 切换侧边栏状态 - 只处理侧边栏，不打开popup
   const handleToggleSidePanel = () => {
     if (isSidePanelOpen) {
       // 关闭侧边栏

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 import { useTranslations } from "@/hooks/useTranslations";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Trash2 } from "lucide-react";
 import { History } from "@/components/alia/icons/history";
 import { Collecte } from "@/components/alia/icons/collecte";

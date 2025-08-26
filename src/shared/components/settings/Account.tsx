@@ -47,7 +47,7 @@ const Account: React.FC = () => {
     },
     {
       icon: "https://c.animaapp.com/tsXhjynw/img/vector-6.svg",
-      label: "XIcon (Twitter)",
+      label: "X(Twitter)",
       value: userDetail?.twitter || "-",
       hasAction: true,
       showEidt: userDetail?.twitter ? true : false,

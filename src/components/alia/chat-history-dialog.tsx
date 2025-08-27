@@ -49,7 +49,8 @@ export function ChatHistoryDialog() {
     }
     const fetchHistoryMetadata = async () => {
         try {
-            const user_id = getStateValue("state.userDetail.uid") || '__default__';
+            const user_id = getStateValue("state.userDetail.uid");
+            if (!user_id) return;
             const data = await queryHistoryMetadata(user_id)
             if (data && Array.isArray(data)) {
                 console.log("history metadata:", data);
@@ -133,11 +134,10 @@ export function ChatHistoryDialog() {
 
 
     useEffect(() => {
-        if (token) {
+        if (token && open) {
             fetchHistoryMetadata();
         }
-   
-    }, [token]);
+    }, [token, open]);
 
 
     return (

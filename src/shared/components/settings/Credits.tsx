@@ -1,4 +1,4 @@
-import { HelpCircleIcon } from "lucide-react";
+import { HelpCircleIcon, RotateCw } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -54,7 +54,23 @@ const Credits = () => {
                 <span className="text-sm font-normal ">
                   {creditsInfo?.balance || "--"}
                 </span>
-                <HelpCircleIcon className="w-3.5 h-3.5 " />
+                <RotateCw
+                  onClick={(e) => {
+                    fetchCreditsInfo();
+                    const el = e.currentTarget;
+                    el.classList.remove("animate-[spin_0.6s_linear]");
+                    requestAnimationFrame(() =>
+                      el.classList.add("animate-[spin_0.6s_linear]")
+                    );
+                  }}
+                  onAnimationEnd={(e) =>
+                    e.currentTarget.classList.remove(
+                      "animate-[spin_0.6s_linear]"
+                    )
+                  }
+                  className="w-3.5 h-3.5 cursor-pointer"
+                />
+                {/* <HelpCircleIcon className="w-3.5 h-3.5 " /> */}
               </div>
             </div>
 

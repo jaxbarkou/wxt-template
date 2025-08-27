@@ -11,8 +11,9 @@ import _ from "lodash";
 import { WalletButtonCustom } from "./WalletButtonCustom";
 import Register from "./Register";
 import EmailLogin from "./EmailLogin";
-import { useUserDetail } from "@/hooks/useUserDetail";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { useGoogleLogin } from "@/hooks/useGoogleLogin";
+import { GoogleLoginType } from "@/modal";
 
 export enum LoginState {
   Base = "Base",
@@ -24,6 +25,7 @@ const LoginBase: React.FC = () => {
   const { loginModalOpen, setLoginModalOpen, token } = useRootStore();
   const { isConnected } = useAccount();
   const { handleLogin } = useLogin("");
+  const { toGoogleLogin, googleLoading } = useGoogleLogin();
   const [curState, setCurState] = useState<LoginState>(LoginState.Base);
   const handleStateChange = (state: LoginState) => {
     setCurState(state);
@@ -86,8 +88,11 @@ const LoginBase: React.FC = () => {
                 <div className="px-6 pb-6 mt-2 space-y-4">
                   <Button
                     variant="outline"
-                    className="justify-center w-full h-12 gap-3 bg-white text-brand-black rounded-2 border-neutral-200"
-                    disabled
+                    className="justify-center w-full h-12 gap-3 bg-white text-brand-black rounded-2 border-neutral-2"
+                    onClick={() => {
+                      toGoogleLogin(GoogleLoginType.Login);
+                    }}
+                    disabled={googleLoading}
                   >
                     <span className="inline-flex items-center justify-center w-6 h-6">
                       <GoogleIcon />

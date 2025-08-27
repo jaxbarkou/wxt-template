@@ -34,6 +34,7 @@ export const useRootStore = create<RootState>()(
             userDetail: state.userDetail,
             creditsInfo: state.creditsInfo,
             settings: state.settings,
+            googleProfile: state.googleProfile,
           }),
         }
       )

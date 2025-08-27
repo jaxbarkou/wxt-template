@@ -20,6 +20,13 @@ import popularBg from "@/assets/images/popular-bg.png";
 import popularImg from "@/assets/images/popular.png";
 import { BaseDialog } from "@/components/custom/Modal/BaseDialog";
 
+function moveByIdToFront(arr: AssetsNetworkItem[], symbol: string) {
+  const idx = arr.findIndex((it) => it.symbol === symbol);
+  return idx <= 0
+    ? arr.slice()
+    : [arr[idx], ...arr.slice(0, idx), ...arr.slice(idx + 1)];
+}
+
 const TopUp = () => {
   const navigate = useNavigate();
   const [selectedCurrency, setSelectedCurrency] = useState("USDT");
@@ -32,8 +39,9 @@ const TopUp = () => {
     try {
       const response = await getAssetsNetworkList();
       if (response.code === 1 && response.result) {
-        setCurrencyList(response.result);
-        setSelectedCurrency(response.result[0].symbol); // Set default selected currency
+        let arr = moveByIdToFront(response.result, "USDT");
+        setCurrencyList(arr);
+        setSelectedCurrency(arr[0].symbol); // Set default selected currency
       }
     } catch (error) {
       console.error("Failed", error);

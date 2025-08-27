@@ -16,9 +16,11 @@ import ChangePasswordSection from "./ChangePassword"; // 添加导入
 import DisplayHoverCard from "./DisplayHoverCard";
 import { useNavigate } from "react-router-dom";
 import { useCustomToast } from "@/hooks/useCustomToast";
+import { useGoogleLogin } from "@/hooks/useGoogleLogin";
+import { GoogleLoginType, LoginType } from "@/modal";
 
 const Account: React.FC = () => {
-  const { userDetail } = useRootStore();
+  const { userDetail, loginType, googleProfile } = useRootStore();
   const { fetchUserDetail } = useUserDetail();
   const { logout } = useLogout();
   const navigate = useNavigate();
@@ -29,7 +31,7 @@ const Account: React.FC = () => {
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [showGoogle2FaBindModal, setShowGoogle2FaBindModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false); // 添加密码弹窗状态
-
+  const { toGoogleLogin } = useGoogleLogin();
   const accountConnections = [
     {
       icon: "https://c.animaapp.com/tsXhjynw/img/vector-6.svg",
@@ -109,14 +111,16 @@ const Account: React.FC = () => {
   // 处理各种操作
   const handleAction = (item: any) => {
     // 检查是否需要谷歌验证器绑定
-    const needsGoogleAuth = (item.label === "E-Mail" || item.label === "Password") && 
-                           !userDetail?.authenticatorStatus;
-    
+    const needsGoogleAuth =
+      (item.label === "E-Mail" || item.label === "Password") &&
+      !userDetail?.authenticatorStatus;
+
     if (needsGoogleAuth) {
       notify({
-        message: "Please bind Google Authenticator first before proceeding with this operation.",
+        message:
+          "Please bind Google Authenticator first before proceeding with this operation.",
         type: "warning",
-        duration: 4000
+        duration: 4000,
       });
       return;
     }
@@ -129,6 +133,9 @@ const Account: React.FC = () => {
     }
     if (item.label === "Password") {
       setShowPasswordModal(true);
+    }
+    if (item.label === "Google") {
+      toGoogleLogin(GoogleLoginType.Bind);
     }
     // 其他连接项的处理可以在这里添加
   };
@@ -153,30 +160,40 @@ const Account: React.FC = () => {
         <CardContent className="px-0 py-4">
           <div className="flex items-center gap-3">
             <Avatar className="w-10 h-10">
-              <AvatarImage src="https://c.animaapp.com/tsXhjynw/img/image-9@2x.png" />
+              <AvatarImage
+                src={
+                  loginType === LoginType.Google
+                    ? googleProfile?.picture
+                    : "https://c.animaapp.com/tsXhjynw/img/image-10@2x.png"
+                }
+              />
               <AvatarFallback>K</AvatarFallback>
             </Avatar>
             <div className="flex-1">
               {!editNickNameModalOpen ? (
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-normal text-variable-collection">
-                    {userDetail?.nickName
+                    {loginType === LoginType.Google
+                      ? googleProfile?.name
+                      : userDetail?.nickName
                       ? userDetail?.nickName
                       : `Nickname`}
                   </span>
-                  <img
-                    className="w-2.5 h-2.5"
-                    alt="Edit"
-                    src="https://c.animaapp.com/tsXhjynw/img/vector-7.svg"
-                    onClick={() => {
-                      setEditNickNameModalOpen(true);
-                    }}
-                  />
+                  {loginType !== LoginType.Google && (
+                    <img
+                      className="w-2.5 h-2.5"
+                      alt="Edit"
+                      src="https://c.animaapp.com/tsXhjynw/img/vector-7.svg"
+                      onClick={() => {
+                        setEditNickNameModalOpen(true);
+                      }}
+                    />
+                  )}
                 </div>
               ) : (
                 <div className="flex items-center w-[140px] h-[24px] border border-[#F67C00] rounded-[4px] ">
                   <input
-                    className="w-full h-full text-sm focus:outline-none pl-2"
+                    className="w-full h-full pl-2 text-sm focus:outline-none"
                     placeholder="Nickname"
                     value={nickName}
                     onChange={(e) => setNickName(e.target.value)}
@@ -200,7 +217,9 @@ const Account: React.FC = () => {
               )}
 
               <div className="text-xs font-normal text-variable-collection">
-                {userDetail?.email || userDetail?.gmail || "-"}
+                {loginType === LoginType.Google
+                  ? userDetail?.gmail
+                  : userDetail?.email || "-"}
               </div>
             </div>
           </div>
@@ -242,7 +261,7 @@ const Account: React.FC = () => {
                   )}
                   {connection.showPlus && (
                     <div
-                      className="cursor-pointer hover:opacity-70 transition-opacity"
+                      className="transition-opacity cursor-pointer hover:opacity-70"
                       onClick={() => handleAction(connection)}
                     >
                       <PlusIcon className="w-4 h-4 text-variable-collection" />
@@ -250,7 +269,7 @@ const Account: React.FC = () => {
                   )}
                   {connection.showEidt && (
                     <div
-                      className="cursor-pointer hover:opacity-70 transition-opacity"
+                      className="transition-opacity cursor-pointer hover:opacity-70"
                       onClick={() => handleAction(connection)}
                     >
                       <EidtIcon className="w-4 h-4 text-variable-collection" />
@@ -296,7 +315,7 @@ const Account: React.FC = () => {
                   )}
                   {setting.showPlus && (
                     <div
-                      className="cursor-pointer hover:opacity-70 transition-opacity"
+                      className="transition-opacity cursor-pointer hover:opacity-70"
                       onClick={() => handleAction(setting)}
                     >
                       <PlusIcon className="w-4 h-4 text-variable-collection" />
@@ -304,7 +323,7 @@ const Account: React.FC = () => {
                   )}
                   {setting.showEidt && (
                     <div
-                      className="cursor-pointer hover:opacity-70 transition-opacity"
+                      className="transition-opacity cursor-pointer hover:opacity-70"
                       onClick={() => handleAction(setting)}
                     >
                       <EidtIcon className="w-4 h-4 text-variable-collection" />

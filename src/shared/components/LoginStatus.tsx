@@ -11,15 +11,16 @@ import "@/shared/styles/Layout.css";
 import { useRootStore } from "@/store";
 import { useCreditsInfo } from "@/hooks/useCreditsInfo";
 import { useNavigate } from "react-router-dom";
-
+import { LoginType } from "@/modal";
 
 const LoginStatus: React.FC = () => {
-  const { setLoginModalOpen,token,userDetail } = useRootStore();
+  const { setLoginModalOpen, token, userDetail, loginType, googleProfile } =
+    useRootStore();
   const { creditsInfo } = useCreditsInfo();
   const navigate = useNavigate();
   const goTopUp = () => {
     navigate("/top-up");
-  }; 
+  };
   if (!token) {
     return (
       <div className="sign-info">
@@ -64,13 +65,27 @@ const LoginStatus: React.FC = () => {
       <div className="flex items-center justify-between mb-3 user-info">
         <div className="flex items-center user-info-left">
           <Avatar className="w-10 h-10">
-            <AvatarImage src="https://c.animaapp.com/tsXhjynw/img/image-9@2x.png" />
+            <AvatarImage
+              src={
+                loginType === LoginType.Google
+                  ? googleProfile?.picture
+                  : "https://c.animaapp.com/tsXhjynw/img/image-10@2x.png"
+              }
+            />
           </Avatar>
           <div className="user-info-text text-[#2C2C2C] ml-1">
             <p className="text-[14px] font-bold">
-               {userDetail?.nickName || 'Nickname'}
+              {loginType === LoginType.Google
+                ? googleProfile?.name
+                : userDetail?.nickName
+                ? userDetail?.nickName
+                : `Nickname`}
             </p>
-            <p className="text-[12px]">{userDetail?.email||'-'}</p>
+            <p className="text-[12px]">
+              {loginType === LoginType.Google
+                ? userDetail?.gmail
+                : userDetail?.email || "-"}
+            </p>
           </div>
         </div>
         <div className="user-info-right">
@@ -95,7 +110,7 @@ const LoginStatus: React.FC = () => {
         <div className="credits-row border-b border-[#E9E9E9]">
           <div className="flex items-center credits-row-left">
             <span className="mr-1">
-              {creditsInfo?.balance} +{creditsInfo?.daily_credits} /day 
+              {creditsInfo?.balance} +{creditsInfo?.daily_credits} /day
             </span>
           </div>
           <div className="credits-row-right">

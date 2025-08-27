@@ -160,3 +160,10 @@ export interface DepositAddressType {
   chain: string;
   address: string;
 }
+
+export type GoogleProfile = {
+  sub: string;
+  name?: string;
+  email?: string;
+  picture?: string;
+};

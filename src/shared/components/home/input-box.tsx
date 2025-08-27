@@ -56,7 +56,7 @@ export function InputBox({
   const backgroundInvestigation = useSettingsStore(
     (state) => state.general.enableBackgroundInvestigation,
   );
-  const { token, setLoginModalOpen } = useRootStore();
+  const { token } = useRootStore();
   const { config, loading } = useConfig(token || '');
   const reportStyle = useSettingsStore((state) => state.general.reportStyle);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -74,10 +74,6 @@ export function InputBox({
         onCancel?.();
       } else {
         if (message.trim() === "") {
-          return;
-        }
-        if (!token) {
-          setLoginModalOpen(true);
           return;
         }
         if (onSend) {

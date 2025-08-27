@@ -10,16 +10,17 @@ import {
 } from "@/components/base/dialog";
 import { useStore } from "@/core/store";
 import { AddChat } from "@/components/alia/icons/add-chat"
-import { History } from "@/components/alia/icons/history";
 import { cn } from "@/lib/utils";
 
 import { MessagesBlock } from "../components/home/messages-block";
 import { ResearchBlock } from "../components/home/research-block";
 import { closeResearch } from "@/core/store";
 import { ChatHistoryDialog } from "@/components/alia/chat-history-dialog";
+import { useRootStore } from "@/store";
 
 export default function Home() {
   const openResearchId = useStore((state) => state.openResearchId);
+  const { token } = useRootStore();
   const doubleColumnMode = useMemo(
     () => openResearchId !== null,
     [openResearchId],
@@ -35,8 +36,12 @@ export default function Home() {
       )}
     >
       <div className="flex fill-destructive w-full gap-4 cursor-pointer">
-        <div onClick={() => handleAddNewChat()}><AddChat/></div> 
-        <ChatHistoryDialog/>
+        {token &&
+          <>
+            <div onClick={() => handleAddNewChat()}><AddChat/></div> 
+            <ChatHistoryDialog/>
+          </>
+        }
       </div>
       <MessagesBlock className={cn("calc((100vw-538px) transition-all duration-300 ease-out")} />
       <Dialog

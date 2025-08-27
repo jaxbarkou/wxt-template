@@ -26,6 +26,7 @@ import { ConversationStarter } from "./conversation-starter";
 import { InputBox } from "./input-box";
 import { MessageListView } from "./message-list-view";
 import { Welcome } from "./welcome";
+import { useRootStore } from "@/store";
 
 export function MessagesBlock({ className }: { className?: string }) {
   const t = useTranslations("chat.messages");
@@ -37,6 +38,7 @@ export function MessagesBlock({ className }: { className?: string }) {
   const [replayStarted, setReplayStarted] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
   const [feedback, setFeedback] = useState<{ option: Option } | null>(null);
+  const { token, setLoginModalOpen } = useRootStore();
   const handleSend = useCallback(
     async (
       message: string,
@@ -48,6 +50,10 @@ export function MessagesBlock({ className }: { className?: string }) {
       const abortController = new AbortController();
       abortControllerRef.current = abortController;
       try {
+        if (!token) {
+          setLoginModalOpen(true);
+          return;
+        }
         await sendMessage(
           message,
           {

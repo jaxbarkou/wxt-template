@@ -1,8 +1,11 @@
 import { GoogleProfile } from "@/modal/user";
 import { useEffect, useState } from "react";
 import { useRootStore } from "@/store";
-import { LoginType } from "@/modal";
+import { GoogleLoginType, LoginType } from "@/modal";
 import { authInPopup } from "./authPopup";
+import { googleLogin } from "@/lib/api/login";
+import { bindGoogle } from "@/lib/api/user";
+import { useUserDetail } from "@/hooks/useUserDetail";
 
 // 解析 JWT Token 的函数（不验证签名，仅解码）
 function parseJwt(token: string) {
@@ -31,12 +34,64 @@ export const useGoogleLogin = () => {
   const [googleLoading, setGoogleLoading] = useState(false);
   const updateToken = useRootStore((state) => state.updateToken);
   const updateLoginType = useRootStore((state) => state.updateLoginType);
+  const setLoginModalOpen = useRootStore((state) => state.setLoginModalOpen);
+
   const token = useRootStore((state) => state.token);
+
+  const { fetchUserDetail } = useUserDetail();
+
   const updateGoogleProfile = useRootStore(
     (state) => state.updateGoogleProfile
   );
 
-  const googleLogin = async () => {
+  const toBizLogin = async (idToken: string) => {
+    try {
+      let res = await googleLogin(idToken);
+      if (res?.result.token) {
+        updateToken(res?.result.token);
+        updateLoginType(LoginType.Google);
+        const tokenPayload = parseJwt(idToken);
+        if (tokenPayload) {
+          console.log("tokenPayloadtokenPayload", tokenPayload);
+          const userInfo: GoogleProfile = {
+            sub: tokenPayload.sub,
+            name: tokenPayload.name,
+            picture: tokenPayload.picture,
+            email: tokenPayload.email,
+          };
+          updateGoogleProfile(userInfo);
+          setLoginModalOpen(false);
+        }
+      }
+    } catch (error) {
+      console.error("Error during Google login:", error);
+    }
+  };
+
+  const toBizBind = async (idToken: string) => {
+    try {
+      if (idToken) {
+        let res = await bindGoogle(idToken);
+        if (res.result) {
+          const tokenPayload = parseJwt(idToken);
+          if (tokenPayload) {
+            const userInfo: GoogleProfile = {
+              sub: tokenPayload.sub,
+              name: tokenPayload.name,
+              picture: tokenPayload.picture,
+              email: tokenPayload.email,
+            };
+            updateGoogleProfile(userInfo);
+            fetchUserDetail();
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error during Google login:", error);
+    }
+  };
+
+  const toGoogleLogin = async (type: GoogleLoginType) => {
     setGoogleLoading(true);
     try {
       // 获取 manifest 信息进行调试
@@ -64,31 +119,6 @@ export const useGoogleLogin = () => {
         `&nonce=${encodeURIComponent(nonce)}` + // 安全验证
         `&prompt=consent`; // 强制显示同意页面
 
-      // 使用 launchWebAuthFlow 获取 ID Token
-      // const redirectUrl = await new Promise<string>((resolve, reject) => {
-      //   chrome.identity.launchWebAuthFlow(
-      //     { url: authUrl, interactive: true },
-      //     (redirectedTo) => {
-      //       if (chrome.runtime.lastError) {
-      //         console.error("Chrome Identity Error:", chrome.runtime.lastError);
-      //         reject(new Error(chrome.runtime.lastError.message));
-      //         return;
-      //       }
-      //       if (!redirectedTo) {
-      //         reject(new Error("No redirect URL received"));
-      //         return;
-      //       }
-      //       resolve(redirectedTo);
-      //     }
-      //   );
-      // });
-
-      // 从重定向 URL 中解析 ID Token
-      // const url = new URL(redirectUrl);
-      // const fragment = url.hash.substring(1); // 移除开头的 #
-      // const params = new URLSearchParams(fragment);
-      // const idToken = params.get("id_token");
-
       const finalUrl = await authInPopup(authUrl, redirectUri, {
         width: 420,
         height: 640,
@@ -102,33 +132,18 @@ export const useGoogleLogin = () => {
       }
 
       const idToken = data.id_token;
-      console.log("Google ID Token:", idToken);
+
+      if (idToken) {
+        if (type === GoogleLoginType.Login) {
+          // 处理登录逻辑
+          toBizLogin(idToken);
+        } else if (type === GoogleLoginType.Bind) {
+          // 处理绑定逻辑
+          toBizBind(idToken);
+        }
+      }
 
       // 解析 ID Token 获取用户信息
-      const tokenPayload = parseJwt(idToken);
-      console.log("Token Payload:", tokenPayload);
-
-      if (tokenPayload) {
-        // 验证 nonce（可选，增加安全性）
-        if (tokenPayload.nonce !== nonce) {
-          console.warn("Nonce mismatch, but continuing...");
-        }
-
-        // 从 ID Token 中提取用户信息
-        const userInfo: GoogleProfile = {
-          sub: tokenPayload.sub,
-          name: tokenPayload.name,
-          picture: tokenPayload.picture,
-          email: tokenPayload.email,
-        };
-
-        console.log("User Info from ID Token:", userInfo);
-
-        // 更新状态
-        // updateToken(idToken); // 存储 ID Token
-        // updateLoginType(LoginType.Google);
-        // updateGoogleProfile(userInfo);
-      }
     } catch (e: any) {
       console.error(`Google 登录失败：${e?.message ?? e}`);
       // 显示更详细的错误信息
@@ -145,12 +160,14 @@ export const useGoogleLogin = () => {
   const googleLogout = async () => {
     if (!token) return;
     await new Promise<void>((resolve) => {
-      chrome.identity.removeCachedAuthToken({ token }, () => resolve());
+      chrome.identity.removeCachedAuthToken({ token }, () =>
+        resolve(updateGoogleProfile(null))
+      );
     });
   };
 
   return {
-    googleLogin,
+    toGoogleLogin,
     googleLogout,
     googleLoading,
   };

@@ -3,6 +3,7 @@ import { useUserDetail } from "@/hooks/useUserDetail";
 import { useCreditsInfo } from "@/hooks/useCreditsInfo";
 import { LoginType } from "@/modal";
 import { useGoogleLogin } from "@/hooks/useGoogleLogin";
+import { useDisconnect } from "wagmi";
 
 export const useLogout = () => {
   const { clearUserDetail, updateToken, setLoginModalOpen, loginType } =
@@ -10,7 +11,7 @@ export const useLogout = () => {
   const { clearUser } = useUserDetail();
   const { clearCredits } = useCreditsInfo();
   const { googleLogout } = useGoogleLogin();
-
+  const { disconnect } = useDisconnect();
   const logout = () => {
     // 清空用户信息
     clearUserDetail();
@@ -28,6 +29,10 @@ export const useLogout = () => {
     if (loginType === LoginType.Google) {
       // Google登录的退出逻辑
       googleLogout();
+    }
+
+    if (loginType === LoginType.Wallet) {
+      disconnect();
     }
 
     // 清除本地存储

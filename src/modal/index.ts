@@ -12,6 +12,11 @@ export enum LoginType {
   Google,
 }
 
+export enum GoogleLoginType {
+  Login,
+  Bind,
+}
+
 export interface ProjectsParams {
   type: ProjectsQueryType;
   value: string;

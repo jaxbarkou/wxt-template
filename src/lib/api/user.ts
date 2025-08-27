@@ -110,6 +110,14 @@ export const getOperateLog = () => {
   });
 };
 
+export const bindGoogle = (idToken: string) => {
+  return request<boolean>(base3Api, {
+    url: `/user/google/bind`,
+    method: "POST",
+    data: { idToken },
+  });
+};
+
 // top-up
 export const getCreditsInfo = () => {
   return request<{ account: CreditsInfo }>(base4Api, {

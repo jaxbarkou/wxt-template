@@ -50,3 +50,11 @@ export const walletLogin = (
     data: { signature, message, code, chain, type, google2faCode },
   });
 };
+
+export const googleLogin = (idToken: string) => {
+  return request<{ token: string }>(base2Api, {
+    url: `/lg/google/login`,
+    method: "POST",
+    data: { idToken },
+  });
+};

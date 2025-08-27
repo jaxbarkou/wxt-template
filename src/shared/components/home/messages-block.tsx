@@ -28,7 +28,7 @@ import { MessageListView } from "./message-list-view";
 import { Welcome } from "./welcome";
 import { useRootStore } from "@/store";
 
-export function MessagesBlock({ className }: { className?: string }) {
+export function MessagesBlock({ className, askMessage }: { className?: string, askMessage?: string | null }) {
   const t = useTranslations("chat.messages");
   const messageIds = useMessageIds();
   const messageCount = messageIds.length;
@@ -67,7 +67,7 @@ export function MessagesBlock({ className }: { className?: string }) {
         );
       } catch {}
     },
-    [feedback],
+    [feedback, token],
   );
   const handleCancel = useCallback(() => {
     abortControllerRef.current?.abort();
@@ -91,6 +91,15 @@ export function MessagesBlock({ className }: { className?: string }) {
     setFastForwarding(!fastForwarding);
     fastForwardReplay(!fastForwarding);
   }, [fastForwarding]);
+
+  useEffect(() => {
+    if (askMessage && askMessage.indexOf("|")) {
+      const ms = askMessage.split("|");
+      const prompt = `"${ms[0]}",${ms[1]}`;
+      handleSend(prompt);
+    }
+
+  }, [askMessage])
 
   return (
     <div className={cn("flex h-full w-full flex-col", className)}>

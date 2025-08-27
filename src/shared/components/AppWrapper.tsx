@@ -50,6 +50,9 @@ const NavigationHandler: React.FC = () => {
             navigate("/");
         }
       }
+      if (message.type === "NEW_ANALYSIS_REQUEST") {
+        navigate(`/?message=${message.text}`)
+      }
     };
 
     // 监听来自background的消息

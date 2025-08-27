@@ -11,6 +11,7 @@ import {
 import { useStore } from "@/core/store";
 import { AddChat } from "@/components/alia/icons/add-chat"
 import { cn } from "@/lib/utils";
+import { useSearchParams } from "react-router-dom";
 
 import { MessagesBlock } from "../components/home/messages-block";
 import { ResearchBlock } from "../components/home/research-block";
@@ -19,12 +20,16 @@ import { ChatHistoryDialog } from "@/components/alia/chat-history-dialog";
 import { useRootStore } from "@/store";
 
 export default function Home() {
+   const [searchParams] = useSearchParams();
   const openResearchId = useStore((state) => state.openResearchId);
   const { token } = useRootStore();
   const doubleColumnMode = useMemo(
     () => openResearchId !== null,
     [openResearchId],
   );
+
+  const message = searchParams.get("message");
+  console.log("message", message)
   
   const handleAddNewChat = () => {
     useStore.getState().clearMessages();
@@ -43,7 +48,10 @@ export default function Home() {
           </>
         }
       </div>
-      <MessagesBlock className={cn("calc((100vw-538px) transition-all duration-300 ease-out")} />
+      <MessagesBlock
+        className={cn("calc((100vw-538px) transition-all duration-300 ease-out")}
+        askMessage={message}
+      />
       <Dialog
         open={doubleColumnMode} 
         onOpenChange={() => {

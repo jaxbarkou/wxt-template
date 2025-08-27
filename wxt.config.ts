@@ -54,5 +54,12 @@ export default defineConfig({
         "@": path.resolve(__dirname, "./src"), // or "./src" if using src directory
       },
     },
+    build: {
+      chunkSizeWarningLimit: 1000, // 增加警告限制
+    },
+    define: {
+      // 确保环境变量在构建时可用
+      'import.meta.env.VITE_API_BASE_URL': JSON.stringify(process.env.VITE_API_BASE_URL || "https://xisipa-dev.sparklayer.xyz"),
+    },
   }),
 });

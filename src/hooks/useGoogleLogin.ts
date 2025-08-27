@@ -96,7 +96,7 @@ export const useGoogleLogin = () => {
     try {
       // 获取 manifest 信息进行调试
       const manifest = chrome.runtime.getManifest();
-      if (!manifest.oauth2?.client_id) {
+      if (!manifest?.oauth2?.client_id) {
         throw new Error("OAuth2 client_id not configured in manifest");
       }
 
@@ -104,9 +104,9 @@ export const useGoogleLogin = () => {
       const nonce = Math.random().toString(36).slice(2);
 
       // 构建 OAuth2 授权 URL，请求 ID Token
-      const clientId = encodeURIComponent(manifest.oauth2.client_id);
+      const clientId = encodeURIComponent(manifest?.oauth2?.client_id);
       const scopes = encodeURIComponent(
-        (manifest.oauth2.scopes || ["openid", "email", "profile"]).join(" ")
+        (manifest?.oauth2?.scopes || ["openid", "email", "profile"]).join(" ")
       );
       const redirectUri = chrome.identity.getRedirectURL("oauth2");
       const encodedRedirectUri = encodeURIComponent(redirectUri);

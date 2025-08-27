@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, use } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { emailRegister, getEmailCode } from "@/lib/api/login";
@@ -28,19 +28,66 @@ export default function Register({
   const { updateToken, setLoginModalOpen, updateLoginType } = useRootStore();
   const [code, setCode] = useState<string>("");
   const { notify } = useCustomToast();
+  const [errorEmail, setErrorEmail] = useState("");
+  const [errorPwd, setErrorPwd] = useState("");
+  const [errorVerifyPwd, setErrorVerifyPwd] = useState("");
 
-  const handleSendCode = async () => {
-    if (!email || sending || countdown > 0) return;
+  const handleSendCode = useCallback(async () => {
+    if (errorEmail || sending || countdown > 0) return;
     setSending(true);
     try {
-      await getEmailCode(email);
-      setCountdown(60);
+      let res = await getEmailCode(email);
+      if (res.code === 1) {
+        setCountdown(60);
+      } else {
+        notify({ type: "error", message: res.message || "Login failed" });
+      }
     } catch (e) {
       console.error("Failed to send code:", e);
       // 可根据需要提示错误
     } finally {
       setSending(false);
     }
+  }, [errorEmail, sending, countdown]);
+
+  const toCheckEmail = (val: string) => {
+    setErrorEmail("");
+    if (!val) {
+      setErrorEmail("Email is required");
+      return false;
+    }
+    if (!/\S+@\S+\.\S+/.test(val)) {
+      setErrorEmail("Invalid email format");
+      return false;
+    }
+    return true;
+  };
+
+  const toCheckPwd = (val: string) => {
+    setErrorPwd("");
+    const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s])\S{8,}$/;
+    if (!val) {
+      setErrorPwd("Password is required");
+      return false;
+    }
+    if (!re.test(val)) {
+      setErrorPwd("8+ chars: upper, lower, number & symbol.");
+      return false;
+    }
+    return true;
+  };
+
+  const toCheckVerifyPwd = (val: string) => {
+    setErrorVerifyPwd("");
+    if (!val) {
+      setErrorVerifyPwd("Confirm Password is required");
+      return false;
+    }
+    if (val !== pwd) {
+      setErrorVerifyPwd("Passwords do not match");
+      return false;
+    }
+    return true;
   };
 
   useEffect(() => {
@@ -89,8 +136,10 @@ export default function Register({
   }, [email, pwd, code]);
 
   const isDis = useMemo(() => {
-    return !email || !pwd || !verifyPwd || pwd !== verifyPwd || loading;
-  }, [email, pwd, verifyPwd, sending, countdown, loading]);
+    return errorEmail || errorPwd || errorVerifyPwd || !code || loading
+      ? true
+      : false;
+  }, [errorEmail, errorPwd, errorVerifyPwd, sending, loading, code]);
 
   return (
     <div className="">
@@ -108,9 +157,15 @@ export default function Register({
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            onBlur={(e) => toCheckEmail(e.target.value)}
             placeholder="Email Address"
-            className="h-12 rounded-2"
+            className="h-12 mb-0 rounded-2"
           />
+          {errorEmail && (
+            <span className="text-brand-red text-[10px] px-2">
+              {errorEmail}
+            </span>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -118,11 +173,14 @@ export default function Register({
             <Input
               id="code"
               inputMode="numeric"
+              pattern="\d*"
+              maxLength={6}
               placeholder="code"
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              className="h-12 pr-20 rounded-2"
+              className="h-12 pr-20 mb-0 rounded-2"
             />
+
             {/* 发送/倒计时 */}
             <button
               type="button"
@@ -141,10 +199,13 @@ export default function Register({
             placeholder="Password"
             value={pwd}
             onChange={(e) => setPwd(e.target.value)}
-            className="h-12 rounded-2"
+            onBlur={(e) => toCheckPwd(e.target.value)}
+            className="h-12 mb-0 rounded-2"
           />
+          {errorPwd && (
+            <span className="text-brand-red text-[10px] px-2">{errorPwd}</span>
+          )}
         </div>
-
         <div className="space-y-2">
           <Input
             id="confirm"
@@ -152,8 +213,14 @@ export default function Register({
             placeholder="Confirm Password"
             value={verifyPwd}
             onChange={(e) => setVerifyPwd(e.target.value)}
-            className="h-12 rounded-2"
+            onBlur={(e) => toCheckVerifyPwd(e.target.value)}
+            className="h-12 mb-0 rounded-2"
           />
+          {errorVerifyPwd && (
+            <span className="text-brand-red text-[10px] px-2">
+              {errorVerifyPwd}
+            </span>
+          )}
         </div>
 
         <Button

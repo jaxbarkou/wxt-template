@@ -33,14 +33,18 @@ const Search: React.FC = () => {
     null
   );
   const [isLoading, setIsLoading] = useState(false);
+  const [hasUrlQuery, setHasUrlQuery] = useState(false); // 标记是否有URL参数
 
   // 从URL参数中读取查询文本
   useEffect(() => {
     const query = searchParams.get('query');
     if (query) {
       setSearchValue(query);
+      setHasUrlQuery(true); // 标记有URL参数
       // 直接调用getProjectData接口，传入text参数
       handleDirectSearch(query);
+    } else {
+      setHasUrlQuery(false); // 标记没有URL参数
     }
   }, [searchParams]);
 
@@ -108,6 +112,7 @@ const Search: React.FC = () => {
     setProjectData(null);
     setSearchResult(null);
     setIsLoading(false);
+    setHasUrlQuery(false);
   };
 
   const handleSearch = async (query: string): Promise<any[]> => {
@@ -148,7 +153,21 @@ const Search: React.FC = () => {
         <div className="px-4">
           <SearchInput
             value={searchValue}
-            onChange={setSearchValue}
+            onChange={(value) => {
+              setSearchValue(value);
+              // 如果用户开始输入，清空URL参数并启用搜索功能
+              if (hasUrlQuery) {
+                setHasUrlQuery(false);
+                // 清空URL参数
+                const url = new URL(window.location.href);
+                url.searchParams.delete('query');
+                window.history.replaceState({}, '', url.toString());
+                // 清空当前数据
+                setSelectedProject(null);
+                setProjectData(null);
+                setSearchResult(null);
+              }
+            }}
             onSelect={(val, project) => {
               setSearchValue(val);
               if (project) {
@@ -158,7 +177,7 @@ const Search: React.FC = () => {
             onClear={handleClear}
             placeholder="Search tokens, projects or alpha..."
             className=""
-            searchProjects={handleSearch}
+            searchProjects={hasUrlQuery ? undefined : handleSearch}
           />
         </div>
 

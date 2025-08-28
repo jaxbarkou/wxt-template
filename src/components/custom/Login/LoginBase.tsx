@@ -14,6 +14,7 @@ import EmailLogin from "./EmailLogin";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { useGoogleLogin } from "@/hooks/useGoogleLogin";
 import { GoogleLoginType } from "@/modal";
+import logoImg from "@/assets/images/logo.png";
 
 export enum LoginState {
   Base = "Base",
@@ -71,7 +72,7 @@ const LoginBase: React.FC = () => {
                 {/* 头像 + 标题 */}
                 <div className="px-6 pt-1 pb-2 text-center">
                   <Avatar className="w-24 h-24 mx-auto rounded-full bg-neutral-200 dark:bg-neutral-800">
-                    <AvatarImage src="https://c.animaapp.com/tsXhjynw/img/image-9@2x.png" />
+                    <AvatarImage src={logoImg} />
                   </Avatar>
                   <h2 className="mt-6 text-3xl font-semibold tracking-tight">
                     Log In

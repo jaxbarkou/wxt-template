@@ -7,6 +7,7 @@ import { changeEmail } from "@/lib/api/user";
 import { useRootStore } from "@/store";
 import { useUserDetail } from "@/hooks/useUserDetail";
 import { Loader2 } from "lucide-react";
+import { CloseIcon } from "@/components/custom/svg";
 
 // 邮箱校验正则
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -22,10 +23,12 @@ interface ChangeEmailSectionProps {
   onClose?: () => void;
 }
 
-export default function ChangeEmailSection({ onClose }: ChangeEmailSectionProps): React.ReactNode {
+export default function ChangeEmailSection({
+  onClose,
+}: ChangeEmailSectionProps): React.ReactNode {
   const { userDetail } = useRootStore();
   const { fetchUserDetail } = useUserDetail();
-  
+
   // 状态管理
   const [formValues, setFormValues] = useState({
     email: userDetail?.email || "",
@@ -76,32 +79,32 @@ export default function ChangeEmailSection({ onClose }: ChangeEmailSectionProps)
 
   // 处理输入框值变化
   const handleInputChange = (fieldId: string, value: string) => {
-    setFormValues(prev => ({
+    setFormValues((prev) => ({
       ...prev,
-      [fieldId]: value
+      [fieldId]: value,
     }));
-    
+
     // 清除对应字段的错误
     if (errors[fieldId as keyof FormErrors]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [fieldId]: undefined
+        [fieldId]: undefined,
       }));
     }
   };
 
   // 处理清空按钮点击
   const handleClearInput = (fieldId: string) => {
-    setFormValues(prev => ({
+    setFormValues((prev) => ({
       ...prev,
-      [fieldId]: ""
+      [fieldId]: "",
     }));
-    
+
     // 清除对应字段的错误
     if (errors[fieldId as keyof FormErrors]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [fieldId]: undefined
+        [fieldId]: undefined,
       }));
     }
   };
@@ -109,17 +112,17 @@ export default function ChangeEmailSection({ onClose }: ChangeEmailSectionProps)
   // 表单校验
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
-    
+
     const emailError = validateEmail(formValues.email);
     if (emailError) {
       newErrors.email = emailError;
     }
-    
+
     const gaError = validateGACode(formValues.ga);
     if (gaError) {
       newErrors.ga = gaError;
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -135,7 +138,7 @@ export default function ChangeEmailSection({ onClose }: ChangeEmailSectionProps)
 
     try {
       const response = await changeEmail(formValues.email, formValues.ga);
-      
+
       if (response.code === 1) {
         // 成功
         await fetchUserDetail(); // 刷新用户信息
@@ -145,13 +148,13 @@ export default function ChangeEmailSection({ onClose }: ChangeEmailSectionProps)
       } else {
         // 接口返回错误
         setErrors({
-          general: response.message || "Failed to change email"
+          general: response.message || "Failed to change email",
         });
       }
     } catch (error: any) {
       console.error("Change email error:", error);
       setErrors({
-        general: error.message || "Network error, please try again"
+        general: error.message || "Network error, please try again",
       });
     } finally {
       setIsLoading(false);
@@ -183,14 +186,10 @@ export default function ChangeEmailSection({ onClose }: ChangeEmailSectionProps)
               className="h-auto p-0 w-3.5 h-3.5 hover:bg-transparent"
               onClick={handleCancel}
             >
-              <img
-                className="w-3.5 h-3.5"
-                alt="Close"
-                src="https://c.animaapp.com/mei6qdpiZQZsoo/img/vector-1.svg"
-              />
+              <CloseIcon className="w-3.5 h-3.5" />
             </Button>
           </header>
-          
+
           <div className="p-4">
             {/* 通用错误提示 */}
             {errors.general && (
@@ -214,9 +213,13 @@ export default function ChangeEmailSection({ onClose }: ChangeEmailSectionProps)
                       id={field.id}
                       placeholder={field.placeholder}
                       value={field.value}
-                      onChange={(e) => handleInputChange(field.id, e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange(field.id, e.target.value)
+                      }
                       className={`h-10 bg-white rounded-lg border border-solid pr-10 font-normal text-[#000] text-sm tracking-[0] leading-[normal] placeholder:text-[#979797] ${
-                        field.error ? 'border-red-300 focus:border-red-500' : 'border-[#e9e9e9] focus:border-[#F67C00]'
+                        field.error
+                          ? "border-red-300 focus:border-red-500"
+                          : "border-[#e9e9e9] focus:border-[#F67C00]"
                       }`}
                       disabled={isLoading}
                     />
@@ -228,11 +231,7 @@ export default function ChangeEmailSection({ onClose }: ChangeEmailSectionProps)
                         className="absolute w-4 h-4 h-auto p-0 transition-opacity -translate-y-1/2 right-3 top-1/2 hover:bg-transparent"
                         onClick={() => handleClearInput(field.id)}
                       >
-                        <img
-                          className="w-4 h-4"
-                          alt="Clear"
-                          src="https://c.animaapp.com/mei6qdpiZQZsoo/img/shanchu-2.svg"
-                        />
+                        <CloseIcon className="w-4 h-4" />
                       </Button>
                     )}
                   </div>
@@ -254,7 +253,7 @@ export default function ChangeEmailSection({ onClose }: ChangeEmailSectionProps)
               >
                 Cancel
               </Button>
-              <Button 
+              <Button
                 className="flex-1 h-auto bg-[#f67c00] hover:bg-[#f67c00]/90 rounded-[40px] font-medium text-white text-sm text-center tracking-[0] leading-[normal] py-2.5 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={handleSave}
                 disabled={isLoading}
@@ -265,7 +264,7 @@ export default function ChangeEmailSection({ onClose }: ChangeEmailSectionProps)
                     Saving...
                   </>
                 ) : (
-                  'Save'
+                  "Save"
                 )}
               </Button>
             </div>

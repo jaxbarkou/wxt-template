@@ -4,13 +4,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { changePassword } from "@/lib/api/user";
-import { Loader2 } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 
 interface ChangePasswordSectionProps {
   onClose?: () => void;
 }
 
-export default function ChangePasswordSection({ onClose }: ChangePasswordSectionProps): React.ReactNode {
+export default function ChangePasswordSection({
+  onClose,
+}: ChangePasswordSectionProps): React.ReactNode {
   const [formValues, setFormValues] = useState({
     oldPassword: "",
     newPassword: "",
@@ -23,16 +25,16 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
 
   // 处理输入框值变化
   const handleInputChange = (fieldId: string, value: string) => {
-    setFormValues(prev => ({
+    setFormValues((prev) => ({
       ...prev,
-      [fieldId]: value
+      [fieldId]: value,
     }));
-    
+
     // 清除对应字段的错误
     if (errors[fieldId]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [fieldId]: ""
+        [fieldId]: "",
       }));
     }
   };
@@ -40,33 +42,33 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
   // 表单校验
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
-    
+
     // 旧密码校验
     if (!formValues.oldPassword.trim()) {
       newErrors.oldPassword = "Old password is required";
     }
-    
+
     // 新密码校验
     if (!formValues.newPassword.trim()) {
       newErrors.newPassword = "New password is required";
     } else if (formValues.newPassword.length < 6) {
       newErrors.newPassword = "Password must be at least 6 characters";
     }
-    
+
     // 确认密码校验
     if (!formValues.confirmPassword.trim()) {
       newErrors.confirmPassword = "Please confirm your password";
     } else if (formValues.newPassword !== formValues.confirmPassword) {
       newErrors.confirmPassword = "Passwords do not match";
     }
-    
+
     // GA码校验
     if (!formValues.gaCode.trim()) {
       newErrors.gaCode = "Google Authenticator code is required";
     } else if (!/^\d{6}$/.test(formValues.gaCode)) {
       newErrors.gaCode = "Please enter a 6-digit code";
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -87,7 +89,7 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
         formValues.confirmPassword,
         formValues.gaCode
       );
-      
+
       if (response.code === 1) {
         // 成功
         setIsVisible(false);
@@ -97,13 +99,13 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
       } else {
         // 接口返回错误
         setErrors({
-          general: response.message || "Failed to change password"
+          general: response.message || "Failed to change password",
         });
       }
     } catch (error: any) {
       console.error("Change password error:", error);
       setErrors({
-        general: error.message || "Network error, please try again"
+        general: error.message || "Network error, please try again",
       });
     } finally {
       setIsLoading(false);
@@ -136,14 +138,10 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
               className="h-auto p-0 w-3.5 h-3.5 hover:bg-transparent"
               onClick={handleCancel}
             >
-              <img
-                className="w-3.5 h-3.5"
-                alt="Close"
-                src="https://c.animaapp.com/mei6qdpiZQZsoo/img/vector-1.svg"
-              />
+              <X className="w-3.5 h-3.5" />
             </Button>
           </header>
-          
+
           <div className="p-4">
             {/* 通用错误提示 */}
             {errors.general && (
@@ -154,7 +152,7 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
 
             {/* 表单字段 */}
             <div className="space-y-6 translate-y-[-1rem] animate-fade-in [--animation-delay:200ms]">
-                              {/* 旧密码 */}
+              {/* 旧密码 */}
               <div className="space-y-2">
                 <Label
                   htmlFor="oldPassword"
@@ -167,18 +165,24 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
                   type="password"
                   placeholder="Enter old password"
                   value={formValues.oldPassword}
-                  onChange={(e) => handleInputChange("oldPassword", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("oldPassword", e.target.value)
+                  }
                   className={`h-10 bg-white rounded-lg border border-solid text-sm  font-normal text-[#000] tracking-[0] leading-[normal] placeholder:text-[#979797] ${
-                    errors.oldPassword ? 'border-red-300 focus:border-red-500' : 'border-[#e9e9e9] focus:border-[#F67C00]'
+                    errors.oldPassword
+                      ? "border-red-300 focus:border-red-500"
+                      : "border-[#e9e9e9] focus:border-[#F67C00]"
                   }`}
                   disabled={isLoading}
                 />
                 {errors.oldPassword && (
-                  <p className="mt-1 text-xs text-red-500">{errors.oldPassword}</p>
+                  <p className="mt-1 text-xs text-red-500">
+                    {errors.oldPassword}
+                  </p>
                 )}
               </div>
 
-                              {/* 新密码 */}
+              {/* 新密码 */}
               <div className="space-y-2">
                 <Label
                   htmlFor="newPassword"
@@ -191,18 +195,24 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
                   type="password"
                   placeholder="Enter new password"
                   value={formValues.newPassword}
-                  onChange={(e) => handleInputChange("newPassword", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("newPassword", e.target.value)
+                  }
                   className={`h-10 bg-white rounded-lg border border-solid text-sm  font-normal text-[#000] tracking-[0] leading-[normal] placeholder:text-[#979797] ${
-                    errors.newPassword ? 'border-red-300 focus:border-red-500' : 'border-[#e9e9e9] focus:border-[#F67C00]'
+                    errors.newPassword
+                      ? "border-red-300 focus:border-red-500"
+                      : "border-[#e9e9e9] focus:border-[#F67C00]"
                   }`}
                   disabled={isLoading}
                 />
                 {errors.newPassword && (
-                  <p className="mt-1 text-xs text-red-500">{errors.newPassword}</p>
+                  <p className="mt-1 text-xs text-red-500">
+                    {errors.newPassword}
+                  </p>
                 )}
               </div>
 
-                              {/* 确认密码 */}
+              {/* 确认密码 */}
               <div className="space-y-2">
                 <Label
                   htmlFor="confirmPassword"
@@ -215,18 +225,24 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
                   type="password"
                   placeholder="Confirm new password"
                   value={formValues.confirmPassword}
-                  onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("confirmPassword", e.target.value)
+                  }
                   className={`h-10 bg-white rounded-lg border border-solid text-sm  font-normal text-[#000] tracking-[0] leading-[normal] placeholder:text-[#979797] ${
-                    errors.confirmPassword ? 'border-red-300 focus:border-red-500' : 'border-[#e9e9e9] focus:border-[#F67C00]'
+                    errors.confirmPassword
+                      ? "border-red-300 focus:border-red-500"
+                      : "border-[#e9e9e9] focus:border-[#F67C00]"
                   }`}
                   disabled={isLoading}
                 />
                 {errors.confirmPassword && (
-                  <p className="mt-1 text-xs text-red-500">{errors.confirmPassword}</p>
+                  <p className="mt-1 text-xs text-red-500">
+                    {errors.confirmPassword}
+                  </p>
                 )}
               </div>
 
-                              {/* 谷歌验证码 */}
+              {/* 谷歌验证码 */}
               <div className="space-y-2">
                 <Label
                   htmlFor="gaCode"
@@ -240,7 +256,9 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
                   value={formValues.gaCode}
                   onChange={(e) => handleInputChange("gaCode", e.target.value)}
                   className={`h-10 bg-white rounded-lg border border-solid text-sm  font-normal text-[#000] tracking-[0] leading-[normal] placeholder:text-[#979797] ${
-                    errors.gaCode ? 'border-red-300 focus:border-red-500' : 'border-[#e9e9e9] focus:border-[#F67C00]'
+                    errors.gaCode
+                      ? "border-red-300 focus:border-red-500"
+                      : "border-[#e9e9e9] focus:border-[#F67C00]"
                   }`}
                   disabled={isLoading}
                 />
@@ -260,7 +278,7 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
               >
                 Cancel
               </Button>
-              <Button 
+              <Button
                 className="flex-1 h-auto bg-[#f67c00] hover:bg-[#f67c00]/90 rounded-[40px]  font-medium text-white text-sm text-center tracking-[0] leading-[normal] py-2.5 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={handleSave}
                 disabled={isLoading}
@@ -271,7 +289,7 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
                     Saving...
                   </>
                 ) : (
-                  'Save'
+                  "Save"
                 )}
               </Button>
             </div>
@@ -280,4 +298,4 @@ export default function ChangePasswordSection({ onClose }: ChangePasswordSection
       </Card>
     </div>
   );
-} 
+}

@@ -3,12 +3,19 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { PlusIcon, RefreshCwIcon, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useRootStore } from "@/store";
 import { useUserDetail } from "@/hooks/useUserDetail";
 import { useLogout } from "@/hooks/useLogout";
 import { foramtAddress } from "@/lib/utils";
-import { SavedIcon, EidtIcon } from "@/components/custom/svg";
+import {
+  SavedIcon,
+  EidtIcon,
+  HelpIcon,
+  EditIcon,
+  ExitIcon,
+  PlusIcon,
+} from "@/components/custom/svg";
 import { changeNickName } from "@/lib/api/user";
 import ChangeEmailSection from "./ChangeEmail";
 import Google2FaBind from "./Google2FaBind";
@@ -18,6 +25,7 @@ import { useNavigate } from "react-router-dom";
 import { useCustomToast } from "@/hooks/useCustomToast";
 import { useGoogleLogin } from "@/hooks/useGoogleLogin";
 import { GoogleLoginType, LoginType } from "@/modal";
+import logoImg from "@/assets/images/logo.png";
 
 const Account: React.FC = () => {
   const { userDetail, loginType, googleProfile } = useRootStore();
@@ -34,13 +42,13 @@ const Account: React.FC = () => {
   const { toGoogleLogin } = useGoogleLogin();
   const accountConnections = [
     {
-      icon: "https://c.animaapp.com/tsXhjynw/img/vector-6.svg",
+      icon: <ExitIcon size={13} color="#2C2C2C" />,
       label: "Crypto Wallet",
       value: foramtAddress(userDetail?.address || ""),
       hasAction: true,
     },
     {
-      icon: "https://c.animaapp.com/tsXhjynw/img/vector-6.svg",
+      icon: <ExitIcon size={13} color="#2C2C2C" />,
       label: "E-Mail",
       value: userDetail?.email || "-",
       hasAction: true,
@@ -48,7 +56,7 @@ const Account: React.FC = () => {
       showPlus: userDetail?.email ? false : true,
     },
     {
-      icon: "https://c.animaapp.com/tsXhjynw/img/vector-6.svg",
+      icon: <ExitIcon size={13} color="#2C2C2C" />,
       label: "X(Twitter)",
       value: userDetail?.twitter || "-",
       hasAction: true,
@@ -56,7 +64,7 @@ const Account: React.FC = () => {
       showPlus: userDetail?.twitter ? false : true,
     },
     {
-      icon: "https://c.animaapp.com/tsXhjynw/img/vector-2.svg",
+      icon: <PlusIcon size={13} color="#2C2C2C" />,
       label: "Google",
       value: userDetail?.gmail || "-",
       hasAction: false,
@@ -66,7 +74,7 @@ const Account: React.FC = () => {
 
   const securitySettings = [
     {
-      icon: "https://c.animaapp.com/tsXhjynw/img/vector-2.svg",
+      icon: <PlusIcon size={13} color="#2C2C2C" />,
       label: "Password",
       value: userDetail?.password
         ? "Click to change password"
@@ -76,7 +84,7 @@ const Account: React.FC = () => {
       showEidt: userDetail?.password ? true : false,
     },
     {
-      icon: "https://c.animaapp.com/tsXhjynw/img/vector-6.svg",
+      icon: <ExitIcon size={13} color="#2C2C2C" />,
       label: "2FA",
       value: userDetail?.authenticatorStatus
         ? "Manage your 2FA settings"
@@ -164,7 +172,7 @@ const Account: React.FC = () => {
                 src={
                   loginType === LoginType.Google
                     ? googleProfile?.picture
-                    : "https://c.animaapp.com/tsXhjynw/img/image-10@2x.png"
+                    : logoImg
                 }
               />
               <AvatarFallback>K</AvatarFallback>
@@ -180,13 +188,11 @@ const Account: React.FC = () => {
                       : `Nickname`}
                   </span>
                   {loginType !== LoginType.Google && (
-                    <img
-                      className="w-2.5 h-2.5"
-                      alt="Edit"
-                      src="https://c.animaapp.com/tsXhjynw/img/vector-7.svg"
+                    <EditIcon
                       onClick={() => {
                         setEditNickNameModalOpen(true);
                       }}
+                      className="w-2.5 h-2.5"
                     />
                   )}
                 </div>
@@ -237,11 +243,7 @@ const Account: React.FC = () => {
                     {connection.label}
                   </span>
                   {connection.label === "Crypto Wallet" && (
-                    <img
-                      className="w-3.5 h-3.5"
-                      alt="Help"
-                      src="https://c.animaapp.com/tsXhjynw/img/warning---circle-help.svg"
-                    />
+                    <HelpIcon className="w-3.5 h-3.5" />
                   )}
                 </div>
                 <div className="flex items-center gap-2">
@@ -253,11 +255,7 @@ const Account: React.FC = () => {
                     <span></span>
                   )}
                   {!connection.showPlus && !connection.showEidt && (
-                    <img
-                      className="w-[13px] h-[13px]"
-                      alt={connection.label}
-                      src={connection.icon}
-                    />
+                    <div className="w-[13px] h-[13px]">{connection.icon}</div>
                   )}
                   {connection.showPlus && (
                     <div
@@ -307,11 +305,7 @@ const Account: React.FC = () => {
                     {setting.value}
                   </span>
                   {!setting.showPlus && !setting.showEidt && (
-                    <img
-                      className="w-[13px] h-[13px]"
-                      alt={setting.label}
-                      src={setting.icon}
-                    />
+                    <div className="w-[13px] h-[13px]">{setting.icon}</div>
                   )}
                   {setting.showPlus && (
                     <div

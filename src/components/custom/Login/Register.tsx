@@ -7,6 +7,9 @@ import { useRootStore } from "@/store";
 import { LoginState } from "./LoginBase";
 import { LoginType } from "@/modal";
 import { useCustomToast } from "@/hooks/useCustomToast";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import logoImg from "@/assets/images/logo.png";
+
 /**
  * Register
  * - 还原截图：返回/关闭、头像占位、Welcome 标题
@@ -145,7 +148,9 @@ export default function Register({
     <div className="">
       {/* 头像 + 标题 */}
       <div className="px-6 pt-1 pb-4 text-center">
-        <div className="w-20 h-20 mx-auto rounded-full bg-neutral-200 dark:bg-neutral-800" />
+        <Avatar className="w-24 h-24 mx-auto rounded-full bg-neutral-200 dark:bg-neutral-800">
+          <AvatarImage src={logoImg} />
+        </Avatar>
         <h2 className="mt-5 text-3xl font-semibold tracking-tight">Welcome</h2>
       </div>
 

@@ -158,15 +158,15 @@ const hoverTooltip = async (ctx: any) => {
   }
 
   function handleHide() {
-    ui.remove();
-    if (g.__WXT_TOOLTIP_SINGLETON__.elements) {
-      g.__WXT_TOOLTIP_SINGLETON__.elements.root?.unmount?.();
-      g.__WXT_TOOLTIP_SINGLETON__.elements.wrapper?.remove?.();
-    }
-    g.__WXT_TOOLTIP_SINGLETON__.elements = null;
-    g.__WXT_TOOLTIP_SINGLETON__.mounted = false;
-    g.__WXT_TOOLTIP_SINGLETON__.position = null;
-    g.__WXT_TOOLTIP_SINGLETON__.symbol = null;
+    // ui.remove();
+    // if (g.__WXT_TOOLTIP_SINGLETON__.elements) {
+    //   g.__WXT_TOOLTIP_SINGLETON__.elements.root?.unmount?.();
+    //   g.__WXT_TOOLTIP_SINGLETON__.elements.wrapper?.remove?.();
+    // }
+    // g.__WXT_TOOLTIP_SINGLETON__.elements = null;
+    // g.__WXT_TOOLTIP_SINGLETON__.mounted = false;
+    // g.__WXT_TOOLTIP_SINGLETON__.position = null;
+    // g.__WXT_TOOLTIP_SINGLETON__.symbol = null;
   }
 
   // =========================

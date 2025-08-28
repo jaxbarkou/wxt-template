@@ -40,6 +40,7 @@ import { useCreditsInfo } from "@/hooks/useCreditsInfo";
 import { useYomoInitToken } from "@/hooks/useYomoInitToken";
 import { useLogout } from "@/hooks/useLogout";
 import { Toaster } from "@/components/ui/sonner";
+import logoImg from "@/assets/images/logo.png";
 
 // 顶部操作栏配置
 const topActions = [
@@ -274,7 +275,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 onMouseLeave={() => !isDisabled && setIsUserHovered(false)}
               >
                 <Avatar className="w-8 h-8">
-                  <AvatarImage src="https://c.animaapp.com/tsXhjynw/img/image-9@2x.png" />
+                  <AvatarImage src={logoImg} />
                 </Avatar>
               </div>
             </TooltipTrigger>

@@ -16,7 +16,8 @@ import { numFormat, toMonthDay } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import NoImg from "@/assets/images/model-no-data.png";
 import { ArrowUpRight } from "lucide-react";
-import logo from "@/assets/images/slide-logo.png";
+import logoText from "@/assets/images/logo-text.png";
+import { Separator } from "@/components/ui/separator";
 
 interface AppProps {
   symbol?: string;
@@ -186,16 +187,11 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
     return (
       <footer className="flex items-center justify-between p-3 mt-auto">
         <div className="flex items-center gap-3">
-          <Avatar className="w-[26px] h-[26px] bg-[#d9d9d9]">
-            <AvatarImage src={logo} alt="Yomo" />
-            <AvatarFallback className="bg-[#d9d9d9]"></AvatarFallback>
-          </Avatar>
+          <img className="w-auto h-[26px]" src={logoText} alt="Yomo" />
           <div className="flex items-center gap-2">
-            <div className="text-xl font-normal text-black ">Yomo</div>
-            <img
-              className="w-px h-4"
-              alt="Line"
-              src="https://c.animaapp.com/ow4Izvy8/img/line-16.svg"
+            <Separator
+              className="bg-[#E9E9E9] w-[1px] !h-4"
+              orientation="vertical"
             />
             <div className=" font-normal text-gray-600 text-[13px]">
               Your Web3 Navigator

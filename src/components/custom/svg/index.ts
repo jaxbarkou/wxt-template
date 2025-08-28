@@ -28,3 +28,9 @@ export { default as SavedIcon } from "./icons/SavedIcon";
 export { default as EidtIcon } from "./icons/EidtIcon";
 export { default as SearchRightIcon } from "./icons/SearchRightIcon";
 export { default as ChatIcon } from "./icons/ChatIcon";
+export { default as CloseIcon } from "./icons/CloseIcon";
+export { default as HelpIcon } from "./icons/HelpIcon";
+export { default as EditIcon } from "./icons/EditIcon";
+export { default as ExitIcon } from "./icons/ExitIcon";
+export { default as PlusIcon } from "./icons/PlusIcon";
+

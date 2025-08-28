@@ -12,6 +12,7 @@ import { useRootStore } from "@/store";
 import { useCreditsInfo } from "@/hooks/useCreditsInfo";
 import { useNavigate } from "react-router-dom";
 import { LoginType } from "@/modal";
+import logoImg from "@/assets/images/logo.png";
 
 const LoginStatus: React.FC = () => {
   const { setLoginModalOpen, token, userDetail, loginType, googleProfile } =
@@ -69,7 +70,7 @@ const LoginStatus: React.FC = () => {
               src={
                 loginType === LoginType.Google
                   ? googleProfile?.picture
-                  : "https://c.animaapp.com/tsXhjynw/img/image-10@2x.png"
+                  : logoImg
               }
             />
           </Avatar>

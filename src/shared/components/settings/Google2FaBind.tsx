@@ -1,4 +1,4 @@
-import { CopyIcon, CheckIcon, Loader2 } from "lucide-react";
+import { CopyIcon, CheckIcon, Loader2, X } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -219,11 +219,7 @@ export default function TwoFactorAuthSection({ onClose }: ChangeEmailSectionProp
               onClick={handleClose}
               disabled={isSaving}
             >
-              <img
-                className="w-3.5 h-3.5"
-                alt="Close"
-                src="https://c.animaapp.com/mei6qdpiZQZsoo/img/vector-1.svg"
-              />
+              <X className="w-3.5 h-3.5" />
             </Button>
           </header>
 

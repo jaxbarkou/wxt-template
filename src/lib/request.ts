@@ -1,7 +1,6 @@
 import axios, { AxiosRequestConfig } from "axios";
 import _ from "lodash";
 import { API_URL } from "@/config";
-import { env } from "@/env";
 
 interface MyResponseType<T> {
   code: number;
@@ -32,7 +31,7 @@ export const base5Api = axios.create({
 });
 
 export const base6Api = axios.create({
-  baseURL: `${env.NEXT_PUBLIC_API_URL}`,
+  baseURL: `${API_URL}`,
   timeout: 60000,
 });
 

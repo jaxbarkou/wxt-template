@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { SearchInput } from "@/shared/components/search/SearchInput";
 import { Clock } from "lucide-react";
@@ -24,6 +25,7 @@ import DAppIcon from "@/assets/images/search/DApp_icon.png";
 import XIcon from "@/assets/images/search/X_icon.png";
 
 const Search: React.FC = () => {
+  const [searchParams] = useSearchParams();
   const [searchValue, setSearchValue] = useState("");
   const [searchResult, setSearchResult] = useState<string | null>(null);
   const [projectData, setProjectData] = useState<any>(null);
@@ -31,14 +33,25 @@ const Search: React.FC = () => {
     null
   );
 
+  // 从URL参数中读取查询文本
+  useEffect(() => {
+    const query = searchParams.get('query');
+    if (query) {
+      setSearchValue(query);
+      // 自动执行搜索
+      handleSearch(query);
+    }
+  }, [searchParams]);
+
   const handleProjectSelect = async (project: ProjectItem) => {
     setSelectedProject(project);
 
     try {
       const response: any = await getProjectData({
-        id: project.id,
-        ticker: project.token_symbol || "",
-        domain: project.website_url || project.website || "",
+        id: project?.id,
+        ticker: project?.token_symbol || "",
+        domain: project?.website_url || project?.website || "",
+        text: searchValue,
       });
       console.log("response", response);
       if (response) {
@@ -49,6 +62,13 @@ const Search: React.FC = () => {
     } catch (error) {
       console.error("Error getting project details:", error);
     }
+  };
+
+  // 清空数据状态
+  const handleClear = () => {
+    setSelectedProject(null);
+    setProjectData(null);
+    setSearchResult(null);
   };
 
   const handleSearch = async (query: string): Promise<any[]> => {
@@ -96,6 +116,7 @@ const Search: React.FC = () => {
                 handleProjectSelect(project);
               }
             }}
+            onClear={handleClear}
             placeholder="Search tokens, projects or alpha..."
             className=""
             searchProjects={handleSearch}
@@ -108,13 +129,13 @@ const Search: React.FC = () => {
             <div className="px-4 py-3 flex items-center gap-3">
               <div className="w-4 h-4 bg-gray-300 rounded-full">
                 <img
-                  src={selectedProject.logo_url}
-                  alt={selectedProject.project_name}
+                  src={selectedProject.logo}
+                  alt={selectedProject.name}
                   className="w-full h-full object-cover rounded-full"
                 />
               </div>
               <span className="text-sm text-gray-500">
-                {selectedProject.project_name} Project Analysis and Summary
+                {selectedProject.name} Project Analysis and Summary
               </span>
             </div>
           )}

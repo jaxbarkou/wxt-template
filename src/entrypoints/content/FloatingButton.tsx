@@ -36,12 +36,23 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({ text, position, onClose
     }
   };
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(text).then(() => {
-      console.log("文本已复制到剪贴板");
-    }).catch((err) => {
-      console.error("复制失败:", err);
-    });
+  const handleSearch = () => {
+    // 发送消息给background script，打开搜索页面并传递选中的文本
+    if (chrome?.runtime?.sendMessage) {
+      chrome.runtime.sendMessage({
+        type: "SEARCH_SELECTED_TEXT",
+        text: text.trim()
+      }, (response) => {
+        if (response?.success) {
+          handleClose();
+          console.log("搜索请求已发送");
+        } else {
+          console.error("发送搜索请求失败:", response?.message);
+        }
+      });
+    } else {
+      console.error("Chrome runtime API 不可用");
+    }
   };
 
   const handleClose = () => {
@@ -158,10 +169,10 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({ text, position, onClose
               src={search}
               alt="搜索"
               style={iconStyle}
-              onClick={handleCopy}
+              onClick={handleSearch}
             />
             {showTooltip === '搜索' && (
-              <div style={tooltipStyle}>复制选中文本</div>
+              <div style={tooltipStyle}>搜索选中文本</div>
             )}
           </div>
 

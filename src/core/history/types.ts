@@ -4,8 +4,10 @@ export interface Thread {
   id: number;
   user_id: string;
   title: string;
-  created_at: number;
+  is_starred: boolean;
   thread_id: string;
+  deleted: false;
+  created_at: number;
 }
 
 export interface ThreadMessage {

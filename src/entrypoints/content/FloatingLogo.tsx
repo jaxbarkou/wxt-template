@@ -26,6 +26,7 @@ const FloatingLogo: React.FC<FloatingLogoProps> = ({
   const [isHoverDisable, setIsHoverDisable] = useState(false);
   const [bottom, setBottom] = useState(24);
   const [right, setRight] = useState(0);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const dragStartY = useRef<number>(0);
   const initialBottom = useRef<number>(24);
@@ -33,24 +34,82 @@ const FloatingLogo: React.FC<FloatingLogoProps> = ({
   const hasDragged = useRef<boolean>(false); // 标记是否已经拖拽过
 
   // 使用存储hook
-  const { pageDisabled, setPageDisabledValue, globalDisabled, setGlobalDisabledValue } = useWxtStorage();
+  const { 
+    pageDisabled, 
+    setPageDisabledValue, 
+    globalDisabled, 
+    setGlobalDisabledValue,
+    disabledDomains,
+    addDisabledDomain,
+    refreshValues
+  } = useWxtStorage();
+
+  console.log('FloatingLogo useWxtStorage values:', {
+    globalDisabled,
+    disabledDomains,
+    currentDomain: window.location.hostname
+  });
+
+  // 获取当前域名
+  const getCurrentDomain = () => {
+    return window.location.hostname;
+  };
+
+  // 检查当前页面是否被禁用
+  const isCurrentPageDisabled = () => {
+    const currentDomain = getCurrentDomain();
+    return disabledDomains.includes(currentDomain);
+  };
 
   // 点击外部关闭菜单
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setIsHovered(false);
+        setIsHoverMenu(false);
+        setIsHoverDisable(false);
       }
     };
 
-    if (isHovered) {
+    if (isHovered || isHoverMenu || isHoverDisable) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isHovered]);
+  }, [isHovered, isHoverMenu, isHoverDisable]);
+
+
+
+  // 添加全局鼠标事件监听
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [isDragging]);
+
+  // 如果全局禁用或当前页面被禁用，不显示组件
+  console.log('FloatingLogo render check:', {
+    globalDisabled,
+    currentDomain: getCurrentDomain(),
+    isCurrentPageDisabled: isCurrentPageDisabled(),
+    disabledDomains
+  });
+  
+  if (globalDisabled || isCurrentPageDisabled()) {
+    console.log('FloatingLogo hidden due to:', {
+      globalDisabled,
+      isCurrentPageDisabled: isCurrentPageDisabled()
+    });
+    return null;
+  }
 
   // 内联样式
   const parentContainerStyle: React.CSSProperties = {
@@ -165,19 +224,6 @@ const FloatingLogo: React.FC<FloatingLogoProps> = ({
       hasDragged.current = false;
     }, 100);
   };
-
-  // 添加全局鼠标事件监听
-  useEffect(() => {
-    if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-      
-      return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-      };
-    }
-  }, [isDragging]);
 
   return (
     <div 
@@ -374,7 +420,8 @@ const FloatingLogo: React.FC<FloatingLogoProps> = ({
           {/* 此页面禁用选项 */}
           <button
             onClick={() => {
-              setPageDisabledValue(!pageDisabled);
+              const currentDomain = getCurrentDomain();
+              addDisabledDomain(currentDomain);
               setIsHoverDisable(false);
             }}
             style={{
@@ -386,7 +433,7 @@ const FloatingLogo: React.FC<FloatingLogoProps> = ({
               cursor: 'pointer',
               fontSize: '12px',
               textAlign: 'left',
-              color: pageDisabled ? '#ef4444' : '#374151',
+              color: isCurrentPageDisabled() ? '#ef4444' : '#374151',
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
@@ -398,10 +445,7 @@ const FloatingLogo: React.FC<FloatingLogoProps> = ({
               e.currentTarget.style.background = 'transparent';
             }}
           >
-            <span style={{ fontSize: '10px' }}>
-              {pageDisabled ? '✓' : '○'}
-            </span>
-            禁用此页面
+            {isCurrentPageDisabled() ? '✓ ' : ''}禁用此页面
           </button>
 
           {/* 所有页面禁用选项 */}
@@ -431,9 +475,6 @@ const FloatingLogo: React.FC<FloatingLogoProps> = ({
               e.currentTarget.style.background = 'transparent';
             }}
           >
-            <span style={{ fontSize: '10px' }}>
-              {globalDisabled ? '✓' : '○'}
-            </span>
             禁用所有页面
           </button>
         </div>

@@ -16,23 +16,37 @@ export const globalDisabledItem = storage.defineItem('local:globalDisabled', {
   fallback: false,
 });
 
+// 定义禁用域名列表
+export const disabledDomainsItem = storage.defineItem('local:disabledDomains', {
+  fallback: [] as string[],
+});
+
 export const useWxtStorage = () => {
   const [isEnabled, setIsEnabled] = useState(false);
   const [pageDisabled, setPageDisabled] = useState(false);
   const [globalDisabled, setGlobalDisabled] = useState(false);
+  const [disabledDomains, setDisabledDomains] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   // 获取设置值
   const getValue = async () => {
     try {
-      const [hoverValue, pageValue, globalValue] = await Promise.all([
+      const [hoverValue, pageValue, globalValue, domainsValue] = await Promise.all([
         displayHoverCardItem.getValue(),
         pageDisabledItem.getValue(),
         globalDisabledItem.getValue(),
+        disabledDomainsItem.getValue(),
       ]);
+      console.log('Initial values loaded:', {
+        hoverValue,
+        pageValue,
+        globalValue,
+        domainsValue
+      });
       setIsEnabled(hoverValue);
       setPageDisabled(pageValue);
       setGlobalDisabled(globalValue);
+      setDisabledDomains(domainsValue);
     } catch (error) {
       console.error('Failed to get settings:', error);
     } finally {
@@ -63,10 +77,44 @@ export const useWxtStorage = () => {
   // 设置全局禁用状态
   const setGlobalDisabledValue = async (value: boolean) => {
     try {
+      console.log('Setting global disabled to:', value);
       await globalDisabledItem.setValue(value);
       setGlobalDisabled(value);
+      console.log('Global disabled set successfully to:', value);
     } catch (error) {
       console.error('Failed to set global disabled setting:', error);
+    }
+  };
+
+  // 设置禁用域名列表
+  const setDisabledDomainsValue = async (domains: string[]) => {
+    try {
+      await disabledDomainsItem.setValue(domains);
+      setDisabledDomains(domains);
+    } catch (error) {
+      console.error('Failed to set disabled domains setting:', error);
+    }
+  };
+
+  // 添加禁用域名
+  const addDisabledDomain = async (domain: string) => {
+    try {
+      const newDomains = [...disabledDomains, domain];
+      await disabledDomainsItem.setValue(newDomains);
+      setDisabledDomains(newDomains);
+    } catch (error) {
+      console.error('Failed to add disabled domain:', error);
+    }
+  };
+
+  // 移除禁用域名
+  const removeDisabledDomain = async (domain: string) => {
+    try {
+      const newDomains = disabledDomains.filter(d => d !== domain);
+      await disabledDomainsItem.setValue(newDomains);
+      setDisabledDomains(newDomains);
+    } catch (error) {
+      console.error('Failed to remove disabled domain:', error);
     }
   };
 
@@ -84,23 +132,38 @@ export const useWxtStorage = () => {
     });
 
     const unwatchGlobal = globalDisabledItem.watch((newValue) => {
+      console.log('Global disabled watch triggered, new value:', newValue);
       setGlobalDisabled(newValue);
+    });
+
+    const unwatchDomains = disabledDomainsItem.watch((newValue) => {
+      setDisabledDomains(newValue);
     });
 
     return () => {
       unwatchHover();
       unwatchPage();
       unwatchGlobal();
+      unwatchDomains();
     };
   }, []);
 
-  return {
-    isEnabled,
-    setValue,
-    pageDisabled,
-    setPageDisabledValue,
-    globalDisabled,
-    setGlobalDisabledValue,
-    loading,
-  };
+        const refreshValues = async () => {
+        await getValue();
+      };
+
+      return {
+        isEnabled,
+        setValue,
+        pageDisabled,
+        setPageDisabledValue,
+        globalDisabled,
+        setGlobalDisabledValue,
+        disabledDomains,
+        setDisabledDomainsValue,
+        addDisabledDomain,
+        removeDisabledDomain,
+        refreshValues,
+        loading,
+      };
 }; 

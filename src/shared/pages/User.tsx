@@ -5,6 +5,7 @@ import { PasskeyTest } from "../components";
 import { loginWithPasskey, registerPasskey } from "@/lib/api/passkey";
 import React from 'react';
 import { useMode } from '../context/ModeProvider';
+import SiderIconSettings from '../components/settings/SiderIconSettings';
 
 const User: React.FC = () => {
   const { mode } = useMode();
@@ -231,6 +232,12 @@ const User: React.FC = () => {
       <div className="flex space-x-4">
         <Link to="/" className="text-blue-600 hover:text-blue-800">跳转到 Home</Link>
         <Link to="/user" className="text-blue-600 hover:text-blue-800">跳转到 User</Link>
+      </div>
+      
+      {/* Sider图标设置 */}
+      <div className="mt-8 p-4 border rounded-lg bg-gray-50">
+        <h3 className="mb-4 text-lg font-semibold text-gray-800">Sider图标设置</h3>
+        <SiderIconSettings />
       </div>
       
       {/* Passkey 测试组件 */}

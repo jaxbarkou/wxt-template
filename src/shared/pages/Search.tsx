@@ -32,19 +32,31 @@ const Search: React.FC = () => {
   const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(
     null
   );
+  const [isLoading, setIsLoading] = useState(false);
 
   // 从URL参数中读取查询文本
   useEffect(() => {
     const query = searchParams.get('query');
     if (query) {
       setSearchValue(query);
-      // 自动执行搜索
-      handleSearch(query);
+      // 直接调用getProjectData接口，传入text参数
+      handleDirectSearch(query);
     }
   }, [searchParams]);
 
+  // 离开页面时清空URL参数
+  useEffect(() => {
+    return () => {
+      // 组件卸载时清空URL参数
+      const url = new URL(window.location.href);
+      url.searchParams.delete('query');
+      window.history.replaceState({}, '', url.toString());
+    };
+  }, []);
+
   const handleProjectSelect = async (project: ProjectItem) => {
     setSelectedProject(project);
+    setIsLoading(true);
 
     try {
       const response: any = await getProjectData({
@@ -61,6 +73,32 @@ const Search: React.FC = () => {
       }
     } catch (error) {
       console.error("Error getting project details:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 直接搜索函数，用于处理URL参数传入的query
+  const handleDirectSearch = async (query: string) => {
+    setIsLoading(true);
+    try {
+      const response: any = await getProjectData({
+        id: '',
+        ticker: '',
+        domain: '',
+        text: query,
+      });
+      console.log("direct search response", response);
+      if (response) {
+        setProjectData(response);
+        setSearchResult(query);
+      } else {
+        console.error("Failed to get project details:", response.message);
+      }
+    } catch (error) {
+      console.error("Error getting project details:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -69,6 +107,7 @@ const Search: React.FC = () => {
     setSelectedProject(null);
     setProjectData(null);
     setSearchResult(null);
+    setIsLoading(false);
   };
 
   const handleSearch = async (query: string): Promise<any[]> => {
@@ -139,10 +178,29 @@ const Search: React.FC = () => {
               </span>
             </div>
           )}
+          {/* 直接搜索结果显示标题 */}
+          {searchResult && !selectedProject && (
+            <div className="px-4 py-3 flex items-center gap-3">
+              <div className="w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center">
+                <div className="w-2 h-2 bg-white rounded-full"></div>
+              </div>
+              <span className="text-sm text-gray-500">
+                Search Results for "{searchResult}"
+              </span>
+            </div>
+          )}
         </div>
 
+        {/* Loading状态 */}
+        {isLoading && (
+          <div className="px-4 py-8 text-center">
+            <div className="w-8 h-8 border-2 border-gray-300 border-t-[#F67C00] rounded-full animate-spin mx-auto mb-4"></div>
+            <div className="text-gray-600 text-sm">Loading project data...</div>
+          </div>
+        )}
+
         {/* 欢迎状态 - 未选择项目时显示 */}
-        {!selectedProject && !searchResult && (
+        {!selectedProject && !searchResult && !isLoading && (
           <div className="px-4 py-8 text-center animate-fade-in">
             <div className="text-black text-lg mb-2 font-medium animate-slide-up [--animation-delay:200ms]">
               Welcome to Project Research Tool
@@ -154,8 +212,8 @@ const Search: React.FC = () => {
           </div>
         )}
 
-        {/* 项目详情 - 仅在选择项目时显示 */}
-        {selectedProject && (
+        {/* 项目详情 - 选择项目或直接搜索时显示 */}
+        {(selectedProject || (searchResult && projectData)) && !isLoading && (
           <>
             {/* 项目介绍部分 */}
             <div className="px-4 mb-6">
@@ -167,11 +225,13 @@ const Search: React.FC = () => {
               </div>
               <div className="text-xs text-gray-700 leading-relaxed">
                 {selectedProject?.brief_desc ||
-                  projectData?.project_info?.short_intro}
+                  projectData?.project_info?.short_intro ||
+                  "Project information is being analyzed..."}
               </div>
               <div className="text-xs text-gray-700 leading-relaxed">
                 {selectedProject?.description ||
-                  projectData?.project_info?.description}
+                  projectData?.project_info?.description ||
+                  "Detailed project analysis and insights will be displayed here."}
               </div>
               {projectData?.project_info?.team_info &&
                 Array.isArray(projectData.project_info.team_info) &&
@@ -212,11 +272,13 @@ const Search: React.FC = () => {
                 <div className="text-xs text-gray-700 leading-relaxed mb-4">
                   According to public information,{" "}
                   {selectedProject?.project_name ||
-                    projectData?.project_info?.name}{" "}
+                    projectData?.project_info?.name ||
+                    "this project"}{" "}
                   has received high recognition and support from the capital
                   market in the early stages of the project.
                   {selectedProject?.project_name ||
-                    projectData?.project_info?.name}{" "}
+                    projectData?.project_info?.name ||
+                    "This project"}{" "}
                   has completed{" "}
                   {projectData?.fundraising_info?.round_info?.length || 0}{" "}
                   rounds of financing
@@ -230,7 +292,8 @@ const Search: React.FC = () => {
                   )}
                   . These data fully demonstrate{" "}
                   {selectedProject?.project_name ||
-                    projectData?.project_info?.name}
+                    projectData?.project_info?.name ||
+                    "this project"}
                   's leading position and great potential in blockchain security
                   and scalability. At the same time, sufficient funding provides
                   strong support for its subsequent development and growth,
@@ -1073,11 +1136,13 @@ const Search: React.FC = () => {
               <div className="text-xs text-gray-700 leading-relaxed">
                 According to public information,{" "}
                 {selectedProject?.project_name ||
-                  projectData?.project_info?.name}{" "}
+                  projectData?.project_info?.name ||
+                  "this project"}{" "}
                 has received high recognition and support from the capital
                 market in the early stages of the project.
                 {selectedProject?.project_name ||
-                  projectData?.project_info?.name}{" "}
+                  projectData?.project_info?.name ||
+                  "This project"}{" "}
                 has completed{" "}
                 {projectData?.fundraising_info?.round_info?.length || 0} rounds
                 of financing
@@ -1091,7 +1156,8 @@ const Search: React.FC = () => {
                 )}
                 . These data fully demonstrate{" "}
                 {selectedProject?.project_name ||
-                  projectData?.project_info?.name}
+                  projectData?.project_info?.name ||
+                  "this project"}
                 's leading position and great potential in blockchain security
                 and scalability. At the same time, sufficient funding provides
                 strong support for its subsequent development and growth,

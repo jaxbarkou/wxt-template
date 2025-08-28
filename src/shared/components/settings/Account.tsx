@@ -21,6 +21,7 @@ import ChangeEmailSection from "./ChangeEmail";
 import Google2FaBind from "./Google2FaBind";
 import ChangePasswordSection from "./ChangePassword"; // 添加导入
 import DisplayHoverCard from "./DisplayHoverCard";
+import SiderIconSettings from "./SiderIconSettings";
 import { useNavigate } from "react-router-dom";
 import { useCustomToast } from "@/hooks/useCustomToast";
 import { useGoogleLogin } from "@/hooks/useGoogleLogin";
@@ -334,6 +335,8 @@ const Account: React.FC = () => {
       </Card>
 
       <DisplayHoverCard className="mt-3" />
+
+      <SiderIconSettings className="mt-3" />
 
       {/* 退出登录按钮 */}
       <div className="mt-2">

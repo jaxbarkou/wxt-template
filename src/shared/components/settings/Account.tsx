@@ -336,7 +336,7 @@ const Account: React.FC = () => {
 
       <DisplayHoverCard className="mt-3" />
 
-      <SiderIconSettings className="mt-3" />
+      <SiderIconSettings />
 
       {/* 退出登录按钮 */}
       <div className="mt-2">

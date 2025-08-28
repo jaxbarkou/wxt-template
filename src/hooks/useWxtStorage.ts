@@ -1,28 +1,31 @@
-import { useState, useEffect } from 'react';
-import { storage } from 'wxt/utils/storage'; 
+import { useState, useEffect } from "react";
+import { storage } from "wxt/utils/storage";
 
 // 定义设置项
-export const displayHoverCardItem = storage.defineItem('local:displayHoverCard', {
-  fallback: false,
-});
+export const displayHoverCardItem = storage.defineItem(
+  "local:displayHoverCard",
+  {
+    fallback: false,
+  }
+);
 
 // 定义页面禁用状态
-export const pageDisabledItem = storage.defineItem('local:pageDisabled', {
+export const pageDisabledItem = storage.defineItem("local:pageDisabled", {
   fallback: false,
 });
 
 // 定义全局禁用状态
-export const globalDisabledItem = storage.defineItem('local:globalDisabled', {
+export const globalDisabledItem = storage.defineItem("local:globalDisabled", {
   fallback: false,
 });
 
 // 定义禁用域名列表
-export const disabledDomainsItem = storage.defineItem('local:disabledDomains', {
+export const disabledDomainsItem = storage.defineItem("local:disabledDomains", {
   fallback: [] as string[],
 });
 
 export const useWxtStorage = () => {
-  const [isEnabled, setIsEnabled] = useState(false);
+  const [hoverModelDisabled, setHoverModelDisabled] = useState(true);
   const [pageDisabled, setPageDisabled] = useState(false);
   const [globalDisabled, setGlobalDisabled] = useState(false);
   const [disabledDomains, setDisabledDomains] = useState<string[]>([]);
@@ -31,24 +34,25 @@ export const useWxtStorage = () => {
   // 获取设置值
   const getValue = async () => {
     try {
-      const [hoverValue, pageValue, globalValue, domainsValue] = await Promise.all([
-        displayHoverCardItem.getValue(),
-        pageDisabledItem.getValue(),
-        globalDisabledItem.getValue(),
-        disabledDomainsItem.getValue(),
-      ]);
-      console.log('Initial values loaded:', {
+      const [hoverValue, pageValue, globalValue, domainsValue] =
+        await Promise.all([
+          displayHoverCardItem.getValue(),
+          pageDisabledItem.getValue(),
+          globalDisabledItem.getValue(),
+          disabledDomainsItem.getValue(),
+        ]);
+      console.log("Initial values loaded:", {
         hoverValue,
         pageValue,
         globalValue,
-        domainsValue
+        domainsValue,
       });
-      setIsEnabled(hoverValue);
+      setHoverModelDisabled(hoverValue);
       setPageDisabled(pageValue);
       setGlobalDisabled(globalValue);
       setDisabledDomains(domainsValue);
     } catch (error) {
-      console.error('Failed to get settings:', error);
+      console.error("Failed to get settings:", error);
     } finally {
       setLoading(false);
     }
@@ -58,9 +62,9 @@ export const useWxtStorage = () => {
   const setValue = async (value: boolean) => {
     try {
       await displayHoverCardItem.setValue(value);
-      setIsEnabled(value);
+      setHoverModelDisabled(value);
     } catch (error) {
-      console.error('Failed to set setting:', error);
+      console.error("Failed to set setting:", error);
     }
   };
 
@@ -70,19 +74,19 @@ export const useWxtStorage = () => {
       await pageDisabledItem.setValue(value);
       setPageDisabled(value);
     } catch (error) {
-      console.error('Failed to set page disabled setting:', error);
+      console.error("Failed to set page disabled setting:", error);
     }
   };
 
   // 设置全局禁用状态
   const setGlobalDisabledValue = async (value: boolean) => {
     try {
-      console.log('Setting global disabled to:', value);
+      console.log("Setting global disabled to:", value);
       await globalDisabledItem.setValue(value);
       setGlobalDisabled(value);
-      console.log('Global disabled set successfully to:', value);
+      console.log("Global disabled set successfully to:", value);
     } catch (error) {
-      console.error('Failed to set global disabled setting:', error);
+      console.error("Failed to set global disabled setting:", error);
     }
   };
 
@@ -92,7 +96,7 @@ export const useWxtStorage = () => {
       await disabledDomainsItem.setValue(domains);
       setDisabledDomains(domains);
     } catch (error) {
-      console.error('Failed to set disabled domains setting:', error);
+      console.error("Failed to set disabled domains setting:", error);
     }
   };
 
@@ -103,18 +107,18 @@ export const useWxtStorage = () => {
       await disabledDomainsItem.setValue(newDomains);
       setDisabledDomains(newDomains);
     } catch (error) {
-      console.error('Failed to add disabled domain:', error);
+      console.error("Failed to add disabled domain:", error);
     }
   };
 
   // 移除禁用域名
   const removeDisabledDomain = async (domain: string) => {
     try {
-      const newDomains = disabledDomains.filter(d => d !== domain);
+      const newDomains = disabledDomains.filter((d) => d !== domain);
       await disabledDomainsItem.setValue(newDomains);
       setDisabledDomains(newDomains);
     } catch (error) {
-      console.error('Failed to remove disabled domain:', error);
+      console.error("Failed to remove disabled domain:", error);
     }
   };
 
@@ -124,7 +128,7 @@ export const useWxtStorage = () => {
 
     // 监听存储变化
     const unwatchHover = displayHoverCardItem.watch((newValue) => {
-      setIsEnabled(newValue);
+      setHoverModelDisabled(newValue);
     });
 
     const unwatchPage = pageDisabledItem.watch((newValue) => {
@@ -132,7 +136,7 @@ export const useWxtStorage = () => {
     });
 
     const unwatchGlobal = globalDisabledItem.watch((newValue) => {
-      console.log('Global disabled watch triggered, new value:', newValue);
+      console.log("Global disabled watch triggered, new value:", newValue);
       setGlobalDisabled(newValue);
     });
 
@@ -148,22 +152,22 @@ export const useWxtStorage = () => {
     };
   }, []);
 
-        const refreshValues = async () => {
-        await getValue();
-      };
+  const refreshValues = async () => {
+    await getValue();
+  };
 
-      return {
-        isEnabled,
-        setValue,
-        pageDisabled,
-        setPageDisabledValue,
-        globalDisabled,
-        setGlobalDisabledValue,
-        disabledDomains,
-        setDisabledDomainsValue,
-        addDisabledDomain,
-        removeDisabledDomain,
-        refreshValues,
-        loading,
-      };
-}; 
+  return {
+    hoverModelDisabled,
+    setValue,
+    pageDisabled,
+    setPageDisabledValue,
+    globalDisabled,
+    setGlobalDisabledValue,
+    disabledDomains,
+    setDisabledDomainsValue,
+    addDisabledDomain,
+    removeDisabledDomain,
+    refreshValues,
+    loading,
+  };
+};

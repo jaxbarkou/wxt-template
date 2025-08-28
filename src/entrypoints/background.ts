@@ -20,19 +20,19 @@ export default defineBackground(() => {
   // 监听插件图标点击事件
   chrome.action.onClicked.addListener((tab) => {
     try {
-      console.log('插件logo被点击了', tab);
+      console.log("插件logo被点击了", tab);
       if (tab.id) {
         // 直接在这里处理，不使用异步操作
         chrome.sidePanel.setOptions({
           enabled: true,
         });
-        
+
         // 使用 windowId 如果可用
         const openOptions: any = { tabId: tab.id };
         if (tab.windowId) {
           openOptions.windowId = tab.windowId;
         }
-        
+
         chrome.sidePanel.open(openOptions);
         console.log("尝试打开侧边栏");
       }
@@ -65,9 +65,11 @@ export default defineBackground(() => {
         });
         // 通知content script侧边栏已关闭
         if (sender.tab?.id) {
-          chrome.tabs.sendMessage(sender.tab.id, { type: "SIDEPANEL_CLOSED" }).catch(() => {
-            // 如果content script不存在，忽略错误
-          });
+          chrome.tabs
+            .sendMessage(sender.tab.id, { type: "SIDEPANEL_CLOSED" })
+            .catch(() => {
+              // 如果content script不存在，忽略错误
+            });
         }
         sendResponse({ success: true, message: "侧边栏状态已更新" });
         return true;
@@ -79,10 +81,10 @@ export default defineBackground(() => {
           ticker: message.symbol,
           domain: "",
         };
-        
+
         console.log("Fetching project data:", payload);
-        
-        fetch(`${API_URL}/api/v1/project/project_data`, {
+
+        fetch(`${API_URL}/nauth/alia/api/v1/project/project_data`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -115,22 +117,24 @@ export default defineBackground(() => {
           chrome.sidePanel.setOptions({
             enabled: true,
           });
-          
+
           const openOptions: any = { tabId: sender.tab.id };
           if (sender.tab.windowId) {
             openOptions.windowId = sender.tab.windowId;
           }
-          
+
           chrome.sidePanel.open(openOptions);
-          
+
           // 通知侧边栏有新的分析请求
-          chrome.runtime.sendMessage({
-            type: "NEW_ANALYSIS_REQUEST",
-            text: message.text
-          }).catch(() => {
-            // 如果侧边栏还没有加载，忽略错误
-          });
-          
+          chrome.runtime
+            .sendMessage({
+              type: "NEW_ANALYSIS_REQUEST",
+              text: message.text,
+            })
+            .catch(() => {
+              // 如果侧边栏还没有加载，忽略错误
+            });
+
           sendResponse({ success: true, message: "分析请求已处理" });
         } else {
           sendResponse({ success: false, message: "无法获取标签页信息" });
@@ -145,22 +149,24 @@ export default defineBackground(() => {
           chrome.sidePanel.setOptions({
             enabled: true,
           });
-          
+
           const openOptions: any = { tabId: sender.tab.id };
           if (sender.tab.windowId) {
             openOptions.windowId = sender.tab.windowId;
           }
-          
+
           chrome.sidePanel.open(openOptions);
-          
-          // 通知侧边栏有新的搜索请求 
-          chrome.runtime.sendMessage({
-            type: "NEW_SEARCH_REQUEST",
-            text: message.text
-          }).catch(() => {
-            // 如果侧边栏还没有加载，忽略错误
-          });
-          
+
+          // 通知侧边栏有新的搜索请求
+          chrome.runtime
+            .sendMessage({
+              type: "NEW_SEARCH_REQUEST",
+              text: message.text,
+            })
+            .catch(() => {
+              // 如果侧边栏还没有加载，忽略错误
+            });
+
           sendResponse({ success: true, message: "搜索请求已处理" });
         } else {
           sendResponse({ success: false, message: "无法获取标签页信息" });
@@ -172,7 +178,10 @@ export default defineBackground(() => {
       sendResponse({ success: true, received: message.type });
     } catch (error) {
       handleError(error, "onMessage");
-      sendResponse({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
+      sendResponse({
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
     }
   });
 

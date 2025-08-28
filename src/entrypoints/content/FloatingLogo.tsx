@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import logo from '@/assets/images/slide-logo.png';
+import { useWxtStorage } from '@/hooks/useWxtStorage';
+import { XIcon } from 'lucide-react';
 
 interface FloatingLogoProps {
   onToggleSidePanel: () => void;
@@ -20,6 +22,8 @@ const FloatingLogo: React.FC<FloatingLogoProps> = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [isHoverMenu, setIsHoverMenu] = useState(false);
+  const [isHoverDisable, setIsHoverDisable] = useState(false);
   const [bottom, setBottom] = useState(24);
   const [right, setRight] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -27,6 +31,26 @@ const FloatingLogo: React.FC<FloatingLogoProps> = ({
   const initialBottom = useRef<number>(24);
   const dragThreshold = 5; // 拖拽阈值，避免轻微移动就触发拖拽
   const hasDragged = useRef<boolean>(false); // 标记是否已经拖拽过
+
+  // 使用存储hook
+  const { pageDisabled, setPageDisabledValue, globalDisabled, setGlobalDisabledValue } = useWxtStorage();
+
+  // 点击外部关闭菜单
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsHovered(false);
+      }
+    };
+
+    if (isHovered) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isHovered]);
 
   // 内联样式
   const parentContainerStyle: React.CSSProperties = {
@@ -159,11 +183,11 @@ const FloatingLogo: React.FC<FloatingLogoProps> = ({
     <div 
       ref={containerRef}
       style={parentContainerStyle}
-      // onMouseEnter={() => setIsHovered(true)}
-      // onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       {/* 悬停菜单 */}
-      {isHovered && (
+      { isHoverMenu && (
         <div style={menuStyle}>
           <div style={lineStyle}>
           {/* 侧边栏按钮 */}
@@ -295,6 +319,125 @@ const FloatingLogo: React.FC<FloatingLogoProps> = ({
           />
         </p>
       </button>
+
+      {/* 禁用功能图标 - 位于主logo按钮左下角 */}
+      {(isHovered || isHoverDisable) && <button
+        onClick={() => setIsHoverDisable(!isHoverDisable)}
+        style={{
+          position: 'absolute',
+          bottom: '-4px',
+          left: '-4px',
+          width: '16px',
+          height: '16px',
+          borderRadius: '50%',
+          border: 'none',
+          background: 'rgba(0, 0, 0, 0.3)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+          transition: 'all 0.2s ease',
+          color: 'white',
+          fontSize: '16px',
+          zIndex: 1000,
+          padding: '0'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'scale(1.1)';
+          e.currentTarget.style.background = 'rgba(0, 0, 0, 0.5)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'scale(1)';
+          e.currentTarget.style.background = 'rgba(0, 0, 0, 0.3)';
+        }}
+        title="禁用设置"
+      >
+        <XIcon size={12}  />
+      </button>}
+
+      {/* 禁用选项菜单 */}
+      {isHoverDisable && (
+        <div style={{
+          position: 'absolute',
+          bottom: '5px',
+          right: '41px',
+          marginBottom: '8px',
+          background: 'white',
+          borderRadius: '8px',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+          border: '1px solid #e5e7eb',
+          padding: '4px',
+          zIndex: 1001,
+          minWidth: '120px',
+        }}>
+          {/* 此页面禁用选项 */}
+          <button
+            onClick={() => {
+              setPageDisabledValue(!pageDisabled);
+              setIsHoverDisable(false);
+            }}
+            style={{
+              width: '100%',
+              padding: '6px 8px',
+              border: 'none',
+              background: 'transparent',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontSize: '12px',
+              textAlign: 'left',
+              color: pageDisabled ? '#ef4444' : '#374151',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#f3f4f6';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent';
+            }}
+          >
+            <span style={{ fontSize: '10px' }}>
+              {pageDisabled ? '✓' : '○'}
+            </span>
+            禁用此页面
+          </button>
+
+          {/* 所有页面禁用选项 */}
+          <button
+            onClick={() => {
+              setGlobalDisabledValue(!globalDisabled);
+              setIsHoverDisable(false);
+            }}
+            style={{
+              width: '100%',
+              padding: '6px 8px',
+              border: 'none',
+              background: 'transparent',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontSize: '12px',
+              textAlign: 'left',
+              color: globalDisabled ? '#ef4444' : '#374151',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#f3f4f6';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent';
+            }}
+          >
+            <span style={{ fontSize: '10px' }}>
+              {globalDisabled ? '✓' : '○'}
+            </span>
+            禁用所有页面
+          </button>
+        </div>
+      )}
     </div>
   );
 };

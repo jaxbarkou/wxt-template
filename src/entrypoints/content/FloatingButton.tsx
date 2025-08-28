@@ -4,6 +4,7 @@ import search from '@/assets/images/search.png'
 import close from '@/assets/images/close.png'
 import { Input } from '@/components/base/input';
 import { Send } from '@/components/alia/icons/send';
+import { useWxtStorage } from '@/hooks/useWxtStorage';
 
 interface FloatingButtonProps {
   text: string;
@@ -16,6 +17,9 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({ text, position, onClose
   const [showTooltip, setShowTooltip] = useState<string | null>(null);
   const [askAi, setAskAi] = useState(false);
   const [question, setQuestion] = useState("");
+
+  // 使用存储hook
+  const { pageDisabled, globalDisabled } = useWxtStorage();
 
   const handleAnalyze = () => {
     // 发送消息给background script，打开侧边栏并传递选中的文本
@@ -116,6 +120,31 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({ text, position, onClose
     zIndex: 1000000,
     marginBottom: '4px',
   };
+
+  // 如果全局禁用或页面禁用，显示提示信息
+  if (globalDisabled || pageDisabled) {
+    return (
+      <div
+        style={{
+          ...containerStyle,
+          backgroundColor: '#fef2f2',
+          border: '1px solid #fecaca',
+          color: '#dc2626',
+        }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+          <div style={{ fontSize: '12px', fontWeight: '500' }}>
+            {pageDisabled ? '此页面禁用' : '所有页面禁用'}
+          </div>
+          <div style={{ fontSize: '10px', opacity: 0.8 }}>
+            {pageDisabled ? '此页面禁用' : '所有页面禁用'}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

@@ -1,3 +1,4 @@
+import { Message } from "../messages";
 
 
 export interface Thread {
@@ -21,14 +22,14 @@ export interface ThreadMessage {
 }
 
 export interface ThreadDetail {
-  messages: ThreadMessage[];
-  locale: string;
-  research_topic: string;
-  observations: Array<any>;
-  resources: Array<any>;
-  plan_iterations: number;
-  current_plan: any;
-  final_report: string;
-  auto_accepted_plan: boolean;
-  enable_background_investigation: boolean;
+  messages: Message[];
+  // locale: string;
+  // research_topic: string;
+  // observations: Array<any>;
+  // resources: Array<any>;
+  // plan_iterations: number;
+  // current_plan: any;
+  // final_report: string;
+  // auto_accepted_plan: boolean;
+  // enable_background_investigation: boolean;
 }

@@ -32,24 +32,13 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 
 
-function DeleteModal({ thread, open, onClose, refresh }: 
+function DeleteModal({ open, onClose, onSubmit }: 
     {
-        thread: Thread | undefined,
         open: boolean,
         onClose: () => void,
-        refresh: () => void
+        onSubmit: () => void,
     }) {
-    const handleDelete = async () => {
-        try {
-            if (thread) {
-                const res = await deleteThreads([thread.thread_id]);
-                console.log("DeleteModal", res)
-                refresh()
-            }
-        } catch (error) {
-            
-        }
-    }
+    
     return (
         <BaseDialog open={open} onOpenChange={onClose}>
           <div className="bg-white rounded-lg border-0 h-[auto] p-4">
@@ -69,7 +58,7 @@ function DeleteModal({ thread, open, onClose, refresh }:
                   </Button>
                   <Button
                     className="flex-1 h-[26px] bg-[#F60000] hover:bg-[#F60000]/90  rounded-[30px] font-medium text-white text-sm text-center tracking-[0] leading-[normal] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                    onClick={handleDelete}
+                    onClick={onSubmit}
                   >
                     Delete
                   </Button>
@@ -81,25 +70,15 @@ function DeleteModal({ thread, open, onClose, refresh }:
     )
 }
 
-function EditModal({ thread, open, onClose, refresh }: {
+function EditModal({ thread, open, onClose, onSubmit }: {
     thread: Thread | undefined,
     open: boolean,
     onClose: () => void,
-    refresh: () => void
+    onSubmit: (title: string) => void,
 }) {
     const [title, setTitle] = useState(thread?.title || "");
 
-    const handleEdite = async () => {
-        try {
-            if (thread) {
-                const res = await updateTitle(thread.thread_id, title); 
-                console.log("EditModal", res)
-                refresh()
-            }
-        } catch (error) {
-            
-        }
-    }
+    
     return (
         <BaseDialog open={open} onOpenChange={onClose}>
           <div className="bg-white rounded-lg border-0 h-[auto] p-4">
@@ -112,7 +91,7 @@ function EditModal({ thread, open, onClose, refresh }: {
                         placeholder="Long size title"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        />
+                    />
                 </div>
                 <div className="flex w-full gap-3 pt-2 mt-6">
                   <Button
@@ -123,7 +102,7 @@ function EditModal({ thread, open, onClose, refresh }: {
                   </Button>
                   <Button
                     className="flex-1 h-[26px] bg-primary hover:bg-primary/90  rounded-[30px] font-medium text-white text-sm text-center tracking-[0] leading-[normal] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                    onClick={handleEdite}
+                    onClick={() => onSubmit(title)}
                   >
                     Save
                   </Button>
@@ -143,6 +122,7 @@ export function ChatHistoryDialog() {
     const [search, setSearch] = useState<string>('');
     const [type, setType] = useState<"all" | "starred">('all');
     const [currentThread, setCurrentThread] = useState<Thread>();
+    const [total, setTotal] = useState(0);
 
     const { token } = useRootStore();
     const [threads, setThreads] = useState<Record<string, Thread[]>>({})
@@ -164,9 +144,8 @@ export function ChatHistoryDialog() {
             if (!user_id) return;
             const data = await queryHistoryMetadata(user_id, search.trim(), type)
             if (data && Array.isArray(data)) {
-                console.log("history metadata:", data);
+                setTotal(data.length)
                 const dataObj = groupByDayTimestamp(data);
-                console.log("grouped history metadata:", dataObj);
                 setThreads(dataObj);
             }
         } catch (error) {
@@ -174,30 +153,30 @@ export function ChatHistoryDialog() {
         }
     }
 
-    function getRole(message: ThreadMessage) {
-        if (message.type === "human") {
-            return message.name === "reporter" ? "assistant" : "user";
-        } else if (message.type === "ai") {
-            return "assistant";
-        } else if (message.type === "ai") {
-            return "assistant";
-        } else {
-            return "assistant";
-        }
-    }
-    function getAgent(message: ThreadMessage) {
-        if (message.name === null && message.type === "ai") {
-            return "coordinator"
-        } else {
-            return message.name as 
-                | "coordinator"
-                | "planner"
-                | "researcher"
-                | "coder"
-                | "reporter"
-                | "podcast"
-        }
-    }
+    // function getRole(message: ThreadMessage) {
+    //     if (message.type === "human") {
+    //         return message.name === "reporter" ? "assistant" : "user";
+    //     } else if (message.type === "ai") {
+    //         return "assistant";
+    //     } else if (message.type === "ai") {
+    //         return "assistant";
+    //     } else {
+    //         return "assistant";
+    //     }
+    // }
+    // function getAgent(message: ThreadMessage) {
+    //     if (message.name === null && message.type === "ai") {
+    //         return "coordinator"
+    //     } else {
+    //         return message.name as 
+    //             | "coordinator"
+    //             | "planner"
+    //             | "researcher"
+    //             | "coder"
+    //             | "reporter"
+    //             | "podcast"
+    //     }
+    // }
 
     const handlethreadClick = async (thread: Thread) => {
         try {
@@ -209,23 +188,7 @@ export function ChatHistoryDialog() {
             // let messageIds: string[] = [];
             if (data && data.messages && Array.isArray(data.messages)) {
                 data.messages.forEach((message) => {
-                    // if (
-                    //     message.name === "coder" ||
-                    //     message.name === "reporter" ||
-                    //     message.name === "researcher"
-                    // ) {
-
-                    // } else {
-                        
-                    // }
-                    messages.push({
-                        id: message.id,
-                        threadId: thread.thread_id,
-                        content: message.content,
-                        agent: getAgent(message),
-                        role: getRole(message) as MessageRole,
-                        contentChunks: [],
-                    } as Message)
+                    messages.push(message)
                 });
             }
             if (messages.length) {
@@ -240,18 +203,40 @@ export function ChatHistoryDialog() {
         }
     }
 
-    // const hendleDeleteThreads = async (thread_ids: string[]) => {
-    //     try {
-    //         const res = deleteThreads(thread_ids);
-    //     } catch (error) {
+    const handleDelete = async () => {
+        try {
+            if (currentThread) {
+                const res = await deleteThreads([currentThread.thread_id]);
+                if (res.message) {
+                    setDeleteOpen(false);
+                    fetchHistoryMetadata();
+                }
+            }
+        } catch (error) {
             
-    //     }
-    // }
+        }
+    }
+
+    const handleEdite = async (title: string) => {
+        try {
+            if (currentThread) {
+                const res = await updateTitle(currentThread.thread_id, title); 
+                if (res.message) {
+                    setEditOpen(false);
+                    fetchHistoryMetadata();
+                }
+            }
+        } catch (error) {
+            
+        }
+    }
 
     const handleUpdateStarred = async (thread_id: string, starred: boolean) => {
         try {
-            const res = updateStarred(thread_id, starred);
-            console.log("res", res)
+            const res = await updateStarred(thread_id, starred);
+            if (res.message) {
+                fetchHistoryMetadata();
+            }
         } catch (error) {
             
         }
@@ -274,15 +259,15 @@ export function ChatHistoryDialog() {
                     <div onClick={() => setOpen(true)}><History /></div>
                 </DialogTrigger>
             </Tooltip>
-            <DeleteModal thread={currentThread} open={deleteOpen} onClose={() => setDeleteOpen(false)} refresh={() => fetchHistoryMetadata()} />
-            <EditModal thread={currentThread} open={editOpen} onClose={() => setEditOpen(false)} refresh={() => fetchHistoryMetadata()} />
+            <DeleteModal open={deleteOpen} onClose={() => setDeleteOpen(false)} onSubmit={() => handleDelete()} />
+            <EditModal thread={currentThread} open={editOpen} onClose={() => setEditOpen(false)} onSubmit={(title) => handleEdite(title)}  />
             <DialogContentBottom className="h-[80%]">
                 <DialogHeader className="flex flex-row">
                     <DialogTitle>
                         {t("chatHistory")}
                     </DialogTitle>
                     <p className="text-muted-foreground text-sm">
-                        (0)
+                        ({total})
                     </p>
                 </DialogHeader>
                 <div className="flex flex-col h-full">

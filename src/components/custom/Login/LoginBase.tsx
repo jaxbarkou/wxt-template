@@ -46,7 +46,7 @@ const LoginBase: React.FC = () => {
 
   return (
     <Drawer open={loginModalOpen} onOpenChange={setLoginModalOpen}>
-      <DrawerContent className="w-full bg-white rounded-2">
+      <DrawerContent className="w-full bg-white rounded-2 min-h-[560px] h-[90vh]">
         <div className="flex flex-col h-full p-4">
           {/* 顶部关闭 */}
           <div className="flex items-center justify-between h-6">

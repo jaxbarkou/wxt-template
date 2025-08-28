@@ -114,7 +114,7 @@ const TopUp = () => {
   }, [unpaidOrders, selectedCurrency]);
 
   return (
-    <div className="w-full min-h-screen mx-auto bg-white">
+    <div className="w-full mx-auto bg-white">
       <div className="pb-4">
         <div className="flex items-center justify-between py-4">
           <div className="flex items-center gap-3 ">
@@ -131,12 +131,10 @@ const TopUp = () => {
             </h1>
           </div>
         </div>
-
         <div className="w-full h-px mb-4 bg-brand-gray1/20" />
-
         <div className="flex items-center justify-between px-4 mb-4">
-          <div className="text-xs font-normal text-brand-black">
-            Pay with $PELL to get an extra 15% off
+          <div className="text-[10px] font-normal text-brand-black">
+            Pay with ${selectedCurrency} to get an extra 15% off
           </div>
 
           <Select value={selectedCurrency} onValueChange={setSelectedCurrency}>
@@ -163,54 +161,56 @@ const TopUp = () => {
             </SelectContent>
           </Select>
         </div>
+        <div className="flex justify-center w-full">
+          <div className="p-4 pt-0">
+            <div className="flex flex-wrap gap-4">
+              {creditOptions.map((option, index) => (
+                <Card
+                  key={index}
+                  className="min-w-[130px] max-w-[200px] relative py-0 overflow-visible transition-shadow duration-200 bg-white border border-[#E9E9E9] rounded-[8px] shadow-sm cursor-pointer hover:shadow-lg hover:border-brand-primary"
+                  onClick={() => {
+                    goDetail(option.id);
+                  }}
+                >
+                  <CardContent className="px-0 text-center min-h-[100px] flex flex-col">
+                    <div className="flex flex-col items-center justify-center flex-1">
+                      {option.is_popular === 1 && (
+                        <div
+                          style={{ backgroundImage: `url(${popularBg})` }}
+                          className="absolute left-0 top-[-10px] flex items-center  bg-no-repeat bg-cover bg-center w-[96px] h-[25px]"
+                        >
+                          <img
+                            className="w-[17px] h-auto mt-[-15px]"
+                            src={popularImg}
+                            alt=""
+                          />
+                          <span className="text-[10px] text-white leading-none mt-[-10px]">
+                            {" "}
+                            Popular Choice
+                          </span>
+                        </div>
+                      )}
 
-        <div className="bg-[#f6f6f8] rounded-lg p-4">
-          <div className="grid grid-cols-2 gap-4">
-            {creditOptions.map((option, index) => (
-              <Card
-                key={index}
-                className="relative py-0 overflow-visible transition-shadow duration-200 bg-white border-0 rounded-lg shadow-sm cursor-pointer hover:shadow-lg"
-                onClick={() => {
-                  goDetail(option.id);
-                }}
-              >
-                <CardContent className="px-0 text-center min-h-[100px] flex flex-col">
-                  <div className="flex flex-col items-center justify-center flex-1">
-                    {option.is_popular === 1 && (
-                      <div
-                        style={{ backgroundImage: `url(${popularBg})` }}
-                        className="absolute left-0 top-[-10px] flex items-center  bg-no-repeat bg-cover bg-center w-[96px] h-[25px]"
-                      >
-                        <img
-                          className="w-[17px] h-auto mt-[-15px]"
-                          src={popularImg}
-                          alt=""
-                        />
-                        <span className="text-[10px] text-white leading-none mt-[-10px]">
-                          {" "}
-                          Popular Choice
-                        </span>
+                      <div className="my-1 text-base font-bold text-brand-black">
+                        {option.credits}
                       </div>
-                    )}
 
-                    <div className="my-1 text-base font-bold text-brand-black">
-                      {option.credits}
+                      <div className="mb-3 text-sm font-normal text-brand-gray1">
+                        Save {option.discount_percentage}%
+                      </div>
                     </div>
-
-                    <div className="mb-3 text-sm font-normal text-brand-gray1">
-                      Save {option.discount_percentage}%
+                    <div className="flex items-center justify-center w-full py-1.5 bg-brand-primary/20 rounded-b-[8px]">
+                      <div className="text-sm font-bold bottom-4 text-brand-black">
+                        {option.list_price} {option.currency}
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center justify-center w-full py-1.5 bg-brand-primary/20 rounded-b-lg ">
-                    <div className="text-sm font-bold bottom-4 text-brand-black">
-                      {option.list_price} {option.currency}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
         </div>
+
         {/* <div className="mt-8 text-xs font-normal text-center text-brand-gray1">
           Price from CoinGecko · Refreshes in 04:59
         </div> */}
@@ -230,13 +230,13 @@ const TopUp = () => {
                 <div className="flex gap-3 pt-2 mt-6">
                   <Button
                     variant="outline"
-                    className="flex-1 h-[26px] rounded-[30px] font-medium text-sm text-center"
+                    className="flex-1 h-10 rounded-[30px] font-medium text-sm text-center"
                     onClick={handleCancelOrder}
                   >
                     Cancel order
                   </Button>
                   <Button
-                    className="flex-1 h-[26px] bg-[#f67c00] hover:bg-[#f67c00]/90  rounded-[30px] font-medium text-white text-sm text-center tracking-[0] leading-[normal] disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 h-10 bg-[#f67c00] hover:bg-[#f67c00]/90  rounded-[30px] font-medium text-white text-sm text-center tracking-[0] leading-[normal] disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={toContinueOrder}
                   >
                     Continue to pay

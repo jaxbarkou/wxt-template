@@ -184,8 +184,8 @@ const TopUpDetail = () => {
   }, [curNetworkItem]);
 
   return (
-    <div className="w-full min-h-screen mx-auto bg-white">
-      <div className="bg-[#f6f6f8] w-full min-h-screen relative">
+    <div className="w-full mx-auto bg-white">
+      <div className="relative w-full ">
         {/* Main Content */}
         <main className="">
           {/* Go Back and Currency Selector */}

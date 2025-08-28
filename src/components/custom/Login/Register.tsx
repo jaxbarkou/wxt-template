@@ -166,11 +166,13 @@ export default function Register({
             placeholder="Email Address"
             className="h-12 mb-0 rounded-2"
           />
-          {errorEmail && (
-            <span className="text-brand-red text-[10px] px-2">
-              {errorEmail}
-            </span>
-          )}
+          <div className="h-2.5">
+            {errorEmail && (
+              <span className="text-brand-red text-[10px] px-2">
+                {errorEmail}
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="space-y-2">
@@ -180,7 +182,7 @@ export default function Register({
               inputMode="numeric"
               pattern="\d*"
               maxLength={6}
-              placeholder="code"
+              placeholder="Code"
               value={code}
               onChange={(e) => setCode(e.target.value)}
               className="h-12 pr-20 mb-0 rounded-2"
@@ -207,9 +209,13 @@ export default function Register({
             onBlur={(e) => toCheckPwd(e.target.value)}
             className="h-12 mb-0 rounded-2"
           />
-          {errorPwd && (
-            <span className="text-brand-red text-[10px] px-2">{errorPwd}</span>
-          )}
+          <div className="h-2.5">
+            {errorPwd && (
+              <span className="text-brand-red text-[10px] px-2 ">
+                {errorPwd}
+              </span>
+            )}
+          </div>
         </div>
         <div className="space-y-2">
           <Input
@@ -221,11 +227,13 @@ export default function Register({
             onBlur={(e) => toCheckVerifyPwd(e.target.value)}
             className="h-12 mb-0 rounded-2"
           />
-          {errorVerifyPwd && (
-            <span className="text-brand-red text-[10px] px-2">
-              {errorVerifyPwd}
-            </span>
-          )}
+          <div className="h-2.5">
+            {errorVerifyPwd && (
+              <span className="text-brand-red text-[10px] px-2">
+                {errorVerifyPwd}
+              </span>
+            )}
+          </div>
         </div>
 
         <Button

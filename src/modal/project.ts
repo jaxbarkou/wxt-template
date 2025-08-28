@@ -276,4 +276,5 @@ export interface QueryProjectData {
   id?: string;
   ticker?: string;
   domain?: string;
+  text?: string;
 }

@@ -162,6 +162,9 @@
   .font-brand-medium {
     font-family: 'arboria-medium';
   }
+  .font-brand-regular {
+    font-family: 'arboria-book';
+  }
 }
 
 body {

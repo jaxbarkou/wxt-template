@@ -8,11 +8,13 @@ import ChainLogo from "@/components/custom/svg/icons/ChainLogo";
 import {
   projectSearch,
   projectData as getProjectData,
-  projectTextData as getProjectTextData
+  projectTextData as getProjectTextData,
 } from "@/lib/api/project";
 import { ProjectItem } from "@/modal/searchResult";
 import ChartContainer from "@/components/charts/ChartContainer";
 import PriceChart from "@/components/charts/PriceChart";
+import TvlTrendChart from "@/components/charts/TvlTrendChart";
+import TvlDistributionChart from "@/components/charts/TvlDistributionChart";
 import { numFormat } from "@/lib/utils";
 
 // 导入图标
@@ -38,7 +40,7 @@ const Search: React.FC = () => {
 
   // 从URL参数中读取查询文本
   useEffect(() => {
-    const query = searchParams.get('query');
+    const query = searchParams.get("query");
     if (query) {
       setSearchValue(query);
       setHasUrlQuery(true); // 标记有URL参数
@@ -54,8 +56,8 @@ const Search: React.FC = () => {
     return () => {
       // 组件卸载时清空URL参数
       const url = new URL(window.location.href);
-      url.searchParams.delete('query');
-      window.history.replaceState({}, '', url.toString());
+      url.searchParams.delete("query");
+      window.history.replaceState({}, "", url.toString());
     };
   }, []);
 
@@ -158,8 +160,8 @@ const Search: React.FC = () => {
                 setHasUrlQuery(false);
                 // 清空URL参数
                 const url = new URL(window.location.href);
-                url.searchParams.delete('query');
-                window.history.replaceState({}, '', url.toString());
+                url.searchParams.delete("query");
+                window.history.replaceState({}, "", url.toString());
                 // 清空当前数据
                 setSelectedProject(null);
                 setProjectData(null);
@@ -534,9 +536,6 @@ const Search: React.FC = () => {
                 {/* 链上数据部分 */}
                 {projectData?.on_chain_data && (
                   <div className="space-y-2 text-xs mb-4">
-                    <div className="text-xs text-gray-700 font-medium mb-2">
-                      On-Chain Data
-                    </div>
                     {projectData.on_chain_data.tvl && (
                       <div className="flex justify-between">
                         <span className="text-gray-700">
@@ -545,9 +544,18 @@ const Search: React.FC = () => {
                         <span className="text-black font-medium">
                           ${numFormat(projectData.on_chain_data.tvl)}
                           {projectData.on_chain_data.tvl_7d_increment && (
-                            <span className="text-green-500 ml-1">
-                              (+{projectData.on_chain_data.tvl_7d_increment}
-                              %/7d)
+                            <span
+                              className={`ml-1 ${
+                                projectData.on_chain_data.tvl_7d_increment >= 0
+                                  ? "text-green-500"
+                                  : "text-red-500"
+                              }`}
+                            >
+                              (
+                              {projectData.on_chain_data.tvl_7d_increment >= 0
+                                ? "+"
+                                : ""}
+                              {projectData.on_chain_data.tvl_7d_increment}%/7d)
                             </span>
                           )}
                         </span>
@@ -561,6 +569,34 @@ const Search: React.FC = () => {
                         </span>
                       </div>
                     )}
+                    {projectData.on_chain_data.tvl_trend &&
+                      projectData.on_chain_data.tvl_trend.length > 0 && (
+                        <div className="mb-4">
+                          <div className="text-xs text-gray-700 font-medium mb-2">
+                            TVL Trend (7D)
+                          </div>
+                          <ChartContainer>
+                            <TvlTrendChart
+                              data={projectData.on_chain_data.tvl_trend}
+                              height={144}
+                            />
+                          </ChartContainer>
+                        </div>
+                      )}
+                    {projectData.on_chain_data.tvl_distribution &&
+                      projectData.on_chain_data.tvl_distribution.length > 0 && (
+                        <div className="mb-4">
+                          <div className="text-xs text-gray-700 font-medium mb-2">
+                            TVL Distribution
+                          </div>
+                          <ChartContainer>
+                            <TvlDistributionChart
+                              data={projectData.on_chain_data.tvl_distribution}
+                              height={200}
+                            />
+                          </ChartContainer>
+                        </div>
+                      )}
                     {projectData.on_chain_data.active_addresses_7d && (
                       <div className="flex justify-between">
                         <span className="text-gray-700">
@@ -572,7 +608,14 @@ const Search: React.FC = () => {
                           )}
                           {projectData.on_chain_data
                             .active_addresses_7d_change && (
-                            <span className="text-green-500 ml-1">
+                            <span
+                              className={`ml-1 ${
+                                projectData.on_chain_data
+                                  .active_addresses_7d_change >= 0
+                                  ? "text-green-500"
+                                  : "text-red-500"
+                              }`}
+                            >
                               (
                               {projectData.on_chain_data
                                 .active_addresses_7d_change > 0
@@ -599,7 +642,14 @@ const Search: React.FC = () => {
                           )}
                           {projectData.on_chain_data
                             .contract_interactions_7d_change && (
-                            <span className="text-green-500 ml-1">
+                            <span
+                              className={`ml-1 ${
+                                projectData.on_chain_data
+                                  .contract_interactions_7d_change >= 0
+                                  ? "text-green-500"
+                                  : "text-red-500"
+                              }`}
+                            >
                               (
                               {projectData.on_chain_data
                                 .contract_interactions_7d_change > 0
@@ -1126,7 +1176,11 @@ const Search: React.FC = () => {
                         }
                       >
                         <CardContent className="p-0 h-full flex flex-col items-center justify-center gap-1">
-                          <img src={platform.icon} alt={platform.name} className="w-6 h-6 object-contain" />
+                          <img
+                            src={platform.icon}
+                            alt={platform.name}
+                            className="w-6 h-6 object-contain"
+                          />
                           <div className="text-xs text-center font-medium text-gray-700">
                             {platform.name}
                           </div>
@@ -1137,6 +1191,63 @@ const Search: React.FC = () => {
                 </div>
               );
             })()}
+            {/* 融资信息部分 */}
+            {projectData?.fundraising_info?.round_info &&
+              projectData.fundraising_info.round_info.length > 0 && (
+                <div className="px-4 mb-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-1 h-4 bg-orange-500 rounded"></div>
+                    <div className="text-sm font-medium text-black">
+                      Funding Rounds
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    {projectData.fundraising_info.round_info.map(
+                      (round: any, index: number) => (
+                        <div
+                          key={index}
+                          className="flex justify-between items-center p-2 bg-gray-50 rounded-lg"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="text-xs font-medium text-gray-900">
+                              {round.round}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              {new Date(round.date * 1000).toLocaleDateString(
+                                "en-US",
+                                {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                }
+                              )}
+                            </div>
+                          </div>
+                          <div className="text-xs font-semibold text-green-600">
+                            ${round.amount}M
+                          </div>
+                        </div>
+                      )
+                    )}
+                    {projectData?.fundraising_info?.total_raised && (
+                      <div className="flex justify-between items-center p-2 bg-green-50 border border-green-200 rounded-lg">
+                        <div className="text-xs font-medium text-gray-900">
+                          Total Raised
+                        </div>
+                        <div className="text-xs font-bold text-green-700">
+                          $
+                          {numFormat(
+                            parseFloat(
+                              projectData.fundraising_info.total_raised
+                            )
+                          )}
+                          M
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
 
             {/* 项目总结标题部分 */}
             <div className="px-4 mb-3 mt-4">

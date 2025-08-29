@@ -1,5 +1,5 @@
 export const env = {
-    NEXT_PUBLIC_API_URL1: 'http://34.126.119.159:18012',
+    NEXT_PUBLIC_API_URL1: 'http://34.126.119.159:18015',
     // NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api",
     // NEXT_PUBLIC_STATIC_WEBSITE_ONLY: process.env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true",
     // GITHUB_OAUTH_TOKEN: process.env.GITHUB_OAUTH_TOKEN || ''

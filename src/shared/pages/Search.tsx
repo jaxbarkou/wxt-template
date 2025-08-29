@@ -8,6 +8,7 @@ import ChainLogo from "@/components/custom/svg/icons/ChainLogo";
 import {
   projectSearch,
   projectData as getProjectData,
+  projectTextData as getProjectTextData
 } from "@/lib/api/project";
 import { ProjectItem } from "@/modal/searchResult";
 import ChartContainer from "@/components/charts/ChartContainer";
@@ -86,10 +87,7 @@ const Search: React.FC = () => {
   const handleDirectSearch = async (query: string) => {
     setIsLoading(true);
     try {
-      const response: any = await getProjectData({
-        id: '',
-        ticker: '',
-        domain: '',
+      const response: any = await getProjectTextData({
         text: query,
       });
       console.log("direct search response", response);

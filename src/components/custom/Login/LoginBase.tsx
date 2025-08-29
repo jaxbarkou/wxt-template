@@ -74,7 +74,7 @@ const LoginBase: React.FC = () => {
                   <Avatar className="w-24 h-24 mx-auto rounded-full bg-neutral-200 dark:bg-neutral-800">
                     <AvatarImage src={logoImg} />
                   </Avatar>
-                  <h2 className="mt-6 text-3xl font-semibold tracking-tight">
+                  <h2 className="mt-6 text-3xl tracking-tight font-brand-medium">
                     Log In
                   </h2>
                   <p className="mt-6 text-base text-neutral-600 dark:text-neutral-300">

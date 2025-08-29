@@ -38,6 +38,12 @@ export default defineConfig({
         page: "options.html", // Points to your options page HTML
         open_in_tab: true, // 在新标签页中打开
       },
+      web_accessible_resources: [
+        {
+          resources: ["fonts/*.otf", "assets/globals.css"],
+          matches: ["<all_urls>"],
+        },
+      ],
       permissions: [
         "sidePanel", // Required permission for side panels
         "storage",

@@ -19,7 +19,7 @@ export default defineConfig({
         "32": "icon/32x32.png",
         "48": "icon/48x48.png",
         "96": "icon/96x96.png",
-        "128": "icon/128x128.png",
+        "128": "icon/128x128.png", 
       },
       // 配置插件图标，不设置popup，让点击时打开侧边栏
       action: {

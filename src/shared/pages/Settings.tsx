@@ -3,11 +3,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import Account from "../components/settings/Account";
 import Credits from "../components/settings/Credits";
+import Sidebar from "../components/settings/Sidebar";
 const Settings: React.FC = () => {
   const tabItems = [
     { value: "account", label: "Account" },
     { value: "credits", label: "Credits" },
-    { value: "stake", label: "Stake", isDis: true },
+    { value: "sidebar", label: "Sidebar" },
     { value: "earns", label: "Earns", isDis: true },
   ];
   return (
@@ -46,11 +47,11 @@ const Settings: React.FC = () => {
         <TabsContent value="credits" className="flex-1 px-4">
           <Credits />
         </TabsContent>
+        <TabsContent value="sidebar" className="flex-1 px-4 ">
+          <Sidebar />
+        </TabsContent>
         <TabsContent value="earns" className="flex-1 px-4 ">
           earns
-        </TabsContent>
-        <TabsContent value="stake" className="flex-1 px-4 ">
-          stake
         </TabsContent>
       </Tabs>
     </div>

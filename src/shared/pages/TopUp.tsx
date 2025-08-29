@@ -162,12 +162,12 @@ const TopUp = () => {
           </Select>
         </div>
         <div className="flex justify-center w-full">
-          <div className="p-4 pt-0">
-            <div className="flex flex-wrap gap-4">
+          <div className="w-full p-4 pt-0">
+            <div className="grid w-full grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
               {creditOptions.map((option, index) => (
                 <Card
                   key={index}
-                  className="min-w-[130px] max-w-[200px] relative py-0 overflow-visible transition-shadow duration-200 bg-white border border-[#E9E9E9] rounded-[8px] shadow-sm cursor-pointer hover:shadow-lg hover:border-brand-primary"
+                  className="relative py-0 overflow-visible transition-shadow duration-200 bg-white border border-[#E9E9E9] rounded-[8px] shadow-sm cursor-pointer hover:shadow-lg hover:border-brand-primary"
                   onClick={() => {
                     goDetail(option.id);
                   }}

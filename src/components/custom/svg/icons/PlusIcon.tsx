@@ -2,7 +2,7 @@ import SvgWrapper from "../SvgWrapper";
 
 const PlusIcon = ({
   size = 20,
-  color = "#2C2C2C",
+  color = "currentColor",
   hoverColor,
   ...props
 }: {
@@ -22,7 +22,7 @@ const PlusIcon = ({
       >
         <path
           d="M1 7H7M7 7H13M7 7V13M7 7V1"
-          stroke="#2C2C2C"
+          stroke="currentColor"
           stroke-linecap="round"
           stroke-linejoin="round"
         />

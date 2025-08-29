@@ -181,10 +181,10 @@ export const getAssetsNetworkList = () => {
   });
 };
 
-export const getDepositAddress = (chain: string) => {
+export const getDepositAddress = (chainId: number) => {
   return request<DepositAddressType[]>(base5Api, {
     url: `/wallet_a/v1/wallet/deposit/address`,
     method: "GET",
-    params: { chain },
+    params: { chainId },
   });
 };

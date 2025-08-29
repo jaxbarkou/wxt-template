@@ -11,6 +11,7 @@ import { sleep } from "../utils";
 
 import { resolveServiceURL } from "./resolve-service-url";
 import type { ChatEvent } from "./types";
+import ThreadMapStorage from "../utils/thread-map";
 
 export async function* chatStream(
   userMessage: string,
@@ -47,7 +48,7 @@ export async function* chatStream(
   try{
     const { state } = JSON.parse(localStorage.getItem('yomo') || '{}');
     if (!state.token) return;
-    const stream = fetchStream(resolveServiceURL("chat/stream"), {
+    const stream = fetchStream(resolveServiceURL("v1/chat/stream"), {
       headers: {
         "Content-Type": "application/json",
         "X-Auth-Token": state.token,
@@ -58,9 +59,10 @@ export async function* chatStream(
       }),
       signal: options.abortSignal,
     });
-    
     for await (const event of stream) {
+      ThreadMapStorage.set(JSON.parse(event.data).thread_id, event.id);
       yield {
+        id: event.id,
         type: event.event,
         data: JSON.parse(event.data),
       } as ChatEvent;

@@ -48,6 +48,7 @@ export async function* fetchStream(
 }
 
 function parseEvent(chunk: string) {
+  let resultId = "";
   let resultEvent = "message";
   let resultData: string | null = null;
   for (const line of chunk.split("\n")) {
@@ -57,7 +58,9 @@ function parseEvent(chunk: string) {
     }
     const key = line.slice(0, pos);
     const value = line.slice(pos + 2);
-    if (key === "event") {
+    if (key === "id") {
+      resultId = value;
+    } else if (key === "event") {
       resultEvent = value;
     } else if (key === "data") {
       resultData = value;
@@ -67,6 +70,7 @@ function parseEvent(chunk: string) {
     return undefined;
   }
   return {
+    id: resultId,
     event: resultEvent,
     data: resultData,
   } as StreamEvent;

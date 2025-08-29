@@ -29,7 +29,6 @@ export default function Home() {
   );
 
   const message = searchParams.get("message");
-  console.log("message", message)
   
   const handleAddNewChat = () => {
     useStore.getState().clearMessages();

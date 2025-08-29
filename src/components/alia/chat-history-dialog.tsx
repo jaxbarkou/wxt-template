@@ -3,7 +3,7 @@
 
 import { useTranslations } from "@/hooks/useTranslations";
 import { useState, useEffect } from "react";
-import { Search, Trash2 } from "lucide-react";
+import { Search } from "lucide-react";
 import { History } from "@/components/alia/icons/history";
 import { Collecte } from "@/components/alia/icons/collecte";
 import {
@@ -20,11 +20,11 @@ import { Tooltip } from "./tooltip";
 // import { DeleteAll } from "./icons/delete-all";
 // import { Delete } from "./icons/delete";
 import MoreActionsMenu from "./more-action";
-import { queryHistoryMetadata, getThreadDetail, deleteThreads, updateStarred, updateTitle } from "@/core/api/history";
+import { queryHistoryMetadata, getThreadDetail, deleteThread, updateThread } from "@/core/api/history";
 // import { useRootStore } from "@/store";
-import { Thread, ThreadMessage } from "@/core/history";
+import { Thread } from "@/core/history";
 import dayjs from "dayjs";
-import type { Message, MessageRole } from "@/core/messages";
+import type { Message } from "@/core/messages";
 import { appendMessage, useStore } from "@/core/store";
 import { useRootStore } from "@/store";
 import { BaseDialog } from "../custom/Modal/BaseDialog";
@@ -206,7 +206,8 @@ export function ChatHistoryDialog() {
     const handleDelete = async () => {
         try {
             if (currentThread) {
-                const res = await deleteThreads([currentThread.thread_id]);
+                const res = await deleteThread(currentThread.thread_id);
+                console.log("res",res)
                 if (res.message) {
                     setDeleteOpen(false);
                     fetchHistoryMetadata();
@@ -220,7 +221,7 @@ export function ChatHistoryDialog() {
     const handleEdite = async (title: string) => {
         try {
             if (currentThread) {
-                const res = await updateTitle(currentThread.thread_id, title); 
+                const res = await updateThread(currentThread.thread_id, title, currentThread.is_starred); 
                 if (res.message) {
                     setEditOpen(false);
                     fetchHistoryMetadata();
@@ -231,9 +232,9 @@ export function ChatHistoryDialog() {
         }
     }
 
-    const handleUpdateStarred = async (thread_id: string, starred: boolean) => {
+    const handleUpdateStarred = async (thread_id: string, title: string, starred: boolean) => {
         try {
-            const res = await updateStarred(thread_id, starred);
+            const res = await updateThread(thread_id, title, starred);
             if (res.message) {
                 fetchHistoryMetadata();
             }
@@ -338,7 +339,7 @@ export function ChatHistoryDialog() {
                                                         />
                                                         <div onClick={(e) => {
                                                             e.stopPropagation();
-                                                            handleUpdateStarred(thread.thread_id, !thread.is_starred);
+                                                            handleUpdateStarred(thread.thread_id, thread.title, !thread.is_starred);
                                                         }}>
                                                             <Collecte className="cursor-pointer" color={thread.is_starred ? '#F67C00' : ''} />
                                                         </div>

@@ -40,18 +40,19 @@ export function getThreadDetail(thread_id: string) {
     });
 }
 
-export function updateTitle(thread_id: string, title: string) {
+
+export function updateThread(thread_id: string, title?: string, is_starred?: boolean) {
    const token = getStateValue("state.token");
   if (!token) return;
-  return fetch(resolveServiceURL(`v1/chat/thread/title`), {
+  return fetch(resolveServiceURL(`v1/chat/thread/${thread_id}`), {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
       "X-Auth-Token": token,
     },
     body: JSON.stringify({
-      thread_id,
       title,
+      is_starred,
     }),
   })
     .then((res) => res.json())
@@ -63,42 +64,15 @@ export function updateTitle(thread_id: string, title: string) {
     });
 }
 
-
-export function updateStarred(thread_id: string, starred: boolean) {
+export function deleteThread(thread_id: string) {
    const token = getStateValue("state.token");
   if (!token) return;
-  return fetch(resolveServiceURL(`v1/chat/thread/starred`), {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Auth-Token": token,
-    },
-    body: JSON.stringify({
-      thread_id,
-      starred,
-    }),
-  })
-    .then((res) => res.json())
-    .then((res) => {
-      return res;
-    })
-    .catch(() => {
-      return null;
-    });
-}
-
-export function deleteThreads(thread_ids: string[]) {
-   const token = getStateValue("state.token");
-  if (!token) return;
-  return fetch(resolveServiceURL(`v1/chat/thread/delete`), {
+  return fetch(resolveServiceURL(`v1/chat/thread/${thread_id}`), {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
       "X-Auth-Token": token,
     },
-    body: JSON.stringify({
-      thread_ids
-    }),
   })
     .then((res) => res.json())
     .then((res) => {

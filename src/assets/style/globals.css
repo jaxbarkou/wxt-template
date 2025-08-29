@@ -121,8 +121,29 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
-  
 }
+
+@font-face {
+  font-family: 'montserrat-medium';
+  src: url('/fonts/montserrat-medium.otf');
+}
+
+@font-face {
+  font-family: 'montserrat-regular';
+  src: url('/fonts/montserrat-regular.otf') ;
+}
+
+@font-face {
+  font-family: 'arboria-book';
+  src: url('/fonts/Arboria-Book.otf');
+}
+
+@font-face {
+  font-family: 'arboria-medium';
+  src: url('/fonts/Arboria-Medium.otf');
+  font-weight: 600;
+}
+
 
 @layer base {
   * {
@@ -132,21 +153,20 @@
     @apply bg-background text-foreground;
     color: #2C2C2C;
   }
+   h1, h2, h3, h4, h5, h6 {
+    font-family: 'arboria-medium';
+  }
+}
+
+@layer utilities {
+  .font-brand-medium {
+    font-family: 'arboria-medium';
+  }
 }
 
 body {
   @apply font-sans;
-  font-family: 'montserrat-regular';
-}
-
-@font-face {
-  font-family: 'montserrat-medium';
-  src: url('/fonts/montserrat-medium.otf')  format("otf");
-}
-
-@font-face {
-  font-family: 'montserrat-regular';
-  src: url('/fonts/montserrat-regular.otf') format("otf");
+  font-family: 'arboria-book';
 }
 
 /* loading  */

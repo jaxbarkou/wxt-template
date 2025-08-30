@@ -27,9 +27,7 @@ export default function Home() {
     () => openResearchId !== null,
     [openResearchId],
   );
-
   const message = searchParams.get("message");
-  console.log("message", message)
   
   const handleAddNewChat = () => {
     useStore.getState().clearMessages();

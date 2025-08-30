@@ -22,7 +22,7 @@ export function ConversationStarter({
   return (
     <div className={cn("flex flex-col items-center", className)}>
       <div className="pointer-events-none fixed inset-0 flex items-center justify-center">
-        <Welcome className="pointer-events-auto mb-15 w-full ml-[24px] -translate-y-38" />
+        <Welcome className="pointer-events-auto w-full -translate-y-34" />
       </div>
       <ul className="flex flex-wrap">
         {questionsTitles.map((question, index) => (
@@ -40,13 +40,13 @@ export function ConversationStarter({
             }}
           >
             <div
-              className="bg-[#FAFAFA] border-[#E9E9E9] text-muted-foreground h-full w-full cursor-pointer rounded-[8px] border px-4 py-4 opacity-75 transition-all duration-300 hover:opacity-100 hover:shadow-md"
+              className="bg-[#FAFAFA] border-[#E9E9E9] h-full w-full cursor-pointer rounded-[8px] border px-2 py-2 opacity-75 transition-all duration-300 hover:opacity-100 hover:shadow-md"
               onClick={() => {
                 onSend?.(question);
               }}
             >
-              <h4 className="text-[#2C2C2C] font-medium">{question}</h4>
-              <p>{questions[index]}</p>
+              <h2 className="font-medium">{question}</h2>
+              <p className="font-medium">{questions[index]}</p>
             </div>
           </motion.li>
         ))}

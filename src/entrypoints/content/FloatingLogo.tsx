@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import logo from "@/assets/images/slide-logo.png";
+import logo from "@/assets/images/logo.png";
 import { useWxtStorage } from "@/hooks/useWxtStorage";
 import { XIcon } from "lucide-react";
 

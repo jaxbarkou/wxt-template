@@ -33,4 +33,5 @@ export { default as HelpIcon } from "./icons/HelpIcon";
 export { default as EditIcon } from "./icons/EditIcon";
 export { default as ExitIcon } from "./icons/ExitIcon";
 export { default as PlusIcon } from "./icons/PlusIcon";
-
+export { default as HistoryIcon } from "./icons/HistoryIcon";
+export { default as AddChat } from "./icons/AddChat";

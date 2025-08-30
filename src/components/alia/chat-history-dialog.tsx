@@ -4,7 +4,7 @@
 import { useTranslations } from "@/hooks/useTranslations";
 import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
-import { History } from "@/components/alia/icons/history";
+import { HistoryIcon } from "@/components/custom/svg";
 import { Collecte } from "@/components/alia/icons/collecte";
 import {
   Dialog,
@@ -34,7 +34,16 @@ import { appendMessage, useStore } from "@/core/store";
 import { useRootStore } from "@/store";
 import { BaseDialog } from "../custom/Modal/BaseDialog";
 import { Button } from "../ui/button";
-import { Input } from "../ui/input";
+import { Input } from "@/components/ui/input";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerTrigger,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
+import { X } from "lucide-react";
+import AiNoImg from "@/assets/images/ai-no.png";
 
 function DeleteModal({
   open,
@@ -63,19 +72,19 @@ function DeleteModal({
                 fill="#F60000"
               />
             </svg>
-            <h3 className="text-brand-medium font-medium text-[16px] mt-5 mb-2">
+            <h3 className="font-brand-medium text-[16px] mt-5 mb-2">
               Delete this conversation?
             </h3>
-            <p className="font-medium">This action cannot be undone.</p>
+            <p className="text-[14px]">This action cannot be undone.</p>
             <div className="flex w-full gap-3 pt-2 mt-6">
               <Button
-                className="flex-1 bg-[#F3F3F3] h-[26px] rounded-[30px] font-medium text-sm text-center text-[#2C2C2C] hover:bg-[#F3F3F3]/90"
+                className="flex-1 bg-[#F3F3F3] h-[40px] rounded-[30px] text-sm text-center text-[#2C2C2C] hover:bg-[#F3F3F3]/90"
                 onClick={() => onClose()}
               >
                 Cancel
               </Button>
               <Button
-                className="flex-1 h-[26px] bg-[#F60000] hover:bg-[#F60000]/90  rounded-[30px] font-medium text-white text-sm text-center tracking-[0] leading-[normal] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                className="flex-1 h-[40px] bg-[#F60000] hover:bg-[#F60000]/90  rounded-[30px] text-white text-sm text-center tracking-[0] leading-[normal] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 onClick={onSubmit}
               >
                 Delete
@@ -105,11 +114,11 @@ function EditModal({
     <BaseDialog open={open} onOpenChange={onClose}>
       <div className="bg-white rounded-lg border-0 h-[auto] p-4">
         <div className="p-0 space-y-4">
-          <h3 className="mt-8 text-lg font-bold">Edit Title</h3>
+          <h3 className="text-lg font-bold">Edit Title</h3>
           <div className="flex flex-col">
             <div className="relative">
               <Input
-                className="h-8 pl-2 pr-20 mb-0 rounded-2"
+                className="h-10 pl-2 pr-20 mb-0 rounded-2"
                 placeholder="Long size title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -117,13 +126,14 @@ function EditModal({
             </div>
             <div className="flex w-full gap-3 pt-2 mt-6">
               <Button
-                className="flex-1 bg-[#F3F3F3] h-[26px] rounded-[30px] font-medium text-sm text-center text-[#2C2C2C] hover:bg-[#F3F3F3]/90 cursor-pointer"
+                variant="outline"
+                className="flex-1 h-10 rounded-[30px] font-medium text-sm text-center cursor-pointer"
                 onClick={() => onClose()}
               >
                 Cancel
               </Button>
               <Button
-                className="flex-1 h-[26px] bg-primary hover:bg-primary/90  rounded-[30px] font-medium text-white text-sm text-center tracking-[0] leading-[normal] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                className="flex-1 h-10 bg-[#f67c00] hover:bg-[#f67c00]/90  rounded-[30px] font-medium text-white text-sm text-center tracking-[0] leading-[normal] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 onClick={() => onSubmit(title)}
               >
                 Save
@@ -274,16 +284,21 @@ export function ChatHistoryDialog() {
   }, [token, open, type, search]);
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Drawer open={open} onOpenChange={setOpen}>
       <Tooltip
         // className="max-w-60"
         title={t("title")}
       >
-        <DialogTrigger asChild>
-          <div onClick={() => setOpen(true)}>
-            <History />
+        <DrawerTrigger asChild>
+          <div className="cursor-pointer" onClick={() => setOpen(true)}>
+            <HistoryIcon
+              className="!cursor-pointer"
+              size={16}
+              color="#2C2C2C"
+              hoverColor="#F67C00"
+            />
           </div>
-        </DialogTrigger>
+        </DrawerTrigger>
       </Tooltip>
       <DeleteModal
         open={deleteOpen}
@@ -296,22 +311,34 @@ export function ChatHistoryDialog() {
         onClose={() => setEditOpen(false)}
         onSubmit={(title) => handleEdite(title)}
       />
-      <DialogContentBottom className="h-[80%]">
-        <DialogHeader className="flex flex-row">
-          <DialogTitle>{t("chatHistory")}</DialogTitle>
-          <p className="text-sm text-muted-foreground">({total})</p>
-        </DialogHeader>
+      <DrawerContent className="min-h-[560px] h-[80vh]">
+        <DrawerHeader className="flex flex-row items-center justify-between">
+          <div className="flex items-center">
+            <DrawerTitle className="font-brand-medium text-[20px]">
+              {t("chatHistory")}
+            </DrawerTitle>
+            <p className="text-[14px] text-brand-gray1 ml-1">({total})</p>
+          </div>
+          <Button
+            onClick={() => setOpen(false)}
+            variant="ghost"
+            size="icon"
+            className="w-6 h-6 p-0"
+          >
+            <X className="w-6 h-6" />
+          </Button>
+        </DrawerHeader>
         <div className="flex flex-col h-full">
-          <div className="flex flex-col py-2 space-y-2">
+          <div className="flex flex-col px-4 space-y-2">
             <div className="flex items-center space-x-4 text-sm font-medium">
               <button
                 className={
                   type === "all"
                     ? cn(
-                        "text-black border-b-2 border-black hover:text-black pb-1 cursor-pointer"
+                        "font-brand-medium text-[16px] pb-[-3px] text-brand-primary border-b-2 border-brand-primary hover:text-brand-primary cursor-pointer"
                       )
                     : cn(
-                        "text-gray-500 border-b-2 border-white hover:text-black pb-1 cursor-pointer"
+                        " font-brand-medium text-[16px] pb-[-3px] text-brand-gray1 border-b-2 border-white hover:text-brand-primary cursor-pointer"
                       )
                 }
                 onClick={() => setType("all")}
@@ -322,10 +349,10 @@ export function ChatHistoryDialog() {
                 className={
                   type === "starred"
                     ? cn(
-                        "text-black border-b-2 border-black hover:text-black pb-1 cursor-pointer"
+                        "font-brand-medium text-[16px] pb-[-3px] text-brand-primary border-b-2 border-brand-primary hover:text-brand-primary cursor-pointer"
                       )
                     : cn(
-                        "text-gray-500 border-b-2 border-white hover:text-black pb-1 cursor-pointer"
+                        "font-brand-medium text-[16px] pb-[-3px] text-brand-gray1 border-b-2 border-white hover:text-brand-primary cursor-pointer"
                       )
                 }
                 onClick={() => setType("starred")}
@@ -333,15 +360,17 @@ export function ChatHistoryDialog() {
                 Starred
               </button>
             </div>
-            <div className="flex items-center justify-between">
-              <div className="relative w-full">
-                <Search className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-2 top-1/2" />
-                <input
+            <div className="flex items-center justify-between mt-2">
+              <div className="relative w-full group">
+                <Search className="absolute w-4 h-4 -translate-y-1/2 text-brand-gray1 group-focus-within:text-brand-primary left-2 top-1/2" />
+                <Input
                   value={search}
+                  name="search"
+                  id="search"
                   onChange={(e) => setSearch(e.target.value)}
                   type="text"
                   placeholder="Search"
-                  className="w-full rounded-md border border-gray-300 pl-8 pr-2 py-1 text-sm focus:outline-none focus:ring-2 focus:#F67C00"
+                  className="w-full pl-8 pr-2 rounded-md"
                 />
               </div>
               {/* <button onClick={() => {}} className="p-2 rounded-md hover:text-red-500">
@@ -349,7 +378,7 @@ export function ChatHistoryDialog() {
                             </button> */}
             </div>
           </div>
-          <div className="h-[calc(100vh-22%)] overflow-y-auto">
+          <div className="h-[calc(100vh-22%)] overflow-y-auto px-4 pb-2 pt-5">
             {Object.keys(threads)
               .sort((a, b) => Number(b) - Number(a))
               .map((key) => (
@@ -367,7 +396,7 @@ export function ChatHistoryDialog() {
                         <button
                           key={index}
                           className={cn(
-                            "hover:bg-accent flex items-start gap-3 rounded-lg p-4 text-left transition-colors bg-[#F3F3F3]"
+                            "hover:bg-accent flex items-start gap-3 rounded-lg p-4 text-left transition-colors bg-white hover:bg-brand-gray1/20"
                             // isSelected && "bg-[#FFF4E8]",
                           )}
                           onClick={() => handlethreadClick(thread)}
@@ -412,15 +441,22 @@ export function ChatHistoryDialog() {
                   </div>
                 </>
               ))}
-            <div className="p-4 bg-white ">
-              <p className="mt-2 text-sm text-center">No more history</p>
-              <p className="mt-2 text-sm text-center">
-                Only show sessions within 30 days
-              </p>
-            </div>
+            {Object.keys(threads).length === 0 && (
+              <div className="pt-[100px]">
+                <div className="flex items-center justify-center">
+                  <img className="w-[136px] h-auto" src={AiNoImg} alt="" />
+                </div>
+                <p className="mt-[30px] text-brand-gray1 text-sm text-center">
+                  No more history
+                </p>
+                <p className="text-sm text-center text-brand-gray1">
+                  Only show sessions within 30 days
+                </p>
+              </div>
+            )}
           </div>
         </div>
-      </DialogContentBottom>
-    </Dialog>
+      </DrawerContent>
+    </Drawer>
   );
 }

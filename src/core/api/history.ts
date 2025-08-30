@@ -83,3 +83,27 @@ export function deleteThread(thread_id: string) {
     });
 }
 
+
+export function getThreadStream(thread_id: string, last_event_id: string) {
+   const token = getStateValue("state.token");
+  if (!token) return;
+  return fetch(resolveServiceURL(`v1/chat/stream`), {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Auth-Token": token,
+      "Last-Event-ID": last_event_id
+    },
+    body: JSON.stringify({
+      thread_id,
+    }),
+  })
+    .then((res) => res.json())
+    .then((res) => {
+      return res;
+    })
+    .catch(() => {
+      return null;
+    });
+}
+

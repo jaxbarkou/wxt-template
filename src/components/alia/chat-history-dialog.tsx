@@ -20,16 +20,18 @@ import { Tooltip } from "./tooltip";
 // import { DeleteAll } from "./icons/delete-all";
 // import { Delete } from "./icons/delete";
 import MoreActionsMenu from "./more-action";
-import { queryHistoryMetadata, getThreadDetail, deleteThread, updateThread } from "@/core/api/history";
+import { queryHistoryMetadata, getThreadDetail, deleteThread, updateThread, getThreadStream } from "@/core/api/history";
 // import { useRootStore } from "@/store";
 import { Thread } from "@/core/history";
 import dayjs from "dayjs";
 import type { Message } from "@/core/messages";
-import { appendMessage, useStore } from "@/core/store";
+import { appendMessage, getLostMessage, useStore } from "@/core/store";
 import { useRootStore } from "@/store";
 import { BaseDialog } from "../custom/Modal/BaseDialog";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import ThreadMapStorage from "@/core/utils/thread-map";
+import { featchStream } from "@/core/api";
 
 
 function DeleteModal({ open, onClose, onSubmit }: 
@@ -78,7 +80,6 @@ function EditModal({ thread, open, onClose, onSubmit }: {
 }) {
     const [title, setTitle] = useState(thread?.title || "");
 
-    
     return (
         <BaseDialog open={open} onOpenChange={onClose}>
           <div className="bg-white rounded-lg border-0 h-[auto] p-4">
@@ -180,9 +181,16 @@ export function ChatHistoryDialog() {
 
     const handlethreadClick = async (thread: Thread) => {
         try {
+            // const id = ThreadMapStorage.get("gsHlWSO56Ml8pchB1_yVC");
+            // if (id) {
+            //     console.log("handlethreadClick", thread.thread_id)
+            //     const stream = await featchStream("gsHlWSO56Ml8pchB1_yVC", '1756454423412-0')
+            //     for await (const event of stream) {
+            //         console.log("收到事件:", event);
+            //     }
+            // }
             useStore.getState().clearMessages();
             const data = await getThreadDetail(thread.thread_id)
-            // const data = await getThreadDetail('WUVcMg7FKgnG2mR5NZSOn')
             console.log("thread detail:", data);
             let messages: Message[] = [];
             // let messageIds: string[] = [];

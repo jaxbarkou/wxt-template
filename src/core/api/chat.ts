@@ -201,3 +201,31 @@ let fastForwardReplaying = false;
 export function fastForwardReplay(value: boolean) {
   fastForwardReplaying = value;
 }
+
+export async function* featchStream(thread_id: string, id: string) {
+  try{
+    const { state } = JSON.parse(localStorage.getItem('yomo') || '{}');
+    if (!state.token) return;
+    const stream = fetchStream(resolveServiceURL("v1/chat/stream"), {
+      headers: {
+        "Content-Type": "application/json",
+        "X-Auth-Token": state.token,
+        "Last-Event-ID": id
+      },
+      body: JSON.stringify({
+        thread_id
+      }),
+    });
+    for await (const event of stream) {
+        // console.log(JSON.parse(event.data).thread_id, event.id)
+      // ThreadMapStorage.set(JSON.parse(event.data).thread_id, event.id);
+        yield {
+          id: event.id,
+          type: event.event,
+          data: JSON.parse(event.data),
+        } as ChatEvent;
+      }
+    }catch(e){
+      console.error("errrr",e);
+    }
+}

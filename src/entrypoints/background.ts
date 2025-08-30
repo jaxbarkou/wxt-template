@@ -1,4 +1,5 @@
 import { API_URL } from "@/config";
+import { env } from "@/env";
 
 export default defineBackground(() => {
   // 添加错误处理
@@ -83,8 +84,8 @@ export default defineBackground(() => {
         };
 
         console.log("Fetching project data:", payload);
-
-        fetch(`${API_URL}/nauth/alia/api/v1/project/project_data`, {
+        //  `${API_URL}/nauth/alia/api/v1/project/project_data`
+        fetch(`${env.NEXT_PUBLIC_API_URL1}/api/v1/project/project_data`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

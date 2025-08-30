@@ -371,7 +371,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             {/* 左侧积分显示 */}
             <div className="bottom-left">
               <div className="points-display">
-                <div className="points-icon"></div>
+                <img className="w-3 h-3" src={logoImg} alt="Points Icon" />
                 <span className="points-text">
                   {creditsInfo?.balance
                     ? Number(creditsInfo.balance).toLocaleString()

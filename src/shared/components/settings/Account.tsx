@@ -41,13 +41,29 @@ const Account: React.FC = () => {
   const { toGoogleLogin } = useGoogleLogin();
   const accountConnections = [
     {
-      icon: <ExitIcon size={13} color="#2C2C2C" />,
+      icon: (
+        <ExitIcon
+          className="cursor-pointer"
+          size={12}
+          color="#2C2C2C"
+          hoverColor="#F67C00"
+        />
+      ),
       label: "Crypto Wallet",
-      value: foramtAddress(userDetail?.address || ""),
+      value: userDetail?.address
+        ? foramtAddress(userDetail?.address || "")
+        : "",
       hasAction: true,
     },
     {
-      icon: <ExitIcon size={13} color="#2C2C2C" />,
+      icon: (
+        <ExitIcon
+          className="cursor-pointer"
+          size={12}
+          color="#2C2C2C"
+          hoverColor="#F67C00"
+        />
+      ),
       label: "E-Mail",
       value: userDetail?.email || "-",
       hasAction: true,
@@ -55,7 +71,14 @@ const Account: React.FC = () => {
       showPlus: userDetail?.email ? false : true,
     },
     {
-      icon: <ExitIcon size={13} color="#2C2C2C" />,
+      icon: (
+        <ExitIcon
+          className="cursor-pointer"
+          size={12}
+          color="#2C2C2C"
+          hoverColor="#F67C00"
+        />
+      ),
       label: "X(Twitter)",
       value: userDetail?.twitter || "-",
       hasAction: true,
@@ -63,7 +86,14 @@ const Account: React.FC = () => {
       showPlus: userDetail?.twitter ? false : true,
     },
     {
-      icon: <PlusIcon size={13} color="#2C2C2C" />,
+      icon: (
+        <PlusIcon
+          className="cursor-pointer"
+          size={12}
+          color="#2C2C2C"
+          hoverColor="#F67C00"
+        />
+      ),
       label: "Google",
       value: userDetail?.gmail || "-",
       hasAction: false,
@@ -73,7 +103,14 @@ const Account: React.FC = () => {
 
   const securitySettings = [
     {
-      icon: <PlusIcon size={13} color="#2C2C2C" />,
+      icon: (
+        <PlusIcon
+          className="cursor-pointer"
+          size={12}
+          color="#2C2C2C"
+          hoverColor="#F67C00"
+        />
+      ),
       label: "Password",
       value: userDetail?.password
         ? "Click to change password"
@@ -83,7 +120,14 @@ const Account: React.FC = () => {
       showEidt: userDetail?.password ? true : false,
     },
     {
-      icon: <ExitIcon size={13} color="#2C2C2C" />,
+      icon: (
+        <ExitIcon
+          className="cursor-pointer"
+          size={12}
+          color="#2C2C2C"
+          hoverColor="#F67C00"
+        />
+      ),
       label: "2FA",
       value: userDetail?.authenticatorStatus
         ? "Manage your 2FA settings"
@@ -127,7 +171,7 @@ const Account: React.FC = () => {
         message:
           "Please bind Google Authenticator first before proceeding with this operation.",
         type: "warning",
-        duration: 4000,
+        duration: 300000,
       });
       return;
     }
@@ -164,7 +208,7 @@ const Account: React.FC = () => {
     <div className="">
       {/* 用户资料部分 */}
       <Card className="py-0 bg-transparent border-0 shadow-none rounded-0">
-        <CardContent className="px-0 py-4">
+        <CardContent className="px-0 pt-3">
           <div className="flex items-center gap-3">
             <Avatar className="w-10 h-10">
               <AvatarImage
@@ -191,7 +235,9 @@ const Account: React.FC = () => {
                       onClick={() => {
                         setEditNickNameModalOpen(true);
                       }}
-                      className="w-2.5 h-2.5"
+                      className="w-3 h-3 cursor-pointer"
+                      color="#2C2C2C"
+                      hoverColor="#F67C00"
                     />
                   )}
                 </div>
@@ -232,20 +278,20 @@ const Account: React.FC = () => {
       </Card>
 
       {/* 账户连接 */}
-      <Card className="py-0 bg-white border-0">
+      <Card className="py-0 bg-transparent border-0 shadow-none rounded-0">
         <CardContent className="p-0">
           {accountConnections.map((connection, index) => (
             <div key={connection.label} className="box-border">
-              <div className="flex items-center justify-between p-4">
-                <div className="flex items-center gap-3">
+              <div className="flex items-center justify-between py-2.5">
+                <div className="flex items-center gap-1">
                   <span className="text-sm font-normal text-variable-collection">
                     {connection.label}
                   </span>
                   {connection.label === "Crypto Wallet" && (
-                    <HelpIcon className="w-3.5 h-3.5" />
+                    <HelpIcon className="w-3 h-3" />
                   )}
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
                   {connection.value && connection.value !== "-" ? (
                     <span className="text-sm text-[#979797] font-normal text-right text-variable-collection">
                       {connection.value}
@@ -254,14 +300,19 @@ const Account: React.FC = () => {
                     <span></span>
                   )}
                   {!connection.showPlus && !connection.showEidt && (
-                    <div className="w-[13px] h-[13px]">{connection.icon}</div>
+                    <div className="w-[12px] h-[12px]">{connection.icon}</div>
                   )}
                   {connection.showPlus && (
                     <div
                       className="transition-opacity cursor-pointer hover:opacity-70"
                       onClick={() => handleAction(connection)}
                     >
-                      <PlusIcon className="w-4 h-4 text-variable-collection" />
+                      <PlusIcon
+                        className="cursor-pointer"
+                        size={12}
+                        color="#2C2C2C"
+                        hoverColor="#F67C00"
+                      />
                     </div>
                   )}
                   {connection.showEidt && (
@@ -269,31 +320,32 @@ const Account: React.FC = () => {
                       className="transition-opacity cursor-pointer hover:opacity-70"
                       onClick={() => handleAction(connection)}
                     >
-                      <EidtIcon className="w-4 h-4 text-variable-collection" />
+                      <EidtIcon
+                        className="cursor-pointer"
+                        size={12}
+                        color="#2C2C2C"
+                        hoverColor="#F67C00"
+                      />
                     </div>
                   )}
                 </div>
               </div>
-              {index < accountConnections.length - 1 && (
-                <Separator className="mx-4" style={{ width: "auto" }} />
-              )}
             </div>
           ))}
         </CardContent>
       </Card>
-
+      <Separator className="" style={{ width: "auto" }} />
       {/* 安全设置部分 */}
-      <Card className="py-0 mt-3 bg-white border-0">
+      <Card className="py-0 bg-transparent border-0 shadow-none rounded-0">
         <CardContent className="p-0">
-          <div className="p-4">
+          <div className="pt-2.5">
             <h2 className="text-base font-normal text-variable-collection">
               Security
             </h2>
           </div>
-          <Separator className="mx-4" style={{ width: "auto" }} />
           {securitySettings.map((setting, index) => (
             <div key={setting.label}>
-              <div className="flex items-center justify-between p-4">
+              <div className="flex items-center justify-between py-2.5">
                 <div className="flex items-center gap-3">
                   <span className="text-sm font-normal text-variable-collection">
                     {setting.label}
@@ -311,7 +363,12 @@ const Account: React.FC = () => {
                       className="transition-opacity cursor-pointer hover:opacity-70"
                       onClick={() => handleAction(setting)}
                     >
-                      <PlusIcon className="w-4 h-4 text-variable-collection" />
+                      <PlusIcon
+                        className="cursor-pointer"
+                        size={12}
+                        color="#2C2C2C"
+                        hoverColor="#F67C00"
+                      />
                     </div>
                   )}
                   {setting.showEidt && (
@@ -319,18 +376,21 @@ const Account: React.FC = () => {
                       className="transition-opacity cursor-pointer hover:opacity-70"
                       onClick={() => handleAction(setting)}
                     >
-                      <EidtIcon className="w-4 h-4 text-variable-collection" />
+                      <EditIcon
+                        className="cursor-pointer"
+                        size={12}
+                        color="#2C2C2C"
+                        hoverColor="#F67C00"
+                      />
                     </div>
                   )}
                 </div>
               </div>
-              {index < securitySettings.length - 1 && (
-                <Separator className="mx-4" style={{ width: "auto" }} />
-              )}
             </div>
           ))}
         </CardContent>
       </Card>
+      <Separator className="" style={{ width: "auto" }} />
       {/* 退出登录按钮 */}
       <div className="mt-2">
         <Button
@@ -338,7 +398,8 @@ const Account: React.FC = () => {
             logout();
             navigate("/");
           }}
-          className="w-full mt-3"
+          variant={"link"}
+          className="w-full font-semibold text-brand-red"
         >
           Logout
         </Button>

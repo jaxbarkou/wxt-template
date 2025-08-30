@@ -47,18 +47,18 @@ export function useCustomToast() {
     toast.custom(
       (t: any) => (
         <div
-          className={`absolute right-[-10px] flex items-start rounded-lg w-[240px] bg-[#fff] text-white rounded-[8px] [box-shadow:0_0_2px_0_rgba(255,255,255,0.10)] border border-[#E9E9E9] h-[60px]`}
+          className={`absolute right-[-10px] flex items-stretch items-start rounded-lg w-[240px] bg-[#fff] text-white rounded-[8px] [box-shadow:0_0_2px_0_rgba(255,255,255,0.10)] border border-[#E9E9E9]`}
         >
           <div
-            className={`w-[6px] h-full rounded-l-lg ml-[-2px] ${bgMap[type]}`}
+            className={`absolute left-0 top-0 bottom-0 w-[6px] h-full rounded-l-lg ml-[-2px] ${bgMap[type]}`}
           />
-          <div className="flex items-center p-3">
+          <div className="flex items-center flex-1 p-3">
             {iconMap[type]}
-            <div>
+            <div className="flex-1">
               <h4 className="text-lg font-semibold text-brand-black leading-[1]">
                 {titleMap[type]}
               </h4>
-              <span className="mt-1 text-sm text-brand-black leading-[1]">
+              <span className="mt-1 text-[10px] text-brand-black leading-[1]">
                 {message}
               </span>
             </div>

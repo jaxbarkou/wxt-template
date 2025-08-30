@@ -12,7 +12,7 @@ const Settings: React.FC = () => {
     { value: "earns", label: "Earns", isDis: true },
   ];
   return (
-    <div className="w-full h-full overflow-auto mx-auto bg-[#F6F6F8]">
+    <div className="flex flex-col w-full h-full mx-auto overflow-auto">
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center gap-3">
           <h1 className="text-base font-normal text-brand-black">Settings</h1>
@@ -27,10 +27,10 @@ const Settings: React.FC = () => {
                 value={tab.value}
                 disabled={tab.isDis}
                 className={cn(
-                  "relative px-2 py-2 text-sm font-medium text-zinc-400 data-[state=active]:shadow-none data-[state=active]:bg-transparent rounded-0",
+                  "relative px-2 py-2 text-sm font-medium text-zinc-400 data-[state=active]:shadow-none data-[state=active]:bg-transparent rounded-0 font-brand-medium",
                   "data-[state=active]:text-brand-primary",
                   "after:absolute after:left-0 after:right-0 after:mx-auto",
-                  "after:-bottom-1 after:h-1 after:w-16 after:rounded-full after:bg-orange-500",
+                  "after:-bottom-1 after:h-1 after:w-8 after:rounded-full after:bg-orange-500",
                   "after:opacity-0 data-[state=active]:after:opacity-100",
                   "after:transition-all"
                 )}
@@ -41,16 +41,28 @@ const Settings: React.FC = () => {
           </TabsList>
           <div className="w-5 h-0.5 bg-variable-collection rounded-[22px] mt-1 ml-auto mr-16" />
         </div>
-        <TabsContent value="account" className="flex-1 px-4 ">
+        <TabsContent
+          value="account"
+          className="flex-1 px-4"
+        >
           <Account />
         </TabsContent>
-        <TabsContent value="credits" className="flex-1 px-4">
+        <TabsContent
+          value="credits"
+          className="flex-1 px-4"
+        >
           <Credits />
         </TabsContent>
-        <TabsContent value="sidebar" className="flex-1 px-4 ">
+        <TabsContent
+          value="sidebar"
+          className="flex-1 px-4 "
+        >
           <Sidebar />
         </TabsContent>
-        <TabsContent value="earns" className="flex-1 px-4 ">
+        <TabsContent
+          value="earns"
+          className="flex-1 px-4 "
+        >
           earns
         </TabsContent>
       </Tabs>

@@ -142,10 +142,10 @@ const TopUpDetail = () => {
   const fetchDepositAddress = useCallback(async () => {
     try {
       if (curNetworkItem?.chain) {
-        const response = await getDepositAddress(curNetworkItem.chain);
+        const response = await getDepositAddress(curNetworkItem?.chainId);
         if (response.result && response.result.length > 0) {
           response.result.forEach((item) => {
-            if (item?.chain === curNetworkItem?.chain) {
+            if (item?.chainId === curNetworkItem?.chainId) {
               setDepositAddressData(item);
             }
           });

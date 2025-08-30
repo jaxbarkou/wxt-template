@@ -81,9 +81,9 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  --brand-red: #DE464B;
+  --brand-red: #F60000;
   --brand-primary: #F67C00;
-  --brand-green: #1ABB15;
+  --brand-green: #1ABB15; 
   --brand-yellow: #F6D658;
   --brand-gray1: #979797;
   --brand-black: #2C2C2C;

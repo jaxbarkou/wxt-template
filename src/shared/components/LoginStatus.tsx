@@ -27,7 +27,9 @@ const LoginStatus: React.FC = () => {
       <div className="sign-info">
         <div className="flex items-center justify-between mb-3 user-info">
           <div className="flex items-center user-info-left">
-            <p className="text-[16px] font-bold">Guest Mode</p>
+            <p className="text-[16px] font-bold font-brand-medium">
+              Guest Mode
+            </p>
           </div>
           <div className="user-info-right">
             <button
@@ -65,7 +67,7 @@ const LoginStatus: React.FC = () => {
     <div className="login-info">
       <div className="flex items-center justify-between mb-3 user-info">
         <div className="flex items-center user-info-left">
-          <Avatar className="w-10 h-10">
+          <Avatar onClick={() => navigate("/settings")} className="w-10 h-10">
             <AvatarImage
               src={
                 loginType === LoginType.Google
@@ -90,7 +92,7 @@ const LoginStatus: React.FC = () => {
           </div>
         </div>
         <div className="user-info-right">
-          <TabIcon size={16} color="#2C2C2C" />
+          {/* <TabIcon size={16} color="#2C2C2C" /> */}
         </div>
       </div>
 

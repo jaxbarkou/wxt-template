@@ -142,8 +142,8 @@ const Search: React.FC = () => {
   };
 
   return (
-    <div className="bg-white flex justify-center items-start w-[100%] min-h-screen">
-      <div className="bg-white w-[100%] min-h-screen relative">
+    <div className="bg-white flex justify-center items-start w-[100%]">
+      <div className="bg-white w-[100%] relative">
         <div className="px-4 py-4 flex items-center justify-between">
           <div className="text-xl font-medium text-black mb-1">Research</div>
           <Clock className="w-4 h-4 text-black" />

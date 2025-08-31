@@ -112,6 +112,12 @@ function EditModal({
 }) {
     const [title, setTitle] = useState(thread?.title || "");
 
+    useEffect(() => {
+        if (thread) {
+            setTitle(thread.title);
+        }
+    }, [thread])
+
     return (
         <BaseDialog open={open} onOpenChange={onClose}>
             <div className="bg-white rounded-lg border-0 h-[auto] p-4">

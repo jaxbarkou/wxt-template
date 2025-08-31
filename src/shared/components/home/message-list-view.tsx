@@ -75,7 +75,7 @@ export function MessageListView({
   const ongoingResearchIsOpen = useStore(
     (state) => state.ongoingResearchId === state.openResearchId,
   );
-  // console.log("messageIds:", messageIds);
+  // console.log("messageIds:", messageIds.length);
 
   const handleToggleResearch = useCallback(() => {
     // Fix the issue where auto-scrolling to the bottom
@@ -88,7 +88,7 @@ export function MessageListView({
     return () => {
       clearTimeout(timer);
     };
-  }, []);
+  }, [messageIds.length]);
 
   return (
     <ScrollContainer

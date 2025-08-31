@@ -69,7 +69,7 @@ const topNavigationItems = [
 // 下半部分导航项配置
 const bottomNavigationItems = [
   { id: "home", icon: "home", label: "Home", path: "/home" },
-  { id: "mobile", icon: "mobile", label: "Mobile", path: "" },
+  { id: "earth", icon: "earth", label: "Website", path: "https://yomo-website.vercel.app" },
   { id: "settings", icon: "settings", label: "Settings", path: "/settings" },
   { id: "user", icon: "user", label: "User", path: "/settings" },
 ];
@@ -123,8 +123,13 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       setLoginModalOpen(true);
       return;
     }
-    if (item.path === "/home") {
-      chrome.tabs.create({ url: "https://yomo-website.vercel.app/" });
+    // if (item.path === "/home") {
+    //   chrome.tabs.create({ url: "https://yomo-website.vercel.app/" });
+    //   return;
+    // }
+
+    if (item.id === "earth") {
+      chrome.tabs.create({ url: "https://yomo-website.vercel.app" });
       return;
     }
 

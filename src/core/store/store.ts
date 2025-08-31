@@ -235,15 +235,15 @@ function setResponding(value: boolean) {
   useStore.setState({ responding: value });
 }
 
-function existsMessage(id: string) {
+export function existsMessage(id: string) {
   return useStore.getState().messageIds.includes(id);
 }
 
-function getMessage(id: string) {
+export function getMessage(id: string) {
   return useStore.getState().messages.get(id);
 }
 
-function findMessageByToolCallId(toolCallId: string) {
+export function findMessageByToolCallId(toolCallId: string) {
   return Array.from(useStore.getState().messages.values())
     .reverse()
     .find((message) => {

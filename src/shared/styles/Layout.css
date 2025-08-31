@@ -467,7 +467,6 @@
 .expand-panel-content {
   display: flex;
   flex-direction: column;
-  gap: 16px;
 }
 
 .expand-panel-top {
@@ -477,8 +476,6 @@
 .expand-panel-bottom {
   background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.16);
-  padding: 12px 12px 0 12px;
 }
 
 /* 水平导航栏 */
@@ -511,10 +508,8 @@
 
 /* Credits卡片 */
 .credits-card {
-  margin-bottom: 12px;
   border-radius: 8px;
-  background: #f6f6f8;
-  padding: 12px 12px 0 12px;
+  padding: 16px 16px 0 16px;
 }
 
 .credits-header {
@@ -572,7 +567,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 0;
+  padding: 8px 0;
   font-size: 14px;
   color: #6c757d;
 }
@@ -584,13 +579,11 @@
 
 /* Share卡片 */
 .share-card {
-  margin-bottom: 12px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px;
+  padding: 8px 16px;
   border-radius: 8px;
-  background: #f6f6f8;
   font-size: 14px;
   color: #212529;
   cursor: pointer;
@@ -599,18 +592,14 @@
 
 .share-yomo-card {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   padding: 12px;
   border-radius: 8px;
-  background: #f6f6f8;
   border-radius: 12px;
   cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.share-yomo-card:hover {
-  background: #f8f9fa;
+  background-position: center;
+  background-size: 100%;
+  background-repeat: no-repeat;
 }
 
 .share-yomo-content {
@@ -631,7 +620,7 @@
 
 .share-yomo-subtitle {
   font-size: 12px;
-  color: #6c757d;
+  color: #979797;
 }
 
 /* 面板顶部操作栏 */
@@ -676,8 +665,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 0;
-  margin-top: 16px;
+  padding: 8px 16px;
   border-top: 1px solid #f0f0f0;
 }
 
@@ -775,13 +763,13 @@
   bottom: 43px;
   right: 15px; /* 在导航栏右侧显示 */
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   min-width: 300px;
   max-width: 350px;
   z-index: 1000;
   animation: slideInLeft 0.2s ease;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 @keyframes slideInLeft {
@@ -798,21 +786,21 @@
 /* 确保弹窗内容样式正确 */
 .user-popup .sign-info,
 .user-popup .login-info {
-  margin: 0;
-  padding: 0;
+  /* margin: 0;
+  padding: 0; */
 }
 
 .user-popup .user-info {
-  margin-bottom: 16px;
+  /* margin-bottom: 16px; */
 }
 
 .user-popup .credits-card {
-  margin-bottom: 16px;
+  /* margin-bottom: 16px; */
 }
 
 .user-popup .share-card,
 .user-popup .share-yomo-card {
-  margin-bottom: 12px;
+  /* margin-bottom: 12px; */
 }
 
 .user-popup .share-card:last-child,

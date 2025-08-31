@@ -199,7 +199,7 @@ export function ResearchBlock({
             >
               {reportId && researchId && (
                 <ResearchReportBlock
-                  className="mt-4"
+                  className="mt-4 text-[14px]"
                   researchId={researchId}
                   messageId={reportId}
                   editing={editing}
@@ -214,7 +214,7 @@ export function ResearchBlock({
             hidden={activeTab !== "activities"}
           >
             <ScrollContainer
-              className="h-[calc(100vh-180px)]"
+              className="h-[calc(100vh-180px)] text-[14px]"
               scrollShadowColor="var(--card)"
               autoScrollToBottom={!hasReport || reportStreaming}
             >

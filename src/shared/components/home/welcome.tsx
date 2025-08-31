@@ -11,13 +11,13 @@ export function Welcome({ className }: { className?: string }) {
 
   return (
     <motion.div
-      className={cn("flex flex-col", className)}
+      className={cn("flex flex-col ml-2", className)}
       style={{ transition: "all 0.2s ease-out" }}
       initial={{ opacity: 0, scale: 0.85 }}
       animate={{ opacity: 1, scale: 1 }}
     >
       <h3 className="mb-2 text-3xl font-medium">{t("greeting")}</h3>
-      <div className="text-muted-foreground text-lg">
+      <div className="font-medium text-lg">
         {t("description")}
       </div>
     </motion.div>

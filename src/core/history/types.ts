@@ -23,6 +23,8 @@ export interface ThreadMessage {
 
 export interface ThreadDetail {
   messages: Message[];
+  is_agent_running: boolean;
+  locale: string;
   // locale: string;
   // research_topic: string;
   // observations: Array<any>;

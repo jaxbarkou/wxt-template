@@ -68,7 +68,7 @@ const topNavigationItems = [
 
 // 下半部分导航项配置
 const bottomNavigationItems = [
-  { id: "home", icon: "home", label: "Home", path: "/" },
+  { id: "home", icon: "home", label: "Home", path: "/home" },
   { id: "mobile", icon: "mobile", label: "Mobile", path: "" },
   { id: "settings", icon: "settings", label: "Settings", path: "/settings" },
   { id: "user", icon: "user", label: "User", path: "/settings" },
@@ -121,6 +121,10 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     // 检查settings页面是否需要登录
     if (item.path === "/settings" && !token) {
       setLoginModalOpen(true);
+      return;
+    }
+    if (item.path === "/home") {
+      chrome.tabs.create({ url: "https://yomo-website.vercel.app/" });
       return;
     }
 
@@ -371,7 +375,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             {/* 左侧积分显示 */}
             <div className="bottom-left">
               <div className="points-display">
-                <div className="points-icon"></div>
+                <img className="w-3 h-3" src={logoImg} alt="Points Icon" />
                 <span className="points-text">
                   {creditsInfo?.balance
                     ? Number(creditsInfo.balance).toLocaleString()

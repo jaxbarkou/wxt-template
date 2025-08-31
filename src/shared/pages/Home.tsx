@@ -4,12 +4,9 @@
 "use client";
 
 import { useMemo } from "react";
-import {
-  Dialog,
-  DialogContent2,
-} from "@/components/base/dialog";
+import { Dialog, DialogContent2 } from "@/components/base/dialog";
 import { useStore } from "@/core/store";
-import { AddChat } from "@/components/alia/icons/add-chat"
+import { AddChat } from "@/components/custom/svg";
 import { cn } from "@/lib/utils";
 import { useSearchParams } from "react-router-dom";
 
@@ -20,39 +17,42 @@ import { ChatHistoryDialog } from "@/components/alia/chat-history-dialog";
 import { useRootStore } from "@/store";
 
 export default function Home() {
-   const [searchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const openResearchId = useStore((state) => state.openResearchId);
   const { token } = useRootStore();
   const doubleColumnMode = useMemo(
     () => openResearchId !== null,
-    [openResearchId],
+    [openResearchId]
   );
-
   const message = searchParams.get("message");
-  
   const handleAddNewChat = () => {
     useStore.getState().clearMessages();
   };
   return (
-    <div
-      className={cn(
-        "flex flex-col h-full w-full justify-center-safe p-4"
-      )}
-    >
-      <div className="flex fill-destructive w-full gap-4 cursor-pointer">
-        {token &&
+    <div className={cn("flex flex-col h-full w-full justify-center-safe p-4")}>
+      <div className="flex w-full gap-4 cursor-pointer fill-destructive">
+        {token && (
           <>
-            <div onClick={() => handleAddNewChat()}><AddChat/></div> 
-            <ChatHistoryDialog/>
+            <div className="cursor-pointer" onClick={() => handleAddNewChat()}>
+              <AddChat
+                className="!cursor-pointer"
+                size={16}
+                color="#2C2C2C"
+                hoverColor="#F67C00"
+              />
+            </div>
+            <ChatHistoryDialog />
           </>
-        }
+        )}
       </div>
       <MessagesBlock
-        className={cn("calc((100vw-538px) transition-all duration-300 ease-out")}
+        className={cn(
+          "calc((100vw-538px) transition-all duration-300 ease-out"
+        )}
         askMessage={message}
       />
       <Dialog
-        open={doubleColumnMode} 
+        open={doubleColumnMode}
         onOpenChange={() => {
           closeResearch();
         }}
@@ -62,7 +62,7 @@ export default function Home() {
             className={cn(
               "pb-4 transition-all duration-300 ease-out",
               !doubleColumnMode && "scale-0",
-              doubleColumnMode && "",
+              doubleColumnMode && ""
             )}
             researchId={openResearchId}
           />
@@ -70,4 +70,4 @@ export default function Home() {
       </Dialog>
     </div>
   );
-}   
+}

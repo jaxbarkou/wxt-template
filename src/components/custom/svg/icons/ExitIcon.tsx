@@ -2,7 +2,7 @@ import SvgWrapper from "../SvgWrapper";
 
 const ExitIcon = ({
   size = 20,
-  color = "#2C2C2C",
+  color = "currentColor",
   hoverColor,
   ...props
 }: {
@@ -22,7 +22,7 @@ const ExitIcon = ({
       >
         <path
           d="M10 13V11.5M11.5 10H13M3.28747 6.46973L2.22681 7.53039C1.05523 8.70196 1.05599 10.6012 2.22757 11.7728C3.39914 12.9444 5.2981 12.9447 6.46967 11.7731L7.53067 10.7123M2.5 4H1M4 1V2.5M6.46973 3.28783L7.53039 2.22717C8.70196 1.0556 10.6012 1.05526 11.7728 2.22683C12.9444 3.39841 12.944 5.2981 11.7725 6.46967L10.7119 7.5303"
-          stroke="#2C2C2C"
+          stroke="currentColor"
           stroke-linecap="round"
           stroke-linejoin="round"
         />

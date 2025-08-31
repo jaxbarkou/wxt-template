@@ -51,10 +51,10 @@ const NavigationHandler: React.FC = () => {
         }
       }
       if (message.type === "NEW_ANALYSIS_REQUEST") {
-        navigate(`/?message=${message.text}`)
+        navigate(`/?message=${message.text}`);
       }
       if (message.type === "NEW_SEARCH_REQUEST") {
-        navigate(`/search?query=${encodeURIComponent(message.text)}`)
+        navigate(`/search?query=${encodeURIComponent(message.text)}`);
       }
     };
 

@@ -217,8 +217,7 @@ export async function* featchStream(thread_id: string, id: string) {
       }),
     });
     for await (const event of stream) {
-        // console.log(JSON.parse(event.data).thread_id, event.id)
-      // ThreadMapStorage.set(JSON.parse(event.data).thread_id, event.id);
+      ThreadMapStorage.set(JSON.parse(event.data).thread_id, event.id);
         yield {
           id: event.id,
           type: event.event,

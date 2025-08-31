@@ -272,7 +272,7 @@ const hoverTooltip = async (ctx: any) => {
       if (position) {
         const x = position.x;
         const y = position.y;
-        // wrapper.classList.add("fixed", "w-[200px]", "h-[200px]", "z-[999999]");
+        wrapper.classList.add("fixed", "w-[200px]", "h-[200px]", "z-[999999]");
         wrapper.style.left = `${x}px`;
         wrapper.style.top = `${y}px`;
 

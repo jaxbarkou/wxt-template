@@ -73,6 +73,8 @@ const LoginStatus: React.FC = () => {
               src={
                 loginType === LoginType.Google
                   ? googleProfile?.picture
+                  : userDetail?.avatarUrl
+                  ? userDetail?.avatarUrl
                   : logoImg
               }
             />

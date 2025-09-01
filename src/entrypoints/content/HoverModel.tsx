@@ -20,6 +20,7 @@ import logoText from "@/assets/images/logo-text.png";
 import { Separator } from "@/components/ui/separator";
 import Skeleton from "@/components/custom/HoverModl/Skeleton";
 import { useWxtStorage } from "@/hooks/useWxtStorage";
+import { amountFormat } from "@/lib/format";
 
 interface AppProps {
   symbol?: string;
@@ -313,7 +314,11 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
                                   {projectData?.tokenomics?.token_symbol})
                                 </h3>
                                 <h2 className="text-[20px] font-bold text-brand-green">
-                                  {projectData?.market_data?.token_price}
+                                  {amountFormat(
+                                    projectData?.market_data?.token_price ||
+                                      "0",
+                                    8
+                                  )}
                                   {/* <span className="text-sm font-normal text-brand-black">
                                   {" "}
                                   (+{`--`} %)

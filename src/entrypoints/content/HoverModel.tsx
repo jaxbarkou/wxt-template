@@ -96,6 +96,25 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
     return [];
   }, [projectData]);
 
+  const tvlTrendData = useMemo(() => {
+    if (
+      projectData?.on_chain_data?.tvl_trend &&
+      projectData?.on_chain_data?.tvl_trend.length > 0
+    ) {
+      let list = projectData?.on_chain_data?.tvl_trend;
+      let arr: { date: string; value: number }[] = [];
+      list.forEach((item) => {
+        let date = item?.timestamp ? toMonthDay(item?.timestamp) : "--";
+        arr.push({
+          date,
+          value: Number(item?.value) || 0,
+        });
+      });
+      return arr;
+    }
+    return [];
+  }, [projectData]);
+
   const fetchBaseData = useCallback(async () => {
     if (!symbol) return;
     try {
@@ -415,8 +434,11 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
                                 </h3>
                                 <div className="flex items-center pl-[6px]">
                                   {projectData?.fundraising_info?.investors &&
-                                    projectData?.fundraising_info?.investors.map(
-                                      (investor, index) => (
+                                    projectData?.fundraising_info?.investors
+                                      ?.length > 0 &&
+                                    projectData?.fundraising_info?.investors
+                                      ?.slice(0, 15)
+                                      .map((investor, index) => (
                                         <Avatar
                                           key={investor.name}
                                           className="w-5 h-5 bg-[#D9D9D9] ml-[-6px]"
@@ -429,8 +451,7 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
                                             {investor?.name?.charAt(0) || "Y"}
                                           </AvatarFallback>
                                         </Avatar>
-                                      )
-                                    )}
+                                      ))}
                                 </div>
                               </CardContent>
                             </Card>
@@ -468,18 +489,37 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
                                   Total Value Locked
                                 </h3>
                                 <h2 className="text-[14px] font-bold align-bottom">
-                                  {projectData?.on_chain_data?.tvl}{" "}
-                                  <span className="font-normal font-sm">
-                                    (+
-                                    {
+                                  $
+                                  {numFormat(
+                                    projectData?.on_chain_data?.tvl || "0"
+                                  )}{" "}
+                                  <span
+                                    className={`ml-1 ${
                                       projectData?.on_chain_data
-                                        ?.tvl_7d_increment
-                                    }
+                                        ?.tvl_7d_increment &&
+                                      projectData?.on_chain_data
+                                        ?.tvl_7d_increment >= 0
+                                        ? "text-brand-green"
+                                        : "text-brand-red"
+                                    }`}
+                                  >
+                                    (
+                                    {projectData?.on_chain_data
+                                      ?.tvl_7d_increment &&
+                                    projectData?.on_chain_data
+                                      ?.tvl_7d_increment >= 0
+                                      ? "+"
+                                      : ""}
+                                    {projectData.on_chain_data.tvl_7d_increment}
                                     %/7d)
                                   </span>
                                 </h2>
                                 <div className="flex items-center justify-between w-full">
-                                  {/* <PanelTvlChat data={[]} /> */}
+                                  {projectData?.on_chain_data?.tvl_trend &&
+                                    projectData?.on_chain_data?.tvl_trend
+                                      .length > 0 && (
+                                      <PanelTvlChat data={tvlTrendData} />
+                                    )}
                                 </div>
                               </CardContent>
                             </Card>

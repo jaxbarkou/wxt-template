@@ -23,6 +23,7 @@ export interface ToolCallChunk {
 // Events
 
 interface GenericEvent<T extends string, D extends object> {
+  id: string
   type: T;
   data: {
     id: string;

@@ -10,11 +10,11 @@
 }
 
 .loadingAnimation > div {
-  width: 8px;
-  height: 8px;
-  margin: 2px 4px;
+  width: 4px;
+  height: 4px;
+  margin: 2px 3px;
   border-radius: 50%;
-  background-color: #a3a1a1;
+  background-color: #F67C00;
   opacity: 1;
   animation: bouncing-animation 0.5s infinite alternate;
 }

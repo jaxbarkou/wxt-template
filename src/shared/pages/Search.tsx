@@ -146,7 +146,7 @@ const Search: React.FC = () => {
       <div className="bg-white w-[100%] relative">
         <div className="px-4 py-4 flex items-center justify-between">
           <div className="text-xl font-medium text-black mb-1">Research</div>
-          <Clock className="w-4 h-4 text-black" />
+          {/* <Clock className="w-4 h-4 text-black" /> */}
         </div>
 
         {/* 搜索输入框 */}

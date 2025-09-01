@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 export interface StreamEvent {
+  id: string;
   event: string;
   data: string;
 }

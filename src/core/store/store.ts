@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { create } from "zustand";
 import { useShallow } from "zustand/react/shallow";
 
-import { chatStream, generatePodcast } from "../api";
+import { chatStream, featchStream, generatePodcast } from "../api";
 import type { Message, Resource } from "../messages";
 import { mergeMessage } from "../messages";
 import { parseJSON } from "../utils";
@@ -181,19 +181,69 @@ export async function sendMessage(
   }
 }
 
+export async function getLostMessage(thread_id: string, last_event_id: string) {
+  const stream = await featchStream(thread_id, last_event_id);
+  // console.log("stream", stream)
+  setResponding(true);
+  let messageId: string | undefined;
+  try {
+    for await (const event of stream) {
+      // console.log("event", event)
+      console.log("收到事件:", event);
+      const { type, data } = event;
+      messageId = data.id;
+      let message: Message | undefined;
+      if (type === "tool_call_result") {
+        message = findMessageByToolCallId(data.tool_call_id);
+      } else if (!existsMessage(messageId)) {
+        message = {
+          id: messageId,
+          threadId: data.thread_id,
+          agent: data.agent,
+          role: data.role,
+          content: "",
+          contentChunks: [],
+          reasoningContent: "",
+          reasoningContentChunks: [],
+          isStreaming: true,
+          // interruptFeedback,
+        };
+        appendMessage(message);
+      }
+      message ??= getMessage(messageId);
+      if (message) {
+        message = mergeMessage(message, event);
+        updateMessage(message);
+      }
+    }
+  } catch {
+    toast("An error occurred while generating the response. Please try again.");
+    if (messageId != null) {
+      const message = getMessage(messageId);
+      if (message?.isStreaming) {
+        message.isStreaming = false;
+        useStore.getState().updateMessage(message);
+      }
+    }
+    useStore.getState().setOngoingResearch(null);
+  } finally {
+    setResponding(false);
+  }
+}
+
 function setResponding(value: boolean) {
   useStore.setState({ responding: value });
 }
 
-function existsMessage(id: string) {
+export function existsMessage(id: string) {
   return useStore.getState().messageIds.includes(id);
 }
 
-function getMessage(id: string) {
+export function getMessage(id: string) {
   return useStore.getState().messages.get(id);
 }
 
-function findMessageByToolCallId(toolCallId: string) {
+export function findMessageByToolCallId(toolCallId: string) {
   return Array.from(useStore.getState().messages.values())
     .reverse()
     .find((message) => {

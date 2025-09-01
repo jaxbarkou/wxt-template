@@ -75,7 +75,7 @@ export function MessageListView({
   const ongoingResearchIsOpen = useStore(
     (state) => state.ongoingResearchId === state.openResearchId,
   );
-  // console.log("messageIds:", messageIds);
+  // console.log("messageIds:", messageIds.length);
 
   const handleToggleResearch = useCallback(() => {
     // Fix the issue where auto-scrolling to the bottom
@@ -88,7 +88,7 @@ export function MessageListView({
     return () => {
       clearTimeout(timer);
     };
-  }, []);
+  }, [messageIds.length]);
 
   return (
     <ScrollContainer
@@ -150,6 +150,7 @@ function MessageListItem({
       message.agent === "coordinator" ||
       message.agent === "planner" ||
       message.agent === "podcast" ||
+      message.agent === "reporter" ||
       startOfResearch
     ) {
       let content: React.ReactNode;
@@ -186,16 +187,16 @@ function MessageListItem({
             className={cn(
               "flex w-full px-4",
               message.role === "user" && "justify-end",
+              message.role !== "user" && "pl-0",
               className,
             )}
           >
             <MessageBubble message={message}>
-              <div className="flex w-full flex-col text-wrap break-words">
+              <div className="flex w-full flex-col text-wrap break-words text-[14px]">
                 <Markdown
-                  // className={cn(
-                  //   message.role === "user" &&
-                  //     "prose-invert not-dark:text-secondary dark:text-inherit",
-                  // )}
+                  className={cn(
+                    message.role === "user" && "prose-invert",
+                  )}
                 >
                   {message?.content}
                 </Markdown>
@@ -219,7 +220,7 @@ function MessageListItem({
           >
             {content}
             {message.role !== "user" &&
-              <div className="w-full px-4 mt-1">
+              <div className="w-full px-4">
                 <Button
                   variant="ghost"
                   size="sm"
@@ -256,9 +257,10 @@ function MessageBubble({
   return (
     <div
       className={cn(
-        `group flex max-w-[85%] flex-col rounded-[8px] px-4 py-3`,
+        `group flex flex-col rounded-[8px] px-4 py-3`,
+        message.agent === "reporter" ? "" : "max-w-[85%]",
         message.role === "user" && "bg-[#F6F6F8] rounded-ee-none",
-        message.role === "assistant" && "bg-[#F6F6F8] rounded-es-none",
+        // message.role === "assistant" && "bg-[#F6F6F8] rounded-es-none",
         className,
       )}
     >
@@ -305,9 +307,9 @@ function ResearchCard({
     onToggleResearch?.();
   }, [openResearchId, researchId, onToggleResearch]);
   return (
-    <Card className={cn("w-full border-0 bg-[#F6F6F8]", className)}>
-      <CardHeader>
-        <CardTitle>
+    <Card className={cn("w-full border-0 p-0 gap-1", className)}>
+      <CardHeader className="pl-0">
+        <CardTitle className="pl-0 text-[16px]">
           <RainbowText animated={state !== t("reportGenerated")}>
             {title !== undefined && title !== "" ? title : t("deepResearch")}
           </RainbowText>
@@ -319,6 +321,7 @@ function ResearchCard({
             {state}
           </RollingText>
           <Button
+            size="sm"
             variant={!openResearchId ? "default" : "outline"}
             onClick={handleOpen}
           >
@@ -502,10 +505,10 @@ function PlanCard({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
         >
-          <Card className="w-full border-0 bg-[#F6F6F8]">
-            <CardHeader>
-              <CardTitle>
-                <Markdown animated={message.isStreaming}>
+          <Card className="w-full border-0 p-0 gap-1">
+            <CardHeader className="pl-0">
+              <CardTitle className="pl-0">
+                <Markdown className="text-[16px]" animated={message.isStreaming}>
                   {`### ${
                     plan.title !== undefined && plan.title !== ""
                       ? plan.title
@@ -514,20 +517,20 @@ function PlanCard({
                 </Markdown>
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pl-0">
               <Markdown className="opacity-80" animated={message.isStreaming}>
                 {plan.thought}
               </Markdown>
               {plan.steps && (
-                <ul className="my-2 flex list-decimal flex-col gap-4 border-l-[2px] pl-8">
+                <ul className="my-2 flex list-decimal flex-col gap-4 pl-8">
                   {plan.steps.map((step, i) => (
                     <li key={`step-${i}`}>
-                      <h3 className="mb text-lg font-medium">
+                      <h3 className="mb text-sm font-medium">
                         <Markdown animated={message.isStreaming}>
                           {step.title}
                         </Markdown>
                       </h3>
-                      <div className="text-muted-foreground text-sm">
+                      <div>
                         <Markdown animated={message.isStreaming}>
                           {step.description}
                         </Markdown>
@@ -548,6 +551,7 @@ function PlanCard({
                   {interruptMessage?.options.map((option) => (
                     <Button
                       key={option.value}
+                      size="sm"
                       variant={
                         option.value === "accepted" ? "default" : "outline"
                       }

@@ -22,7 +22,7 @@ export const projectData = (par: QueryProjectData) => {
 export const projectTextData = (par: QueryProjectData) => {
   console.log("base6Api", base6Api);
   return request<ProjectData>(base6Api, {
-    url: `/nauth/alia/api/v1/project/project_data_text`,
+    url: `/api/v1/project/project_text`,
     method: "POST",
     data: par,
   });

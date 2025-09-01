@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { changePassword } from "@/lib/api/user";
 import { Loader2, X } from "lucide-react";
+import { useRootStore } from "@/store";
 
 interface ChangePasswordSectionProps {
   onClose?: () => void;
@@ -13,6 +14,7 @@ interface ChangePasswordSectionProps {
 export default function ChangePasswordSection({
   onClose,
 }: ChangePasswordSectionProps): React.ReactNode {
+  const { userDetail } = useRootStore();
   const [formValues, setFormValues] = useState({
     oldPassword: "",
     newPassword: "",
@@ -40,11 +42,11 @@ export default function ChangePasswordSection({
   };
 
   // 表单校验
-  const validateForm = (): boolean => {
+  const validateForm = useCallback((): boolean => {
     const newErrors: Record<string, string> = {};
 
     // 旧密码校验
-    if (!formValues.oldPassword.trim()) {
+    if (!formValues.oldPassword.trim() && userDetail?.password) {
       newErrors.oldPassword = "Old password is required";
     }
 
@@ -68,10 +70,10 @@ export default function ChangePasswordSection({
     } else if (!/^\d{6}$/.test(formValues.gaCode)) {
       newErrors.gaCode = "Please enter a 6-digit code";
     }
-
+    console.log(newErrors, Object.keys(newErrors).length);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [userDetail, formValues]);
 
   // 处理保存
   const handleSave = async () => {
@@ -153,34 +155,37 @@ export default function ChangePasswordSection({
             {/* 表单字段 */}
             <div className="space-y-6 translate-y-[-1rem] animate-fade-in [--animation-delay:200ms]">
               {/* 旧密码 */}
-              <div className="space-y-2">
-                <Label
-                  htmlFor="oldPassword"
-                  className=" font-normal text-[#979797] text-sm tracking-[0] leading-[normal]"
-                >
-                  Old Password
-                </Label>
-                <Input
-                  id="oldPassword"
-                  type="password"
-                  placeholder="Enter old password"
-                  value={formValues.oldPassword}
-                  onChange={(e) =>
-                    handleInputChange("oldPassword", e.target.value)
-                  }
-                  className={`h-10 bg-white rounded-lg border border-solid text-sm  font-normal text-[#000] tracking-[0] leading-[normal] placeholder:text-[#979797] ${
-                    errors.oldPassword
-                      ? "border-red-300 focus:border-red-500"
-                      : "border-[#e9e9e9] focus:border-[#F67C00]"
-                  }`}
-                  disabled={isLoading}
-                />
-                {errors.oldPassword && (
-                  <p className="mt-1 text-xs text-red-500">
-                    {errors.oldPassword}
-                  </p>
-                )}
-              </div>
+
+              {userDetail && userDetail?.password && (
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="oldPassword"
+                    className=" font-normal text-[#979797] text-sm tracking-[0] leading-[normal]"
+                  >
+                    Old Password
+                  </Label>
+                  <Input
+                    id="oldPassword"
+                    type="password"
+                    placeholder="Enter old password"
+                    value={formValues.oldPassword}
+                    onChange={(e) =>
+                      handleInputChange("oldPassword", e.target.value)
+                    }
+                    className={`h-10 bg-white rounded-lg border border-solid text-sm  font-normal text-[#000] tracking-[0] leading-[normal] placeholder:text-[#979797] ${
+                      errors.oldPassword
+                        ? "border-red-300 focus:border-red-500"
+                        : "border-[#e9e9e9] focus:border-[#F67C00]"
+                    }`}
+                    disabled={isLoading}
+                  />
+                  {errors.oldPassword && (
+                    <p className="mt-1 text-xs text-red-500">
+                      {errors.oldPassword}
+                    </p>
+                  )}
+                </div>
+              )}
 
               {/* 新密码 */}
               <div className="space-y-2">

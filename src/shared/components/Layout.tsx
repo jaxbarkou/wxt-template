@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import {
   SearchIcon,
   PentagramIcon,
@@ -41,6 +41,7 @@ import { useYomoInitToken } from "@/hooks/useYomoInitToken";
 import { useLogout } from "@/hooks/useLogout";
 import { Toaster } from "@/components/ui/sonner";
 import logoImg from "@/assets/images/logo.png";
+import { LoginType } from "@/modal";
 
 // 顶部操作栏配置
 const topActions = [
@@ -58,9 +59,9 @@ const topNavigationItems = [
   { id: "search", icon: "search", label: "Research", path: "/search" },
   { id: "chat", icon: "chat", label: "Chat", path: "/" },
   //   { id: "pentagram", icon: "pentagram", label: "收藏", path: "" },
-  { id: "earth", icon: "earth", label: "Community", path: "" },
-  { id: "lamp", icon: "lamp", label: "News", path: "" },
-  { id: "gift", icon: "gift", label: "Campaigns", path: "" },
+  // { id: "earth", icon: "earth", label: "Community", path: "" },
+  // { id: "lamp", icon: "lamp", label: "News", path: "" },
+  // { id: "gift", icon: "gift", label: "Campaigns", path: "" },
   { id: "more", icon: "more", label: "More", path: "" },
   { id: "twitter", icon: "twitter", label: "Twitter", path: "" },
   { id: "telegram", icon: "telegram", label: "Telegram", path: "" },
@@ -69,7 +70,12 @@ const topNavigationItems = [
 // 下半部分导航项配置
 const bottomNavigationItems = [
   { id: "home", icon: "home", label: "Home", path: "/home" },
-  { id: "earth", icon: "earth", label: "Website", path: "https://yomo-website.vercel.app" },
+  {
+    id: "earth",
+    icon: "earth",
+    label: "Website",
+    path: "https://yomo-website.vercel.app",
+  },
   { id: "settings", icon: "settings", label: "Settings", path: "/settings" },
   { id: "user", icon: "user", label: "User", path: "/settings" },
 ];
@@ -86,7 +92,8 @@ const bottomItems = [
 
 // 移除mode参数
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { loginModalOpen, setLoginModalOpen, token } = useRootStore();
+  const { setLoginModalOpen, token, loginType, userDetail, googleProfile } =
+    useRootStore();
   const { fetchUserDetail } = useUserDetail();
   const { fetchCreditsInfo, creditsInfo } = useCreditsInfo();
   const { mode } = useMode();
@@ -99,6 +106,19 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const navigate = useNavigate();
   const yomoInitToken = useYomoInitToken();
   const { logout } = useLogout();
+
+  const userLogo = useMemo(() => {
+    if (token) {
+      if (loginType === LoginType.Google) {
+        return googleProfile?.picture;
+      } else {
+        return userDetail?.avatarUrl;
+      }
+    } else {
+      return logoImg;
+    }
+  }, [loginType, googleProfile, userDetail, logoImg]);
+
   useEffect(() => {
     if (yomoInitToken) {
       logout();
@@ -284,7 +304,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 onMouseLeave={() => !isDisabled && setIsUserHovered(false)}
               >
                 <Avatar className="w-8 h-8">
-                  <AvatarImage src={logoImg} />
+                  <AvatarImage src={userLogo} />
                 </Avatar>
               </div>
             </TooltipTrigger>
@@ -390,7 +410,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             </div>
 
             {/* 右侧图标 */}
-            <div className="bottom-right-icons">
+            {/* <div className="bottom-right-icons">
               <div
                 className="bottom-item disabled"
                 style={{ cursor: "not-allowed", opacity: 0.5 }}
@@ -415,7 +435,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               >
                 <EmaiIcon size={18} color="#6c757d" />
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 

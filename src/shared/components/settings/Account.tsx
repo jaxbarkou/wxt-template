@@ -70,21 +70,21 @@ const Account: React.FC = () => {
       showEidt: userDetail?.email ? true : false,
       showPlus: userDetail?.email ? false : true,
     },
-    {
-      icon: (
-        <ExitIcon
-          className="cursor-pointer"
-          size={12}
-          color="#2C2C2C"
-          hoverColor="#F67C00"
-        />
-      ),
-      label: "X(Twitter)",
-      value: userDetail?.twitter || "-",
-      hasAction: true,
-      showEidt: userDetail?.twitter ? true : false,
-      showPlus: userDetail?.twitter ? false : true,
-    },
+    // {
+    //   icon: (
+    //     <ExitIcon
+    //       className="cursor-pointer"
+    //       size={12}
+    //       color="#2C2C2C"
+    //       hoverColor="#F67C00"
+    //     />
+    //   ),
+    //   label: "X(Twitter)",
+    //   value: userDetail?.twitter || "-",
+    //   hasAction: true,
+    //   showEidt: userDetail?.twitter ? true : false,
+    //   showPlus: userDetail?.twitter ? false : true,
+    // },
     {
       icon: (
         <PlusIcon
@@ -215,6 +215,8 @@ const Account: React.FC = () => {
                 src={
                   loginType === LoginType.Google
                     ? googleProfile?.picture
+                    : userDetail?.avatarUrl
+                    ? userDetail?.avatarUrl
                     : logoImg
                 }
               />

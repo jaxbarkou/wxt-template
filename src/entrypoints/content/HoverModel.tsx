@@ -20,7 +20,7 @@ import logoText from "@/assets/images/logo-text.png";
 import { Separator } from "@/components/ui/separator";
 import Skeleton from "@/components/custom/HoverModl/Skeleton";
 import { useWxtStorage } from "@/hooks/useWxtStorage";
-import { amountFormat } from "@/lib/format";
+import { amountFormat, rate } from "@/lib/format";
 
 interface AppProps {
   symbol?: string;
@@ -323,6 +323,28 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
                                   {" "}
                                   (+{`--`} %)
                                 </span> */}
+                                  <span
+                                    className={`ml-1 ${
+                                      projectData?.market_data
+                                        ?.token_price_change_24h &&
+                                      projectData?.market_data
+                                        ?.token_price_change_24h >= 0
+                                        ? "text-brand-green"
+                                        : "text-brand-red"
+                                    }`}
+                                  >
+                                    (
+                                    {projectData?.market_data
+                                      ?.token_price_change_24h &&
+                                    projectData?.market_data
+                                      ?.token_price_change_24h >= 0
+                                      ? "+"
+                                      : ""}
+                                    {projectData.market_data?.token_price_change_24h?.toFixed(
+                                      2
+                                    ) || "--"}
+                                    %)
+                                  </span>
                                 </h2>
                                 <div className="flex items-center justify-between w-full">
                                   {projectData?.market_data?.kline_30d && (
@@ -432,7 +454,11 @@ const HoverModel: React.FC<AppProps> = ({ symbol, onClose }) => {
                                   Total Raised
                                 </h3>
                                 <h2 className="text-[20px] font-bold">
-                                  {projectData?.fundraising_info?.total_raised}
+                                  {numFormat(
+                                    projectData?.fundraising_info
+                                      ?.total_raised || "0",
+                                    2
+                                  )}{" "}
                                 </h2>
                                 <h3 className="mt-5 mb-2 text-sm font-normal ">
                                   Investors

@@ -85,7 +85,7 @@ export default defineBackground(() => {
 
         console.log("Fetching project data:", payload);
         //  `${API_URL}/nauth/alia/api/v1/project/project_data`
-        fetch(`${env.NEXT_PUBLIC_API_URL1}/api/v1/project/project_data`, {
+        fetch(`${env.NEXT_PUBLIC_API_URL1}/nauth/alia/api/v1/project/project_data`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

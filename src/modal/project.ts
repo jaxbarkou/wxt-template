@@ -200,7 +200,7 @@ export interface MarketData {
   /** Description of token price */
   token_price_desc?: string;
   /** 24-hour price change percentage */
-  token_price_change_24h?: string;
+  token_price_change_24h?: number;
   /** 24-hour trading volume */
   trading_volume_24h?: number;
   /** Description of 24-hour trading volume */

@@ -47,6 +47,7 @@ export default defineBackground(() => {
     try {
       // 添加打开侧边栏的消息处理
       if (message.type === "OPEN_SIDEPANEL") {
+        console.log("打开侧边栏 OPEN_SIDEPANEL");
         if (sender.tab?.id) {
           chrome.sidePanel.setOptions({
             enabled: true,

@@ -58,6 +58,7 @@ export default defineConfig({
       host_permissions: [
         "<all_urls>",
         "https://*/*", // 允许访问HTTPS网站
+        "http://localhost:3000/*",
         "http://localhost/*", // 允许访问localhost
         "https://www.googleapis.com/*",
         "https://oauth2.googleapis.com/*",

@@ -7,7 +7,7 @@ export default defineConfig({
   srcDir: "src",
   modules: ["@wxt-dev/module-react"],
   manifest: () => {
-    const isTest = import.meta.env.WXT_TESTNETS;
+    const isTest = import.meta.env.WXT_TESTNETS === "true";
     const KEY = import.meta.env.WXT_PUBLIC_KEY;
     const CLIENT_ID = import.meta.env.WXT_CLIENT_ID;
     return {
@@ -19,7 +19,7 @@ export default defineConfig({
         "32": "icon/32x32.png",
         "48": "icon/48x48.png",
         "96": "icon/96x96.png",
-        "128": "icon/128x128.png", 
+        "128": "icon/128x128.png",
       },
       // 配置插件图标，不设置popup，让点击时打开侧边栏
       action: {

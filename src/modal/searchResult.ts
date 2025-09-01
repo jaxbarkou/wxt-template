@@ -12,7 +12,8 @@ export interface SearchResultData {
 
 export interface ProjectItem {
   id: string;
-  project_name: string;
+  project_name?: string;
+  text?: string;
   name?: string; // 兼容字段
   logo_url?: string;
   logo?: string; // 兼容字段

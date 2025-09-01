@@ -28,7 +28,9 @@ const TvlDistributionChart: React.FC<TvlDistributionChartProps> = ({
     .slice(0, 10);
 
   // 为其他类别合并剩余数据
-  const otherData = data.slice(10);
+  const otherData = [...data]
+    .sort((a, b) => b.value - a.value)
+    .slice(10);
   const otherValue = otherData.reduce((sum, item) => sum + item.value, 0);
   const otherCategories = otherData.map(item => item.category).join(', ');
 
